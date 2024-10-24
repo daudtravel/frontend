@@ -1,5 +1,3 @@
-import React from "react";
-import Image from "next/image";
 import { Car, Clock, Shield, MapPin } from "lucide-react";
 import Road from "@images/Road.webp";
 

@@ -79,6 +79,7 @@ const CoverSection = () => {
           </div>
         </div>
       </div>
+      
     </div>
   );
 };

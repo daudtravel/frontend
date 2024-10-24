@@ -6,20 +6,14 @@ const TransferSection = () => {
     {
       icon: <Car className="w-12 h-12 text-white mb-4" />,
       title: "Modern Vehicle Fleet",
-      description:
-        "Travel in comfort with our range of well-maintained vehicles suitable for all group sizes",
     },
     {
       icon: <Clock className="w-12 h-12 text-white mb-4" />,
       title: "24/7 Availability",
-      description:
-        "Round-the-clock service for your convenience, whether it's early morning or late night",
     },
     {
       icon: <Shield className="w-12 h-12 text-white mb-4" />,
       title: "Licensed Drivers",
-      description:
-        "Professional, experienced drivers ensuring your safe and comfortable journey",
     },
     {
       icon: <MapPin className="w-12 h-12 text-white mb-4" />,
@@ -59,7 +53,6 @@ const TransferSection = () => {
                 <h3 className="text-xl font-semibold text-white mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-200">{feature.description}</p>
               </div>
             ))}
           </div>

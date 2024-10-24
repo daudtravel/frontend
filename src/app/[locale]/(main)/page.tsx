@@ -10,9 +10,9 @@ export default function Page() {
     <main className="w-full relative">
       <CoverSection />
       <ToursSection />
-      <WhyUsSection />
-      <ReviewsSection />
       <TransferSection />
+      <ReviewsSection />
+      <WhyUsSection />
       <FaqSection />
     </main>
   );

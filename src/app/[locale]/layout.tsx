@@ -1,9 +1,10 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { routing, Locale } from "@/i18n/routing";
+import Header from "@/src/components/header/Header";
+import Footer from "@/src/components/footer/Footer";
+import { Locale, routing } from "@/src/i18n/routing";
 import "./globals.css";
-import Header from "@/components/header/Header";
 
 export default async function LocaleLayout({
   children,
@@ -25,6 +26,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <Header />
           {children}
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>

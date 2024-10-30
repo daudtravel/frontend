@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Users, Shield, Map, Star } from "lucide-react";
-import img from "@images/Sunset2.jpg";
+import img from "@img/images/Sunset2.jpg";
 
 export default function WhyUsSection() {
   const features = [
@@ -51,7 +51,7 @@ export default function WhyUsSection() {
 
       {/* Content Container */}
       <div className="relative ">
-        <div className="container mx-auto px-4 py-24">
+        <div className="container mx-auto px-4 py-20">
           {/* Header */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">

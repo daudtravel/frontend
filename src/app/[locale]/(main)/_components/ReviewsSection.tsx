@@ -1,4 +1,10 @@
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/src/components/ui/carousel";
 import { StarIcon } from "lucide-react";
 
 const reviews = [
@@ -80,7 +86,7 @@ const ReviewsSection = () => {
           ))}
         </CarouselContent>
         <div className="hidden md:block">
-          <CarouselPrevious/>
+          <CarouselPrevious />
         </div>
         <div className="hidden md:block">
           <CarouselNext />

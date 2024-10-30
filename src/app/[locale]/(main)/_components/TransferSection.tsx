@@ -1,5 +1,5 @@
-import { Car, Clock, Shield, MapPin } from "lucide-react";
-import Road from "@images/Road.webp";
+import { Car, Clock, Shield, MapPin, Navigation } from "lucide-react";
+import Road from "@img/images/Road.webp";
 
 const TransferSection = () => {
   const transferFeatures = [
@@ -20,6 +20,30 @@ const TransferSection = () => {
       title: "Door-to-Door Service",
       description:
         "Convenient pickup and drop-off at your preferred locations across the region",
+    },
+  ];
+
+  const routes = [
+    {
+      from: "Batumi",
+      to: "Tbilisi",
+      duration: "6 hours",
+      distance: "378 km",
+      highlights: "Scenic mountain views",
+    },
+    {
+      from: "Batumi",
+      to: "Kazbegi",
+      duration: "8 hours",
+      distance: "445 km",
+      highlights: "Mountain passes & valleys",
+    },
+    {
+      from: "Batumi",
+      to: "Kutaisi",
+      duration: "2.5 hours",
+      distance: "155 km",
+      highlights: "Cultural landmarks",
     },
   ];
 
@@ -57,26 +81,30 @@ const TransferSection = () => {
             ))}
           </div>
 
-          {/* Vehicle Types */}
+          {/* Popular Routes */}
           <div className="mt-16 text-center">
             <h3 className="text-2xl font-semibold text-white mb-8">
-              Available Vehicles
+              Popular Routes
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="p-6 rounded-lg backdrop-blur-sm bg-white/10">
-                <h4 className="text-xl font-semibold text-white mb-2">Sedan</h4>
-                <p className="text-gray-200">Up to 3 passengers</p>
-              </div>
-              <div className="p-6 rounded-lg backdrop-blur-sm bg-white/10">
-                <h4 className="text-xl font-semibold text-white mb-2">SUV</h4>
-                <p className="text-gray-200">Up to 5 passengers</p>
-              </div>
-              <div className="p-6 rounded-lg backdrop-blur-sm bg-white/10">
-                <h4 className="text-xl font-semibold text-white mb-2">
-                  Minivan
-                </h4>
-                <p className="text-gray-200">Up to 7 passengers</p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {routes.map((route, index) => (
+                <div
+                  key={index}
+                  className="p-6 rounded-lg backdrop-blur-sm bg-white/10 transform transition-transform duration-300 hover:scale-105"
+                >
+                  <div className="flex items-center justify-center mb-4">
+                    <Navigation className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-xl font-semibold text-white mb-4">
+                    {route.from} - {route.to}
+                  </h4>
+                  <div className="space-y-2 text-gray-200">
+                    <p>Duration: {route.duration}</p>
+                    <p>Distance: {route.distance}</p>
+                    <p className="text-sm italic">{route.highlights}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

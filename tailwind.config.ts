@@ -11,19 +11,17 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
-        "custom-gradient":
-          "linear-gradient(to right, #c2410c, #d97706, #fbbf24)",
-        "custom-gradient-hover":
-          "linear-gradient(to right, #bf2323, #e74c3c, #f39c12)", // more dynamic
-        "text-gradient": "linear-gradient(to right, #fcd34d, #fef08a, #ffffff)",
-        "text-gradient-dark-orange":
-          "linear-gradient(to right, #b45309, #d97706, #fbbf24)",
+        mainGradient: "linear-gradient(to right, #c2410c, #d97706, #fbbf24)",
+        mainGradientHover:
+          "linear-gradient(to right, #bf2323, #e74c3c, #f39c12)",
+        textGradient: "linear-gradient(to right, #fcd34d, #fef08a, #ffffff)",
+        headerGradient: "linear-gradient(to right, #e66b2a, #f5a623, #ffe082)",
       },
 
       colors: {
-        "light-warm-yellow": "#fef9c3", // Light warm yellow background
-        "very-pale-cream": "#fff7e0", // Very pale cream background
-        "soft-beige": "#fdf6e3", // Soft beige background
+        main: "#fbbf24",
+        mainBg: "#f2f5ff",
+
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

@@ -33,7 +33,7 @@ export const Social = () => {
 };
 
 export default function Footer() {
-  const t = useTranslations("NavbarLinks");
+  const t = useTranslations("main");
 
   return (
     <>

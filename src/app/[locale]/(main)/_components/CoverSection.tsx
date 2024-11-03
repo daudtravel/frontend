@@ -52,7 +52,7 @@ const CoverSection = () => {
                 alt={image.alt}
                 layout="fill"
                 objectFit="cover"
-                className="object-cover w-full h-full object-center brightness-75 filter"
+                className="object-cover w-full h-full object-center"
               />
             </motion.div>
           ))}
@@ -68,7 +68,7 @@ const CoverSection = () => {
               }}
               className="text-center space-y-8"
             >
-              <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-text-gradient">
+              <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-textGradient">
                 Find Your Emotions!
               </h1>
               <p className="text-xl md:text-2xl text-white">

@@ -8,9 +8,16 @@ export default getRequestConfig(async ({ requestLocale }) => {
   if (!locale || !routing.locales.includes(locale as any)) {
     locale = routing.defaultLocale;
   }
-  
+
+  // Load all JSON files for the current locale
+  const messages = {
+    meta: (await import(`../messages/${locale}/meta.json`)).default,
+    contact: (await import(`../messages/${locale}/contact.json`)).default,
+    main: (await import(`../messages/${locale}/main.json`)).default,
+  };
+
   return {
     locale,
-    messages: (await import(`../messages/${locale}.json`)).default,
+    messages,
   };
 });

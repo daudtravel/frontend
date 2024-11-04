@@ -74,9 +74,9 @@ const ContactCard: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#f2f5ff]">
-      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6 px-4">
-        <Card className="w-full md:w-1/3 shadow-none border-none md:border md:shadow-lg md:bg-white bg-[#f2f5ff]">
+    <div className="flex justify-center items-center min-h-screen py-10 relative">
+      <div className="w-full max-w-5xl flex flex-col h-full md:flex-row gap-6 px-4 md:px-0">
+        <Card className="w-full md:w-1/3  border border-gray-300 shadow-lg bg-[#f2f5ff]">
           <CardHeader>
             <CardTitle className="text-xl font-bold text-center md:text-start">
               Contact Information
@@ -93,7 +93,7 @@ const ContactCard: React.FC = () => {
                       href="https://www.google.com/maps/place/Daud+Travel/@41.6443898,41.6346718,696m/data=!3m2!1e3!4b1!4m6!3m5!1s0x406787f6f7466e93:0x69bea43bb941487c!8m2!3d41.6443898!4d41.6346718!16s%2Fg%2F11s2jbmn0l?entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw%3D%3D"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:underline"
+                      className="hover:underline hover:text-main"
                     >
                       {CONTACT_INFO.address}
                     </a>
@@ -108,7 +108,7 @@ const ContactCard: React.FC = () => {
                   <p className="text-sm text-gray-600">
                     <a
                       href={`tel:${CONTACT_INFO.phone.replace(/[^0-9+]/g, "")}`}
-                      className="hover:underline"
+                      className="hover:underline hover:text-main"
                     >
                       {CONTACT_INFO.phone}
                     </a>
@@ -123,7 +123,7 @@ const ContactCard: React.FC = () => {
                   <p className="text-sm text-gray-600">
                     <a
                       href={`mailto:${CONTACT_INFO.email}`}
-                      className="hover:underline"
+                      className="hover:underline hover:text-main"
                     >
                       {CONTACT_INFO.email}
                     </a>
@@ -204,87 +204,84 @@ const ContactCard: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        <div className="pb-20 md:p-0 w-full md:w-2/3 ">
-          <Card className="w-full  shadow-lg min-h-[32rem]">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-center md:text-start">
-                Send us a Message
-              </CardTitle>
-              <CardDescription>
-                Fill out the form below and we ll get back to you soon
-              </CardDescription>
-            </CardHeader>
-            <form onSubmit={handleSubmit} className="flex flex-col h-full">
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      name="firstName"
-                      placeholder="John"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      required
-                      className="h-10"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      name="lastName"
-                      placeholder="Doe"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      required
-                      className="h-10"
-                    />
-                  </div>
-                </div>
+
+        <Card className="w-full  md:w-2/3 border-gray-300  shadow-lg min-h-[32rem] bg-[#f2f5ff]">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center md:text-start">
+              Send us a Message
+            </CardTitle>
+            <CardDescription>
+              Fill out the form below and we ll get back to you soon
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit} className="flex flex-col h-full">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="firstName">First Name</Label>
                   <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="john@example.com"
-                    value={formData.email}
+                    id="firstName"
+                    name="firstName"
+                    placeholder="John"
+                    value={formData.firstName}
                     onChange={handleChange}
                     required
                     className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    placeholder="Your message here..."
-                    value={formData.message}
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    placeholder="Doe"
+                    value={formData.lastName}
                     onChange={handleChange}
                     required
-                    className="h-32 resize-none"
+                    className="h-10"
                   />
                 </div>
-                <CardFooter className="mt-auto">
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? (
-                      <span className="flex items-center gap-2">
-                        Sending...
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-2">
-                        Send Message
-                        <Send className="w-4 h-4" />
-                      </span>
-                    )}
-                  </Button>
-                </CardFooter>
-              </CardContent>
-            </form>
-          </Card>
-        </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="h-10"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="message">Message</Label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  placeholder="Your message here..."
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  className="h-32 resize-none"
+                />
+              </div>
+              <CardFooter className="mt-auto">
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <span className="flex items-center gap-2">Sending...</span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Send Message
+                      <Send className="w-4 h-4" />
+                    </span>
+                  )}
+                </Button>
+              </CardFooter>
+            </CardContent>
+          </form>
+        </Card>
       </div>
     </div>
   );

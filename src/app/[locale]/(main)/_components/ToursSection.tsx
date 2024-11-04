@@ -2,6 +2,14 @@ import React from "react";
 import Batumi from "@img/images/Batumi.jpg";
 import Svaneti from "@img/images/Svaneti.jpg";
 import Image from "next/image";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/src/components/ui/carousel";
+import { Location } from "@/src/components/svg";
 
 export default function ToursSection() {
   const tours = [
@@ -45,31 +53,50 @@ export default function ToursSection() {
   ];
 
   return (
-    <section className="container mx-auto px-4 pt-12 pb-24 md:px-20 z-[10000000000]">
-      <h1 className="text-4xl text-center tracking-widest mb-12 uppercase text-slate-700">
-        Popular Destinations
-      </h1>
+    <section className="w-full px-4 pt-12 pb-24 md:px-0 flex flex-col gap-8 md:gap-16">
+      <div className="w-full md:px-20 flex justify-between items-center">
+        <div className="flex flex-col gap-2 ">
+          <h1 className="text-4xl text-start">Popular Destinations</h1>
+          <div className="h-[2px] w-80 md:w-[600px] bg-mainGradient"></div>
+          <p>
+            Most popular destinations around the world, from historical places
+            to natural wonders.
+          </p>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {tours.map((tour) => (
-          <div key={tour.id} className="md:col-span-1 cursor-pointer">
-            <div className="relative group overflow-hidden rounded-lg">
-              <Image
-                src={tour.img}
-                alt={tour.alt}
-                className="w-full h-72 object-cover transition-transform duration-300 group-hover:scale-110 group-hover:brightness-75"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-20 flex items-end justify-between">
-                <h3 className="text-white text-xl font-semibold p-4">
-                  {tour.name}
-                </h3>
-                <div className="text-white text-sm font-medium p-4 hover:underline">
-                  View More
+      <div className="flex justify-center items-center">
+        <Carousel className="w-full">
+          <CarouselContent className="pr-12 md:pr-52 md:pl-6">
+            {tours.map((tour) => (
+              <CarouselItem key={tour.id} className="md:basis-1/3 md:pl-8">
+                <div className="relative group overflow-hidden rounded-xl cursor-pointer h-[400px]">
+                  <Image
+                    src={tour.img}
+                    alt={tour.alt}
+                    fill
+                    className="object-cover transition-transform duration-300 h-full group-hover:scale-110 group-hover:brightness-75"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-end justify-between">
+                    <div className="p-4">
+                      <div className="flex flex-row gap-1 items-center relative">
+                        <Location className="fill-white w-5 h-5" />
+                        <h3 className="text-white text-xl">{tour.name}</h3>
+                      </div>
+                    </div>
+                    <div className="text-white text-sm font-medium p-4 hover:underline">
+                      View More
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="hidden md:block md:absolute -top-20 right-40">
+            <CarouselPrevious className="bg-mainGradient text-white w-10 h-10 border-white border hover:bg-mainGradientHover hover:text-white" />
+            <CarouselNext className="bg-mainGradient text-white w-10 h-10 border-white border hover:bg-mainGradientHover hover:text-white" />
           </div>
-        ))}
+        </Carousel>
       </div>
     </section>
   );

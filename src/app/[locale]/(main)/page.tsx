@@ -1,4 +1,4 @@
-import CoverSection from "./_components/CoverSection";
+import CoverTest from "./_components/CoverTest";
 import FaqSection from "./_components/FaqSection";
 import ReviewsSection from "./_components/ReviewsSection";
 import ToursSection from "./_components/ToursSection";
@@ -7,8 +7,9 @@ import WhyUsSection from "./_components/WhyUsSection";
 
 export default function Page() {
   return (
-    <main className="w-full relative bg-[#f2f5ff]">
-      <CoverSection />
+    <main className="w-full relative ">
+      <CoverTest />
+      {/* <CoverSection /> */}
       <ToursSection />
       <TransferSection />
       <ReviewsSection />

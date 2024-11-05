@@ -10,3 +10,6 @@ export { default as Facebook } from "@img/svg/Facebook.svg";
 export { default as Telegram } from "@img/svg/Telegram.svg";
 export { default as Whatsapp } from "@img/svg/Whatsapp.svg";
 export { default as X } from "@img/svg/X.svg";
+export { default as Ellipse } from "@img/svg/Ellipse.svg";
+export { default as Case } from "@img/svg/Case.svg";
+export { default as WorldMap } from "@img/svg/WorldMap.svg";

@@ -14,7 +14,8 @@ const config: Config = {
         mainGradient: "linear-gradient(to right, #c2410c, #d97706, #fbbf24)",
         mainGradientHover:
           "linear-gradient(to right, #bf2323, #e74c3c, #f39c12)",
-        textGradient: "linear-gradient(to right, #fcd34d, #fef08a, #ffffff)",
+        textGradient:
+          "linear-gradient(to right, #f59e0b, #fcd34d, #fef08a, #ffffff)",
         headerGradient: "linear-gradient(to right, #e66b2a, #f5a623, #ffe082)",
       },
 

@@ -1,4 +1,3 @@
-import React from "react";
 import Batumi from "@img/images/Batumi.jpg";
 import Svaneti from "@img/images/Svaneti.jpg";
 import Image from "next/image";
@@ -53,7 +52,7 @@ export default function ToursSection() {
   ];
 
   return (
-    <section className="w-full   pt-12 pb-24 md:px-0 flex flex-col gap-8 md:gap-16">
+    <section className="w-full py-24 md:px-0 flex flex-col gap-8 md:gap-16">
       <div className="w-full lg:px-20 flex justify-between items-center px-4">
         <div className="flex flex-col gap-2 ">
           <h1 className="text-4xl text-start">Popular Destinations</h1>

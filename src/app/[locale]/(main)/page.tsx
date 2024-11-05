@@ -1,4 +1,5 @@
-import CoverTest from "./_components/CoverTest";
+import CoverSection from "./_components/CoverSection";
+
 import FaqSection from "./_components/FaqSection";
 import ReviewsSection from "./_components/ReviewsSection";
 import ToursSection from "./_components/ToursSection";
@@ -8,8 +9,8 @@ import WhyUsSection from "./_components/WhyUsSection";
 export default function Page() {
   return (
     <main className="w-full relative ">
-      <CoverTest />
-      {/* <CoverSection /> */}
+      {/* <CoverTest /> */}
+      <CoverSection />
       <ToursSection />
       <TransferSection />
       <ReviewsSection />

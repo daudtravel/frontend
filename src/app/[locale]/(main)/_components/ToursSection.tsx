@@ -53,8 +53,8 @@ export default function ToursSection() {
   ];
 
   return (
-    <section className="w-full px-4 pt-12 pb-24 md:px-0 flex flex-col gap-8 md:gap-16">
-      <div className="w-full md:px-20 flex justify-between items-center">
+    <section className="w-full   pt-12 pb-24 md:px-0 flex flex-col gap-8 md:gap-16">
+      <div className="w-full lg:px-20 flex justify-between items-center px-4">
         <div className="flex flex-col gap-2 ">
           <h1 className="text-4xl text-start">Popular Destinations</h1>
           <div className="h-[2px] w-80 md:w-[600px] bg-mainGradient"></div>
@@ -67,9 +67,12 @@ export default function ToursSection() {
 
       <div className="flex justify-center items-center">
         <Carousel className="w-full">
-          <CarouselContent className="pr-12 md:pr-52 md:pl-6">
+          <CarouselContent className="pl-4 pr-12 md:pr-32 xl:pr-52 md:pl-6">
             {tours.map((tour) => (
-              <CarouselItem key={tour.id} className="md:basis-1/3 md:pl-8">
+              <CarouselItem
+                key={tour.id}
+                className="md:basis-1/3 xl:basis-1/3 xl:pl-8 px-2"
+              >
                 <div className="relative group overflow-hidden rounded-xl cursor-pointer h-[400px]">
                   <Image
                     src={tour.img}
@@ -92,7 +95,7 @@ export default function ToursSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="hidden md:block md:absolute -top-20 right-40">
+          <div className="hidden md:block md:absolute -top-20 md:right-20 lg:right-40">
             <CarouselPrevious className="bg-mainGradient text-white w-10 h-10 border-white border hover:bg-mainGradientHover hover:text-white" />
             <CarouselNext className="bg-mainGradient text-white w-10 h-10 border-white border hover:bg-mainGradientHover hover:text-white" />
           </div>

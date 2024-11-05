@@ -54,7 +54,7 @@ const reviews = [
 
 const ReviewsSection = () => {
   return (
-    <section className="my-24 flex w-full flex-col items-center px-4 lg:px-7 xl:px-24">
+    <section className="my-24 flex w-full flex-col items-center  ">
       <h1 className="text-4xl text-center mb-10">What Our Guests Say</h1>
       <Carousel
         opts={{
@@ -62,7 +62,7 @@ const ReviewsSection = () => {
         }}
         className="mt-6 w-full p-0"
       >
-        <CarouselContent className="ml-1 gap-4 pr-10">
+        <CarouselContent className=" gap-4 px-20 ">
           {reviews.map((item, index) => (
             <CarouselItem
               key={index}
@@ -85,11 +85,10 @@ const ReviewsSection = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="hidden md:block">
-          <CarouselPrevious />
-        </div>
-        <div className="hidden md:block">
-          <CarouselNext />
+
+        <div className="hidden md:block md:absolute -top-20 md:right-20 lg:right-40">
+          <CarouselPrevious className="bg-mainGradient text-white w-10 h-10 border-white border hover:bg-mainGradientHover hover:text-white" />
+          <CarouselNext className="bg-mainGradient text-white w-10 h-10 border-white border hover:bg-mainGradientHover hover:text-white" />
         </div>
       </Carousel>
     </section>

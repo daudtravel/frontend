@@ -1,10 +1,11 @@
 import CoverSection from "./_components/CoverSection";
+import CoverTest from "./_components/CoverTest";
 
 import FaqSection from "./_components/FaqSection";
 import ReviewsSection from "./_components/ReviewsSection";
 import ToursSection from "./_components/ToursSection";
 import TransferSection from "./_components/TransferSection";
-import WhyUsSection from "./_components/WhyUsSection";
+
 
 export default function Page() {
   return (
@@ -12,9 +13,9 @@ export default function Page() {
       {/* <CoverTest /> */}
       <CoverSection />
       <ToursSection />
+      <CoverTest/>
       <TransferSection />
       <ReviewsSection />
-      <WhyUsSection />
       <FaqSection />
     </main>
   );

@@ -27,7 +27,7 @@ const CoverSection = () => {
   }, [images.length]);
 
   return (
-    <div className="relative w-full h-screen md:h-[800px] overflow-hidden bg-white">
+    <div className="relative w-full min-h-screen md:h-[800px] overflow-hidden bg-white">
       {images.map((image, index) => (
         <div
           key={index}
@@ -40,7 +40,7 @@ const CoverSection = () => {
             alt={image.alt}
             layout="fill"
             objectFit="cover"
-            className="object-cover w-full h-full object-center brightness-75"
+            className="w-full h-full object-center brightness-75"
           />
         </div>
       ))}

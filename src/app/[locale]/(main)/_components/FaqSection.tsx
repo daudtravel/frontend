@@ -47,7 +47,7 @@ export default function FaqSection() {
   const bgColor = (value: string) => (openItems[value] ? "#DFE6FC" : "#f2f5ff");
 
   return (
-    <section className="bg-[] w-full px-6  py-24 sm:px-16 md:px-20 xl:px-24 ">
+    <section className="bg-[#f2f5ff] w-full px-6  py-12 sm:px-16 md:px-20 xl:px-24 ">
       <h1 className="text-xl">{"Frequently Asked Questions"}</h1>
       {items.map((item) => (
         <Accordion

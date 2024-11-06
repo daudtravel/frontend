@@ -10,18 +10,22 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        mainGradient: "linear-gradient(to right, #c2410c, #d97706, #fbbf24)",
-        mainGradientHover:
-          "linear-gradient(to right, #bf2323, #e74c3c, #f39c12)",
-        textGradient:
-          "linear-gradient(to right, #f59e0b, #fcd34d, #fef08a, #ffffff)",
-        headerGradient: "linear-gradient(to right, #e66b2a, #f5a623, #ffe082)",
-      },
-
-      colors: {
-        main: "#fbbf24",
-        mainBg: "#f2f5ff",
+  backgroundImage: {
+    // Modern gradient with smoother transitions
+    mainGradient: "linear-gradient(to right, #FF6B6B, #FF8E53, #FFA41B)",
+    // Hover state with deeper, richer colors
+    mainGradientHover: "linear-gradient(to right, #E74C3C, #FF5733, #FFA502)",
+    // Text gradient with better contrast and readability
+    textGradient: "linear-gradient(to right, #FFD700, #FFF3B0, #FFFFFF)",
+    // Header gradient with sophisticated tone
+    headerGradient: "linear-gradient(to right, #FF8C42, #FFB347, #FFD460)"
+  },
+  colors: {
+    // Primary brand color
+    main: "#FF8C42",
+    // Subtle background with slight warmth
+    mainBg: "#FAFBFF",
+    // Additional color palette
 
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

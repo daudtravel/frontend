@@ -52,10 +52,10 @@ export default function ToursSection() {
   ];
 
   return (
-    <section className="w-full py-24 md:px-0 flex flex-col gap-8 md:gap-16">
+    <section className="w-full py-10 md:pt-24 pb-12 md:px-0 flex flex-col gap-8 md:gap-16">
       <div className="w-full lg:px-20 flex justify-between items-center px-4">
         <div className="flex flex-col gap-2 ">
-          <h1 className="text-4xl text-start">Popular Destinations</h1>
+          <h1 className="text-4xl md:text-4xl font-bold text-start">Popular Destinations</h1>
           <div className="h-[2px] w-80 md:w-[600px] bg-mainGradient"></div>
           <p>
             Most popular destinations around the world, from historical places
@@ -79,7 +79,7 @@ export default function ToursSection() {
                     fill
                     className="object-cover transition-transform duration-300 h-full group-hover:scale-110 group-hover:brightness-75"
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-end justify-between">
+                  <div className="absolute inset-0 bg-black bg-opacity-10 flex items-end justify-between">
                     <div className="p-4">
                       <div className="flex flex-row gap-1 items-center relative">
                         <Location className="fill-white w-5 h-5" />

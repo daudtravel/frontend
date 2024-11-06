@@ -54,19 +54,21 @@ const reviews = [
 
 const ReviewsSection = () => {
   return (
-    <section className="my-24 flex w-full flex-col items-center  ">
-      <h1 className="text-4xl text-center mb-10">What Our Guests Say</h1>
+    <section className="py-12 md:py-24 flex w-full flex-col items-center  ">
+      <h1 className="text-2xl md:text-4xl text-center mb-5 md:mb-10">
+        What Our Guests Say
+      </h1>
       <Carousel
         opts={{
           align: "start",
         }}
-        className="mt-6 w-full p-0"
+        className="mt-6 w-full p-0 "
       >
-        <CarouselContent className=" gap-4 px-20 ">
+        <CarouselContent className=" gap-4 mx-4 pr-4 md:px-12 ">
           {reviews.map((item, index) => (
             <CarouselItem
               key={index}
-              className="w-full rounded-xl border border-gray-300 bg-[#DFE6FC] md:basis-1/2 lg:basis-1/3"
+              className="w-full  rounded-xl border  border-gray-300 bg-[#f2f5ff] md:basis-1/2 lg:basis-1/3"
             >
               <div className="flex h-full flex-col justify-between p-6">
                 <div>

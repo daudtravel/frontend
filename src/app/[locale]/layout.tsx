@@ -5,6 +5,8 @@ import Header from "@/src/components/header/Header";
 import Footer from "@/src/components/footer/Footer";
 import { Locale, routing } from "@/src/i18n/routing";
 import "./globals.css";
+import SignUpModal from "./(auth)/_signup/SignupModal";
+import SignInModal from "./(auth)/_signin/SigninModal";
 
 export default async function LocaleLayout({
   children,
@@ -25,6 +27,8 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <Header />
+          <SignUpModal />
+          <SignInModal />
           {children}
           <Footer />
         </NextIntlClientProvider>

@@ -6,14 +6,13 @@ import ReviewsSection from "./_components/ReviewsSection";
 import ToursSection from "./_components/ToursSection";
 import TransferSection from "./_components/TransferSection";
 
-
 export default function Page() {
   return (
     <main className="w-full relative ">
       {/* <CoverTest /> */}
       <CoverSection />
       <ToursSection />
-      <CoverTest/>
+      <CoverTest />
       <TransferSection />
       <ReviewsSection />
       <FaqSection />

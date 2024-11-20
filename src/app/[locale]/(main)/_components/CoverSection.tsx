@@ -10,6 +10,7 @@ const CoverSection = () => {
   const images = [
     { src: "/images/Svaneti.jpg", alt: "Svaneti" },
     { src: "/images/Batumi.jpg", alt: "Batumi" },
+    { src: "/images/River.jpg", alt: "River" },
   ];
 
   const destinations = [

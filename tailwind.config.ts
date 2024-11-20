@@ -11,7 +11,11 @@ const config: Config = {
   theme: {
     extend: {
   backgroundImage: {
-    // Modern gradient with smoother transitions
+    backgroundWalpaper: "url('/images/Background.png')",
+    backgroundTest: "url('/images/Test.jpg')",
+    backgroundTest1: "url('/images/Mountain.jpg')",
+    backgroundTest2: "url('/images/MountainOverlay.png')",
+    paperGradient: "linear-gradient(180deg, rgba(255, 255, 255, 0.93) 0%, #FFFFFF 100%)",
     mainGradient: "linear-gradient(to right, #FF6B6B, #FF8E53, #FFA41B)",
     // Hover state with deeper, richer colors
     mainGradientHover: "linear-gradient(to right, #E74C3C, #FF5733, #FFA502)",

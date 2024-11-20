@@ -45,22 +45,19 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 w-full bg-white z-50 shadow-sm">
-      <div className="flex w-full items-center justify-between px-4 md:px-20 h-20">
+    <header className="   top-0 w-full    bg-white z-50 shadow-sm">
+      <div className="flex w-full items-center justify-between  px-4 md:px-20 h-20">
         <div className="font-bold text-xl">Logo</div>
 
-        <nav className="flex items-center gap-3 md:gap-5">
-          <Link
-            href="/"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-          >
+        <nav className="md:flex items-center gap-3 md:gap-5 hidden ">
+          <Link href="/" className="text-sm font-medium text-white">
             HOME
           </Link>
-          <Link
-            href="/contact"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-          >
+          <Link href="/contact" className="text-sm font-medium text-white">
             CONTACT
+          </Link>
+          <Link href="/tours" className="text-sm font-medium text-white">
+            tours
           </Link>
 
           <div className="flex items-center gap-2">
@@ -68,7 +65,7 @@ export default function Header() {
               variant="outline"
               size="sm"
               onClick={signinClickHandler}
-              className="text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+              className="text-white hover:text-gray-900 hover:bg-gray-100"
             >
               <LogIn className="mr-2 h-4 w-4" />
               Sign In

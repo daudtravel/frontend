@@ -45,18 +45,18 @@ export default function Header() {
   };
 
   return (
-    <header className="   top-0 w-full    bg-white z-50 shadow-sm">
+    <header className="  top-0 w-full   bg-white shadow-xl z-50  ">
       <div className="flex w-full items-center justify-between  px-4 md:px-20 h-20">
         <div className="font-bold text-xl">Logo</div>
 
         <nav className="md:flex items-center gap-3 md:gap-5 hidden ">
-          <Link href="/" className="text-sm font-medium text-white">
+          <Link href="/" className="text-sm font-medium text-black">
             HOME
           </Link>
-          <Link href="/contact" className="text-sm font-medium text-white">
+          <Link href="/contact" className="text-sm font-medium text-black">
             CONTACT
           </Link>
-          <Link href="/tours" className="text-sm font-medium text-white">
+          <Link href="/tours" className="text-sm font-medium text-black">
             tours
           </Link>
 
@@ -65,7 +65,7 @@ export default function Header() {
               variant="outline"
               size="sm"
               onClick={signinClickHandler}
-              className="text-white hover:text-gray-900 hover:bg-gray-100"
+              className="text-black hover:text-gray-900 hover:bg-gray-100"
             >
               <LogIn className="mr-2 h-4 w-4" />
               Sign In
@@ -74,7 +74,7 @@ export default function Header() {
             <Button
               size="sm"
               onClick={signupClickHandler}
-              className="bg-blue-600 text-white hover:bg-blue-700"
+              className="bg-blue-600 text-black hover:bg-blue-700"
             >
               <UserPlus className="mr-2 h-4 w-4" />
               Sign Up

@@ -59,6 +59,9 @@ export default function Header() {
           <Link href="/tours" className="text-sm font-medium text-black">
             tours
           </Link>
+          <Link href="/about" className="text-sm font-medium text-black">
+            about
+          </Link>
 
           <div className="flex items-center gap-2">
             <Button

@@ -43,7 +43,7 @@ export default function ToursSection() {
   return (
     <section className="container md:px-20 px-4 pt-10 md:pt-20 pb-20">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {items.map((item, index) => (
+        {items.map((item) => (
           <div
             key={item.id}
             className="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300"

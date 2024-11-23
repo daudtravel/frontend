@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Globe, Mountain, Compass } from "lucide-react";
 import Img from "@img/images/Family.jpg";
 
 export default function Page() {

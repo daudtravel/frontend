@@ -48,7 +48,7 @@ export default function WhyUsSection() {
             transition={{ duration: 1, delay: 0.5 }}
             viewport={{ once: true }}
           >
-            Your trusted partner in exploring Georgia's finest destinations
+            Your trusted partner in exploring Georgia s finest destinations
           </motion.p>
         </div>
 

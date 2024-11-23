@@ -55,7 +55,7 @@ export default function HeaderSection() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-sm sm:text-base lg:text-lg text-gray-200 max-w-[90%] sm:max-w-xl"
           >
-            Embark on unforgettable journeys across Georgia's most stunning
+            Embark on unforgettable journeys across Georgia s most stunning
             destinations. From coastal charm to mountain majesty, your next
             adventure awaits.
           </motion.p>

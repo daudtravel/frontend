@@ -34,7 +34,7 @@ const TourDetailsPage = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-50">
+    <div className="w-full min-h-screen  ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Hero Section - Adjusted height for different screens */}
         <div className="relative h-64 sm:h-80 lg:h-96 mb-4 sm:mb-6 lg:mb-8 rounded-xl overflow-hidden">
@@ -59,12 +59,12 @@ const TourDetailsPage = () => {
         </div>
 
         {/* Main Content - Responsive grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 ">
           {/* Left Column - Tour Details */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 ">
             {/* Booking Card for Mobile - Shows at top on mobile only */}
-            <div className="lg:hidden mb-4">
-              <Card>
+            <div className="lg:hidden mb-4 bg-[#f2f5ff]  cv">
+              <Card >
                 <CardContent className="p-4">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">

@@ -49,7 +49,7 @@ export default function SignInModal() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="flex h-[600px] max-w-4xl p-0 border-none rounded-md overflow-hidden">
+      <DialogContent className="flex md:h-[600px] max-w-4xl p-0 border-none md:rounded-md overflow-hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>Sign In</DialogTitle>
         </DialogHeader>

@@ -5,7 +5,7 @@ import Header from "@/src/components/header/Header";
 import Footer from "@/src/components/footer/Footer";
 import { Locale, routing } from "@/src/i18n/routing";
 import "./globals.css";
-import SignUpModal from "./(auth)/_signup/SignupModal";
+import SignUpModal from "./(auth)/_signup/SignupModalWrapper";
 import SignInModal from "./(auth)/_signin/SigninModal";
 
 export default async function LocaleLayout({

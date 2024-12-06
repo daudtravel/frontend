@@ -4,45 +4,19 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
 import { LogIn, UserPlus } from "lucide-react";
+import { useCallback } from "react";
 
 export default function Header() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
-  const signupClickHandler = () => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-
-    if (newSearchParams.has("signup")) {
-      if (newSearchParams.get("signup") === "true") return;
-      newSearchParams.set("signup", "true");
-    } else {
-      newSearchParams.append("signup", "true");
-    }
-
-    const queryString = newSearchParams.toString();
-    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
-    router.replace(newUrl, {
-      scroll: false,
-    });
-  };
-
-  const signinClickHandler = () => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-
-    if (newSearchParams.has("signin")) {
-      if (newSearchParams.get("signin") === "true") return;
-      newSearchParams.set("signin", "true");
-    } else {
-      newSearchParams.append("signin", "true");
-    }
-
-    const queryString = newSearchParams.toString();
-    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
-    router.replace(newUrl, {
-      scroll: false,
-    });
-  };
+  const authClickHandler = useCallback(
+    (name: string) => {
+      router.push(`${pathname}?${name}`);
+    },
+    [pathname, router]
+  );
 
   return (
     <header className="  top-0 w-full   bg-[#f2f5ff] shadow-md z-50  ">
@@ -67,7 +41,7 @@ export default function Header() {
             <Button
               variant="outline"
               size="sm"
-              onClick={signinClickHandler}
+              onClick={() => authClickHandler("signin")}
               className="text-black hover:text-gray-900 hover:bg-gray-100"
             >
               <LogIn className="mr-2 h-4 w-4" />
@@ -76,7 +50,7 @@ export default function Header() {
 
             <Button
               size="sm"
-              onClick={signupClickHandler}
+              onClick={() => authClickHandler("signup")}
               className="bg-blue-600 text-black hover:bg-blue-700"
             >
               <UserPlus className="mr-2 h-4 w-4" />

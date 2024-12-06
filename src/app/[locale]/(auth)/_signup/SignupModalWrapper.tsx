@@ -59,7 +59,7 @@ export default function SignupModalWrapper() {
       confirmPassword: undefined,
     });
     setIsVerificationStep(false);
-  }, [open]);
+  }, [open, setUserInfo]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -106,7 +106,7 @@ export default function SignupModalWrapper() {
             ) : (
               <CodeVerifyForm
                 setIsVerificationStep={setIsVerificationStep}
-                setIsopen={setIsOpen}
+                setIsOpen={setIsOpen}
               />
             )}
           </div>

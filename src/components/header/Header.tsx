@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
 import { LogIn, UserPlus } from "lucide-react";
 import { useCallback } from "react";
 
 export default function Header() {
-  const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 

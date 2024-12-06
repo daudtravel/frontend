@@ -4,7 +4,7 @@ import { Separator } from "@/src/components/ui/separator";
 import { axiosInstance } from "@/src/libs/utlis/axiosInstance";
 import { AxiosError } from "axios";
 import { Check } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { UserValidator } from "../validators/UserValidator";
 import { CodeValidator } from "../validators/CodeValidator";
 import {
@@ -18,12 +18,12 @@ import { useRouter } from "next/navigation";
 
 type UserInfoFormProps = {
   setIsVerificationStep: Dispatch<SetStateAction<boolean>>;
-  setIsopen: Dispatch<SetStateAction<boolean>>;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function CodeVerifyForm({
   setIsVerificationStep,
-  setIsopen,
+  setIsOpen,
 }: UserInfoFormProps) {
   const userInfoForm = UserValidator();
   const codeForm = CodeValidator();
@@ -31,7 +31,7 @@ export default function CodeVerifyForm({
 
   const onVerify = async () => {
     try {
-      const response = await axiosInstance.post("/verify-email", {
+      await axiosInstance.post("/verify-email", {
         firstname: userInfoForm.getValues("firstname"),
         lastname: userInfoForm.getValues("lastname"),
         password: userInfoForm.getValues("password"),
@@ -40,7 +40,7 @@ export default function CodeVerifyForm({
       });
 
       router.push("/");
-      setIsopen(false);
+      setIsOpen(false);
     } catch (error) {
       console.log(error);
       if (error instanceof AxiosError && error.response) {

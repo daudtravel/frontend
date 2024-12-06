@@ -31,6 +31,7 @@ export default function WhyUsSection() {
 
     return () => {
       if (sectionRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         observer.unobserve(sectionRef.current);
       }
     };
@@ -92,7 +93,7 @@ export default function WhyUsSection() {
             Why Choose Us
           </h1>
           <p className="text-slate-700 text-lg text-center">
-            Your trusted partner in exploring Georgia's finest destinations
+            Your trusted partner in exploring Georgia s finest destinations
           </p>
         </div>
 

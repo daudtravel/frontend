@@ -1,6 +1,6 @@
 "use client";
-
-import React, { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Car, MapPin, Clock, User, Star } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
@@ -66,7 +66,7 @@ const locations = [
 ];
 
 const TransferServicesPage = () => {
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
 
   const pageVariants = {
     hidden: { opacity: 0 },

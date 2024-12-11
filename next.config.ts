@@ -14,14 +14,14 @@ const nextConfig = {
   //     },
   //   },
   // },
-  webpack(config: { module: { rules: { test: RegExp; use: { loader: string; options: { icon: boolean; }; }; }[]; }; }) {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: { loader: "@svgr/webpack", options: { icon: true } },
-    });
+  // webpack(config: { module: { rules: { test: RegExp; use: { loader: string; options: { icon: boolean; }; }; }[]; }; }) {
+  //   config.module.rules.push({
+  //     test: /\.svg$/,
+  //     use: { loader: "@svgr/webpack", options: { icon: true } },
+  //   });
 
-    return config;
-  },
+  //   return config;
+  // },
   images: {
     domains: ["localhost", "chateauiveri.ge"], // Add domains for image optimization
   },

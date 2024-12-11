@@ -6,8 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 export function SigninValidator() {
   const formSchema = z.object({
-    email: z.string().min(6, { message: "Code is required" }),
-    password: z.string().min(6, { message: "Code is required" }),
+    email: z.string().min(6, { message: "email is required" }),
+    password: z.string().min(6, { message: "password is required" }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({

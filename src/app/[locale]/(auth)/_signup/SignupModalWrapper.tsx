@@ -14,8 +14,10 @@ import { useEffect, useState } from "react";
 import UserInfoForm from "./components/UserInfoForm";
 import CodeVerifyForm from "./components/CodeVerifyForm";
 import { userStore } from "@/src/zustand/userStore";
+import { UserValidator } from "./validators/UserValidator";
 
 export default function SignupModalWrapper() {
+  const form = UserValidator();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -58,8 +60,9 @@ export default function SignupModalWrapper() {
       password: undefined,
       confirmPassword: undefined,
     });
+    form.reset();
     setIsVerificationStep(false);
-  }, [open, setUserInfo]);
+  }, [open, setUserInfo, form]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

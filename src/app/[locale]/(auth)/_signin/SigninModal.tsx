@@ -23,6 +23,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/src/components/ui/form";
+import { AxiosError } from "axios";
 
 export default function SignInModal() {
   const form = SigninValidator();
@@ -31,7 +32,7 @@ export default function SignInModal() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const status = searchParams.get("signin");
-
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const onSubmit = async (data: any) => {
     try {
       const response = await axiosInstance.post("/login", {
@@ -43,7 +44,20 @@ export default function SignInModal() {
       setIsOpen(false);
       console.log(response);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.data.message === "EMAIL_NOT_EXIST") {
+          form.setError("email", {
+            type: "manual",
+            message: "User with this email not exists",
+          });
+        }
+        if (error.response.data.message === "INCORRECT_PASSWORD") {
+          form.setError("password", {
+            type: "manual",
+            message: "Incorrect password",
+          });
+        }
+      }
     }
   };
 
@@ -61,6 +75,7 @@ export default function SignInModal() {
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       modalCloseClickHandler();
+      form.reset();
     }
     setIsOpen(open);
   };
@@ -160,7 +175,7 @@ export default function SignInModal() {
           </div>
           <div className="mt-6">
             <p className="mt-4 text-center text-sm text-gray-500">
-              Don't have an account?{" "}
+              Don t have an account?
               <button className="font-medium text-gray-900 hover:underline">
                 Sign up
               </button>

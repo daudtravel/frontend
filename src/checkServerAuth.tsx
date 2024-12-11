@@ -23,7 +23,7 @@ export async function checkServerAuth() {
           Cookie: `connect.sid=${sessionToken}`,
         },
       });
-      console.log(response.data);
+      
     } catch (error) {
       console.error("Error fetching auth status:", error);
       return { isAuthenticated: false };

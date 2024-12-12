@@ -11,7 +11,7 @@ export async function checkServerAuth() {
     }
 
     const apiClient = axios.create({
-      baseURL: "http://localhost:3000/api",
+      baseURL: process.env.NEXT_PUBLIC_BASE_URL,
       withCredentials: true,
     });
 
@@ -23,7 +23,6 @@ export async function checkServerAuth() {
           Cookie: `connect.sid=${sessionToken}`,
         },
       });
-      
     } catch (error) {
       console.error("Error fetching auth status:", error);
       return { isAuthenticated: false };

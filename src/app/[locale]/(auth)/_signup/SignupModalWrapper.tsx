@@ -55,17 +55,19 @@ export default function SignupModalWrapper() {
     }
   }, [status]);
 
-  // useEffect(() => {
-  //   setUserInfo({
-  //     firstname: undefined,
-  //     lastname: undefined,
-  //     email: undefined,
-  //     password: undefined,
-  //     confirmPassword: undefined,
-  //   });
-  //   form.reset();
-  //   setIsVerificationStep(false);
-  // }, [open, setUserInfo, form]);
+  useEffect(() => {
+    if (open) {
+      setUserInfo({
+        firstname: undefined,
+        lastname: undefined,
+        email: undefined,
+        password: undefined,
+        confirmPassword: undefined,
+      });
+      form.reset(); // Reset form only when modal opens
+      setIsVerificationStep(false);
+    }
+  }, [open, setUserInfo, form]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

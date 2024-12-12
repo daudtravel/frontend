@@ -15,7 +15,7 @@ const checkClientAuth = (WrappedComponent: React.ComponentType<any>) => {
       async function checkAuth() {
         try {
           const response = await axios.get(
-            "http://localhost:3000/api/auth/status",
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth`,
             {
               withCredentials: true,
             }

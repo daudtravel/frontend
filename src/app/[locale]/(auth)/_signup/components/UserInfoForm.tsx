@@ -48,7 +48,9 @@ export default function UserInfoForm({
       if (response.data.message === "CODE_SEND") {
         setIsVerificationStep(true);
       }
+      console.log("her", response);
     } catch (error) {
+      console.log(error);
       if (error instanceof AxiosError && error.response) {
         if (error.response.data.message === "EMAIL_EXIST") {
           form.setError("email", {

@@ -20,7 +20,9 @@ export const userStore = create<UserStore>((set) => ({
     confirmPassword: "",
   },
   setUserInfo: (userInfo) =>
-    set((state) => ({
-      userInfo: { ...state.userInfo, ...userInfo },
-    })),
+    set((state) => {
+      // Ensure you're not creating unnecessary updates
+      const updatedUserInfo = { ...state.userInfo, ...userInfo };
+      return { userInfo: updatedUserInfo };
+    }),
 }));

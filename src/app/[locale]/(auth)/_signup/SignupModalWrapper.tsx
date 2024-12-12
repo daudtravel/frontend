@@ -1,4 +1,5 @@
 "use client";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 import { Separator } from "@/src/components/ui/separator";
 import Image from "next/image";
@@ -17,11 +18,13 @@ import { userStore } from "@/src/zustand/userStore";
 import { UserValidator } from "./validators/UserValidator";
 
 export default function SignupModalWrapper() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const form = UserValidator();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const status = searchParams.get("signup");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const setUserInfo = userStore((state) => state.setUserInfo);
 
   const [open, setIsOpen] = useState(false);

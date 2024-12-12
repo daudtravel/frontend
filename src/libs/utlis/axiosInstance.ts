@@ -7,6 +7,6 @@ import axios from "axios";
 //   });
 
 export  const axiosInstance = axios.create({
-  baseURL: 'https://daudtravel.com/api', 
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL, 
   withCredentials: true, 
 });

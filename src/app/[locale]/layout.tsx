@@ -13,9 +13,9 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: Locale }>;
+  params: { locale: Locale }; // Remove Promise wrapper
 }) {
-  const { locale } = await params;
+  const { locale } = params; // Now this should work correctly
 
   if (!routing.locales.includes(locale)) {
     notFound();

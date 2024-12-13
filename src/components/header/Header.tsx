@@ -6,7 +6,6 @@ import axios from "axios";
 import { Button } from "@/src/components/ui/button";
 import { LogIn, UserPlus, User, LogOut } from "lucide-react";
 import { useAuthStore } from "@/src/zustand/useAuthStore";
-import Cookies from "js-cookie";
 
 export default function Header() {
   const router = useRouter();
@@ -23,6 +22,7 @@ export default function Header() {
         );
         setAuth(response.data.isAuthenticated, response.data.user);
       } catch (error) {
+        console.error(error);
         setAuth(false, null);
       } finally {
         setIsUserLoading(false);
@@ -30,7 +30,7 @@ export default function Header() {
     }
 
     fetchUser();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, setAuth]);
 
   const authClickHandler = (name: string) => {
     router.push(`${pathname}?${name}`);
@@ -44,10 +44,8 @@ export default function Header() {
         { withCredentials: true }
       );
 
-      // Clear local state
       setAuth(false, null);
 
-      // Redirect
       router.push("/");
     } catch (error) {
       console.error("Logout failed", error);

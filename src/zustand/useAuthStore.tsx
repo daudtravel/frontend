@@ -3,7 +3,7 @@ import { create } from "zustand";
 interface AuthState {
   isAuthenticated: boolean;
   user: { firstname?: string; email?: string } | null;
-  setAuth: (isAuthenticated: boolean, user: any) => void;
+  setAuth: (isAuthenticated: boolean, user: object | null) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({

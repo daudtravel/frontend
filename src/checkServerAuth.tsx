@@ -18,12 +18,14 @@ export async function checkServerAuth() {
     let response;
 
     try {
-      response = await apiClient.get("/auth/status", {
-        headers: {
-          Cookie: `connect.sid=${sessionToken}`,
-        },
-      });
-    
+      response = await apiClient.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/status`,
+        {
+          headers: {
+            Cookie: `connect.sid=${sessionToken}`,
+          },
+        }
+      );
     } catch (error) {
       console.error("Error fetching auth status:", error);
       return { isAuthenticated: false };

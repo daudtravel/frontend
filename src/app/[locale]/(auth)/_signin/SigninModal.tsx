@@ -24,6 +24,12 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { AxiosError } from "axios";
+import { useAuthStore } from "@/src/zustand/useAuthStore";
+
+type SigninType = {
+  email: string;
+  password: string;
+};
 
 export default function SignInModal() {
   const form = SigninValidator();
@@ -32,17 +38,20 @@ export default function SignInModal() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const status = searchParams.get("signin");
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const onSubmit = async (data: any) => {
+  const { setAuth } = useAuthStore();
+
+  const onSubmit = async (data: SigninType) => {
     try {
       const response = await axiosInstance.post("/login", {
         email: data.email,
         password: data.password,
       });
 
+      setAuth(response.data.isAuthenticated, response.data.user);
+      console.log(response);
+
       router.push("/");
       setIsOpen(false);
-      console.log(response);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         if (error.response.data.message === "EMAIL_NOT_EXIST") {

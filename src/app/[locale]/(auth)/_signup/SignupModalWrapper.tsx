@@ -1,6 +1,4 @@
 "use client";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-
 import { Separator } from "@/src/components/ui/separator";
 import Image from "next/image";
 import {
@@ -14,19 +12,16 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import UserInfoForm from "./components/UserInfoForm";
 import CodeVerifyForm from "./components/CodeVerifyForm";
-import { userStore } from "@/src/zustand/userStore";
+import { useSignupStore } from "@/src/zustand/useSignupStore";
 import { UserValidator } from "./validators/UserValidator";
 
 export default function SignupModalWrapper() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const form = UserValidator();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const status = searchParams.get("signup");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const setUserInfo = userStore((state) => state.setUserInfo);
-
+  const { setUserInfo } = useSignupStore();
   const [open, setIsOpen] = useState(false);
   const [isVerificationStep, setIsVerificationStep] = useState(false);
 
@@ -39,6 +34,14 @@ export default function SignupModalWrapper() {
       });
       setIsOpen(false);
       setIsVerificationStep(false);
+      form.reset();
+      setUserInfo({
+        firstname: undefined,
+        lastname: undefined,
+        email: undefined,
+        password: undefined,
+        confirmPassword: undefined,
+      });
     }
   };
 
@@ -54,20 +57,6 @@ export default function SignupModalWrapper() {
       setIsOpen(true);
     }
   }, [status]);
-
-  // useEffect(() => {
-  //   if (open) {
-  //     setUserInfo({
-  //       firstname: undefined,
-  //       lastname: undefined,
-  //       email: undefined,
-  //       password: undefined,
-  //       confirmPassword: undefined,
-  //     });
-  //     form.reset(); // Reset form only when modal opens
-  //     setIsVerificationStep(false);
-  //   }
-  // }, [open, setUserInfo, form]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

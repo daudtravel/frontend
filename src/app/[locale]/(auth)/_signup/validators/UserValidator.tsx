@@ -1,10 +1,11 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userStore } from "@/src/zustand/userStore";
+import { useSignupStore } from "@/src/zustand/useSignupStore";
+ 
 
 export function UserValidator() {
-  const userInfo = userStore((state) => state.userInfo);
+  const { userInfo } = useSignupStore();
 
   const formSchema = z
     .object({

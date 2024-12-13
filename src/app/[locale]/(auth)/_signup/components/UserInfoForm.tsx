@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import { userStore } from "@/src/zustand/userStore";
+import { useSignupStore } from "@/src/zustand/useSignupStore";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { UserValidator } from "../validators/UserValidator";
 import { axiosInstance } from "@/src/libs/utlis/axiosInstance";
@@ -22,14 +22,11 @@ export default function UserInfoForm({
   setIsVerificationStep,
 }: UserInfoFormProps) {
   const form = UserValidator();
-  const setUserInfo = userStore((state) => state.setUserInfo);
-
-  // State to track if request is in progress
+  const { setUserInfo } = useSignupStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async () => {
     try {
-      // Set submitting state to true
       setIsSubmitting(true);
 
       const userData = {
@@ -66,7 +63,6 @@ export default function UserInfoForm({
         console.error("An unexpected error occurred:", error);
       }
     } finally {
-      // Set submitting state back to false
       setIsSubmitting(false);
     }
   };

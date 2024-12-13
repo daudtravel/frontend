@@ -15,7 +15,7 @@ const checkClientAuth = (WrappedComponent: React.ComponentType<any>) => {
       async function checkAuth() {
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/auth/status`,
             {
               withCredentials: true,
             }
@@ -33,7 +33,7 @@ const checkClientAuth = (WrappedComponent: React.ComponentType<any>) => {
     }, []);
 
     useEffect(() => {
-      const protectedPaths = ["/profile"];
+      const protectedPaths = ["/profile", "/test"];
 
       const matchesProtectedPath = protectedPaths.some((path) =>
         pathname.includes(path)

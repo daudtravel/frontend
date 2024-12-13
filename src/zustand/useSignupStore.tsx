@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type UserStore = {
+type useSignupStore = {
   userInfo: {
     firstname?: string;
     lastname?: string;
@@ -8,10 +8,10 @@ type UserStore = {
     password?: string;
     confirmPassword?: string;
   };
-  setUserInfo: (userInfo: Partial<UserStore["userInfo"]>) => void;
+  setUserInfo: (userInfo: Partial<useSignupStore["userInfo"]>) => void;
 };
 
-export const userStore = create<UserStore>((set) => ({
+export const useSignupStore = create<useSignupStore>((set) => ({
   userInfo: {
     firstname: "",
     lastname: "",

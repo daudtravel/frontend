@@ -6,7 +6,7 @@ export default async function Page() {
   if (!isAuthenticated) {
     redirect("/");
   }
-  console.log(user);
+
   return (
     <div>
       <h1>Welcome to the Page</h1>

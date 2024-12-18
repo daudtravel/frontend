@@ -21,8 +21,7 @@ export default function Header() {
           { withCredentials: true }
         );
         setAuth(response.data.isAuthenticated, response.data.user);
-      } catch (error) {
-        console.error(error);
+      } catch {
         setAuth(false, null);
       } finally {
         setIsUserLoading(false);

@@ -7,6 +7,7 @@ import { Locale, routing } from "@/src/i18n/routing";
 import "./globals.css";
 import SignUpModal from "./(auth)/_signup/SignupModalWrapper";
 import SignInModal from "./(auth)/_signin/SigninModal";
+import { Providers } from "@/src/libs/apollo/providers";
 
 export default async function LocaleLayout({
   children,
@@ -25,13 +26,15 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider messages={messages}>
-          <Header />
-          <SignUpModal />
-          <SignInModal />
-          {children}
-          <Footer />
-        </NextIntlClientProvider>
+        <Providers>
+          <NextIntlClientProvider messages={messages}>
+            <Header />
+            <SignUpModal />
+            <SignInModal />
+            {children}
+            <Footer />
+          </NextIntlClientProvider>
+        </Providers>
       </body>
     </html>
   );

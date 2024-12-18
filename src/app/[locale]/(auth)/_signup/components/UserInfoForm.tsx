@@ -10,7 +10,7 @@ import { Input } from "@/src/components/ui/input";
 import { useSignupStore } from "@/src/zustand/useSignupStore";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { UserValidator } from "../validators/UserValidator";
-import { axiosInstance } from "@/src/libs/utlis/axiosInstance";
+import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { Mail } from "lucide-react";
 import { AxiosError } from "axios";
 

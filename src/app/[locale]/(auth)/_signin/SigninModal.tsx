@@ -14,7 +14,6 @@ import {
 import img from "@img/images/Batumi.jpg";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { axiosInstance } from "@/src/libs/utlis/axiosInstance";
 import { SigninValidator } from "./SigninValidator";
 import {
   Form,
@@ -23,13 +22,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/src/components/ui/form";
-import { AxiosError } from "axios";
-import { useAuthStore } from "@/src/zustand/useAuthStore";
-
-type SigninType = {
-  email: string;
-  password: string;
-};
+// import { useAuthStore } from "@/src/zustand/useAuthStore";
 
 export default function SignInModal() {
   const form = SigninValidator();
@@ -38,37 +31,7 @@ export default function SignInModal() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const status = searchParams.get("signin");
-  const { setAuth } = useAuthStore();
-
-  const onSubmit = async (data: SigninType) => {
-    try {
-      const response = await axiosInstance.post("/login", {
-        email: data.email,
-        password: data.password,
-      });
-
-      setAuth(response.data.isAuthenticated, response.data.user);
-      console.log(response);
-
-      router.push("/");
-      setIsOpen(false);
-    } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        if (error.response.data.message === "EMAIL_NOT_EXIST") {
-          form.setError("email", {
-            type: "manual",
-            message: "User with this email not exists",
-          });
-        }
-        if (error.response.data.message === "INCORRECT_PASSWORD") {
-          form.setError("password", {
-            type: "manual",
-            message: "Incorrect password",
-          });
-        }
-      }
-    }
-  };
+  // const { setAuth } = useAuthStore();
 
   const modalCloseClickHandler = () => {
     if (status !== null) {
@@ -133,7 +96,7 @@ export default function SignInModal() {
             </div>
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                // onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
                 <FormField
@@ -174,7 +137,7 @@ export default function SignInModal() {
                 <Button
                   type="submit"
                   className="h-11 w-full text-white mt-4"
-                  onClick={form.handleSubmit(onSubmit)}
+                  // onClick={form.handleSubmit(onSubmit)}
                 >
                   <LogIn className="mr-2 h-4 w-4" />
                   Sign in

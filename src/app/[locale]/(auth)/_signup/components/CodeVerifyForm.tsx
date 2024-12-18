@@ -1,7 +1,7 @@
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Separator } from "@/src/components/ui/separator";
-import { axiosInstance } from "@/src/libs/utlis/axiosInstance";
+import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { AxiosError } from "axios";
 import { Check } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";

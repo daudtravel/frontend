@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "@/src/libs/utlis/cn";
+import { cn } from "@/src/utlis/cn";
 
 // Extend InputProps to accept custom props hasError and isSuccess
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {

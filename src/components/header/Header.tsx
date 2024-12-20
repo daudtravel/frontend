@@ -1,55 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import axios from "axios";
 import { Button } from "@/src/components/ui/button";
 import { LogIn, UserPlus, User, LogOut } from "lucide-react";
-import { useAuthStore } from "@/src/zustand/useAuthStore";
+import { useAuth } from "@/src/auth/authProvider";
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, user, setAuth } = useAuthStore();
-  const [isUserLoading, setIsUserLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/auth/status`,
-          { withCredentials: true }
-        );
-        setAuth(response.data.isAuthenticated, response.data.user);
-      } catch {
-        setAuth(false, null);
-      } finally {
-        setIsUserLoading(false);
-      }
-    }
-
-    fetchUser();
-  }, [isAuthenticated, setAuth]);
+  const { user, isAuthenticated, isLoading: isUserLoading, logout } = useAuth();
 
   const authClickHandler = (name: string) => {
     router.push(`${pathname}?${name}`);
   };
 
-  const handleLogout = async () => {
-    try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/logout`,
-        {},
-        { withCredentials: true }
-      );
-
-      setAuth(false, null);
-
-      router.push("/");
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-  };
   return (
     <header className="top-0 w-full bg-[#f2f5ff] shadow-md z-50">
       <div className="flex w-full items-center justify-between px-4 md:px-20 h-20">
@@ -68,7 +33,7 @@ export default function Header() {
             ABOUT
           </Link>
           <Link href="/profile" className="text-sm font-medium text-black">
-            profile
+            PROFILE
           </Link>
 
           <div className="flex items-center gap-2">
@@ -104,7 +69,7 @@ export default function Header() {
                 <Button
                   size="sm"
                   variant="destructive"
-                  onClick={handleLogout}
+                  onClick={() => logout()}
                   className="bg-red-600 text-white hover:bg-red-700"
                 >
                   <LogOut className="mr-2 h-4 w-4" />

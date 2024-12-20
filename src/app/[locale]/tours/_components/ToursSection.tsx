@@ -1,8 +1,8 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useQuery } from "@apollo/client";
 import { MapPin, ArrowRight, Filter, X } from "lucide-react";
 import {
   Select,
@@ -13,9 +13,9 @@ import {
 } from "@/src/components/ui/select";
 import { Slider } from "@/src/components/ui/slider";
 import { Button } from "@/src/components/ui/button";
-import Image from "next/image";
-import { GET_TOURS, GET_TOURS_FILTER } from "@/graphql/queries";
-import { Tour } from "@/graphql/types";
+// import Image from "next/image";
+import { axiosInstance } from "@/src/utlis/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ToursSection() {
   const router = useRouter();
@@ -32,42 +32,39 @@ export default function ToursSection() {
     initialMaxPrice,
   ]);
 
-  const { data: toursData, loading: toursLoading } = useQuery(GET_TOURS, {
-    variables: {
-      filters: {
-        destination: {
-          eq: destination,
-        },
-      },
+  // Tours query
+  const { data: toursData, isLoading } = useQuery({
+    queryKey: ["tours", "list", destination],
+    queryFn: async () => {
+      const response = await axiosInstance.get("/tours", {
+        params: { destination },
+      });
+      return response.data;
     },
-
-    fetchPolicy: "cache-first",
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
-  const { data: filtersData, loading: filtersLoading } = useQuery(
-    GET_TOURS_FILTER,
-    {
-      fetchPolicy: "cache-first",
-    }
-  );
-
+  // Filters query
+  const { data: filtersData, isLoading: filtersLoading } = useQuery({
+    queryKey: ["tours", "filters"],
+    queryFn: async () => {
+      const response = await axiosInstance.get("/tours");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (selectedDestination) {
       params.set("destination", selectedDestination);
     }
-
     router.push(`/tours?${params.toString()}`);
   };
 
   const destinationHandler = (value: string) => {
     setSelectedDestination(value);
-    const params = new URLSearchParams();
-    if (value) {
-      params.set("destination", value);
-    }
-
-    router.push(`/tours?${params.toString()}`);
   };
 
   const handleReset = () => {
@@ -98,16 +95,15 @@ export default function ToursSection() {
                 </SelectTrigger>
                 <SelectContent>
                   {filtersData?.tours?.length > 0 &&
-                    filtersData?.tours?.map(
-                      (item: { destination: string }, index: number) => (
-                        <SelectItem
-                          key={item.destination || index}
-                          value={item.destination}
-                        >
-                          {item.destination}
-                        </SelectItem>
-                      )
-                    )}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    filtersData?.tours?.map((item: any, index: number) => (
+                      <SelectItem
+                        key={item.destination || index}
+                        value={item.translations.en.name}
+                      >
+                        {item.translations.en.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -146,23 +142,23 @@ export default function ToursSection() {
         </div>
 
         <div className="col-span-3 space-y-6">
-          {toursLoading ? (
+          {isLoading ? (
             <div className="text-center">Loading tours...</div>
-          ) : toursData.tours.length > 0 ? (
-            toursData.tours.map((item: Tour, index: number) => (
+          ) : toursData.tours ? (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            toursData.tours.map((item: any, index: number) => (
               <div
                 key={index}
                 className="flex bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
               >
                 <div className="relative w-1/3 min-h-[250px]">
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${item?.image?.url}`}
+                  {/* <Image
+                    src={`${process.env.NEXT_PUBLIC_BASE_URL}${item?.image_url}`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
-                    alt={item.name ?? "alt"}
-                    unoptimized
-                  />
+                    alt={item.image_url ?? "alt"}
+                  /> */}
                 </div>
                 <div className="w-2/3 p-6 flex flex-col justify-between">
                   <div>

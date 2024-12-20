@@ -22,16 +22,33 @@ import {
   FormItem,
   FormMessage,
 } from "@/src/components/ui/form";
-// import { useAuthStore } from "@/src/zustand/useAuthStore";
+ 
+import { axiosInstance } from "@/src/utlis/axiosInstance";
+import { useAuth } from "@/src/auth/authProvider";
+ 
+
+interface SignInCredentials {
+  email: string;
+  password: string;
+}
+
+interface SignInResponse {
+  token: string;
+  user: {
+    userId: string;
+    email: string;
+  };
+}
 
 export default function SignInModal() {
   const form = SigninValidator();
   const [open, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const status = searchParams.get("signin");
-  // const { setAuth } = useAuthStore();
+  const { login } = useAuth();
 
   const modalCloseClickHandler = () => {
     if (status !== null) {
@@ -57,6 +74,26 @@ export default function SignInModal() {
       setIsOpen(true);
     }
   }, [status]);
+
+  const onSubmit = async (values: SignInCredentials) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.post<SignInResponse>(
+        "/signin",
+        values
+      );
+      login(response.data.token);
+      modalCloseClickHandler();
+      form.reset();
+    } catch (error) {
+      const err = error as any;
+      const errorMessage =
+        err.response?.data?.message || "Error signing in. Please try again.";
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -96,7 +133,7 @@ export default function SignInModal() {
             </div>
             <Form {...form}>
               <form
-                // onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
                 <FormField
@@ -109,7 +146,7 @@ export default function SignInModal() {
                           placeholder="Email"
                           {...field}
                           className="h-11"
-                          onChange={(e) => field.onChange(e)}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -127,7 +164,7 @@ export default function SignInModal() {
                           placeholder="Password"
                           {...field}
                           className="h-11"
-                          onChange={(e) => field.onChange(e)}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -137,17 +174,23 @@ export default function SignInModal() {
                 <Button
                   type="submit"
                   className="h-11 w-full text-white mt-4"
-                  // onClick={form.handleSubmit(onSubmit)}
+                  disabled={isLoading}
                 >
-                  <LogIn className="mr-2 h-4 w-4" />
-                  Sign in
+                  {isLoading ? (
+                    "Signing in..."
+                  ) : (
+                    <>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Sign in
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>
           </div>
           <div className="mt-6">
             <p className="mt-4 text-center text-sm text-gray-500">
-              Don t have an account?
+              Don&apos;t have an account?{" "}
               <button className="font-medium text-gray-900 hover:underline">
                 Sign up
               </button>

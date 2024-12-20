@@ -40,12 +40,11 @@ export default function UserInfoForm({
         confirmPassword: form.getValues("confirmPassword"),
       });
 
-      const response = await axiosInstance.post("/signup", userData);
+      const response = await axiosInstance.post("/send_code", userData);
 
       if (response.data.message === "CODE_SEND") {
         setIsVerificationStep(true);
       }
-      console.log("her", response);
     } catch (error) {
       console.log(error);
       if (error instanceof AxiosError && error.response) {

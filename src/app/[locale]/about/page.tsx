@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Img from "@img/images/Family.jpg";
+import { withAuth } from "@/src/auth/isAuth";
 
-export default function Page() {
+function Page() {
   return (
     <div className="w-full pb-8 md:px-20 lg:py-12">
       <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
@@ -76,3 +79,5 @@ export default function Page() {
     </div>
   );
 }
+
+export default withAuth(Page);

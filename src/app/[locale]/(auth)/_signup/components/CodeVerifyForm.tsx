@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { useRouter } from "next/navigation";
+import { useSignupStore } from "@/src/zustand/useSignupStore";
 
 type UserInfoFormProps = {
   setIsVerificationStep: Dispatch<SetStateAction<boolean>>;
@@ -27,11 +28,13 @@ export default function CodeVerifyForm({
 }: UserInfoFormProps) {
   const userInfoForm = UserValidator();
   const codeForm = CodeValidator();
+  const form = UserValidator();
   const router = useRouter();
+  const { setUserInfo } = useSignupStore();
 
   const onVerify = async () => {
     try {
-      await axiosInstance.post("/verify-email", {
+      await axiosInstance.post("/signup", {
         firstname: userInfoForm.getValues("firstname"),
         lastname: userInfoForm.getValues("lastname"),
         password: userInfoForm.getValues("password"),
@@ -39,7 +42,16 @@ export default function CodeVerifyForm({
         code: codeForm.getValues("code"),
       });
 
-      router.push("/");
+      form.reset();
+      setUserInfo({
+        firstname: undefined,
+        lastname: undefined,
+        email: undefined,
+        password: undefined,
+        confirmPassword: undefined,
+      });
+      setIsVerificationStep(false);
+      router.push("/?signin");
       setIsOpen(false);
     } catch (error) {
       console.log(error);

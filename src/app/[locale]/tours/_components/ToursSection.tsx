@@ -23,7 +23,6 @@ export default function ToursSection() {
   const destination = searchParams.get("destination") || undefined;
   const initialMinPrice = parseFloat(searchParams.get("minPrice") || "50");
   const initialMaxPrice = parseFloat(searchParams.get("maxPrice") || "500");
-
   const [selectedDestination, setSelectedDestination] = useState<
     string | undefined
   >(destination);
@@ -32,7 +31,6 @@ export default function ToursSection() {
     initialMaxPrice,
   ]);
 
-  // Tours query
   const { data: toursData, isLoading } = useQuery({
     queryKey: ["tours", "list", destination],
     queryFn: async () => {
@@ -45,7 +43,6 @@ export default function ToursSection() {
     gcTime: 30 * 60 * 1000,
   });
 
-  // Filters query
   const { data: filtersData, isLoading: filtersLoading } = useQuery({
     queryKey: ["tours", "filters"],
     queryFn: async () => {
@@ -71,6 +68,7 @@ export default function ToursSection() {
     setSelectedDestination(undefined);
     router.push("/tours");
   };
+  console.log(toursData);
 
   return (
     <section className="container md:px-20 px-4 pt-10 md:pt-20 pb-20">
@@ -144,9 +142,9 @@ export default function ToursSection() {
         <div className="col-span-3 space-y-6">
           {isLoading ? (
             <div className="text-center">Loading tours...</div>
-          ) : toursData.tours ? (
+          ) : toursData.data.tours ? (
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            toursData.tours.map((item: any, index: number) => (
+            toursData.data.tours.map((item: any, index: number) => (
               <div
                 key={index}
                 className="flex bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -164,11 +162,13 @@ export default function ToursSection() {
                   <div>
                     <div className="flex justify-between items-start mb-4">
                       <h3 className="font-bold text-2xl line-clamp-1">
-                        {item.name}
+                        {item.localizations[0].name}
                       </h3>
                       <div className="bg-gray-100 rounded-full px-3 py-1 flex items-center">
                         <MapPin className="w-4 h-4 mr-2" />
-                        <span className="text-sm">{item.destination}</span>
+                        <span className="text-sm">
+                          {item.localizations[0].destination}
+                        </span>
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-gray-600 mb-6">
@@ -176,7 +176,7 @@ export default function ToursSection() {
                         <span className="font-semibold text-xs block mb-1">
                           Total Price
                         </span>
-                        <p className="text-lg font-bold">${item.price}</p>
+                        <p className="text-lg font-bold">${item.total_price}</p>
                       </div>
                       <div>
                         <span className="font-semibold text-xs block mb-1">
@@ -194,7 +194,7 @@ export default function ToursSection() {
                       </div>
                     </div>
                   </div>
-                  <Link href={`/tours/${item.documentId}`}>
+                  <Link href={`/tours/${item.id}`}>
                     <Button className="w-full">
                       Explore Tour
                       <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />

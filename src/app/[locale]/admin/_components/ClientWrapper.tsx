@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Menu, UserCheck, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ToursList } from "./tours/ToursList";
+import { ToursList } from "./tours/toursList/ToursList";
 
-import CreateTour from "./tours/CreateTour";
-import { EditTour } from "./tours/EditTour";
+import CreateTour from "./tours/createTour/CreateTour";
+import { EditTour } from "./tours/editTour/EditTour";
 
 export const ClientWrapper = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);

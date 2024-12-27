@@ -13,9 +13,9 @@ import {
 } from "@/src/components/ui/select";
 import { Slider } from "@/src/components/ui/slider";
 import { Button } from "@/src/components/ui/button";
-// import Image from "next/image";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 
 export default function ToursSection() {
   const router = useRouter();
@@ -150,13 +150,13 @@ export default function ToursSection() {
                 className="flex bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
               >
                 <div className="relative w-1/3 min-h-[250px]">
-                  {/* <Image
-                    src={`${process.env.NEXT_PUBLIC_BASE_URL}${item?.image_url}`}
+                  <Image
+                    src={`http://localhost:3001${item?.image}`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
                     alt={item.image_url ?? "alt"}
-                  /> */}
+                  />
                 </div>
                 <div className="w-2/3 p-6 flex flex-col justify-between">
                   <div>

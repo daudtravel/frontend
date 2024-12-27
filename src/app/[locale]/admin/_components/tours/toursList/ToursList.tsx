@@ -71,7 +71,6 @@ export function ToursList() {
           <span>ტურის დამატება</span>
         </Button>
       </div>
-
       {tours.length === 0 && !error ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 rounded-lg">
           <p className="text-gray-500 text-lg mb-4">ტურები არ მოიძებნა</p>

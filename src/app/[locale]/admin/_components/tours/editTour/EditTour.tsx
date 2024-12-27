@@ -47,9 +47,7 @@ export function EditTour({ params }: { params: { id: string } }) {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/tours/${params.id}`
         );
-
         const tour = response.data.data.tour;
-
         const formData: TourFormData = {
           localizations: SUPPORTED_LOCALES.map((locale) => ({
             locale,
@@ -63,18 +61,15 @@ export function EditTour({ params }: { params: { id: string } }) {
           image: tour.image,
           gallery: tour.gallery || [],
         };
-
         form.reset(formData);
         setMainImagePreview(tour.image);
         setGalleryPreviews(tour.gallery || []);
       } catch (error) {
-        console.error("Error fetching tour:", error);
         setErrorMessage("Failed to load tour details");
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchTourDetails();
   }, []);
 
@@ -106,34 +101,15 @@ export function EditTour({ params }: { params: { id: string } }) {
       setIsSubmitting(true);
       setErrorMessage(null);
 
-      const translations = data.localizations.reduce(
-        (acc, loc) => {
-          const locData = {
-            ...(loc.name && { name: loc.name }),
-            ...(loc.destination && { destination: loc.destination }),
-            ...(loc.description && { description: loc.description }),
-          };
-
-          if (Object.keys(locData).length > 0) {
-            acc[loc.locale] = locData;
-          }
-          return acc;
-        },
-        {} as Record<string, any>
-      );
-
       const submitData = {
-        translations,
-        ...(data.duration !== undefined && { duration: data.duration }),
-        ...(data.total_price !== undefined && {
-          total_price: data.total_price,
-        }),
-        ...(data.reservation_price !== undefined && {
-          reservation_price: data.reservation_price,
-        }),
-        ...(data.image && { image_url: data.image }),
-        ...(data.gallery?.length && { gallery: data.gallery }),
+        duration: form.getValues("duration"),
+        total_price: form.getValues("total_price"),
+        reservation_price: form.getValues("reservation_price"),
+        localizations: form.getValues("localizations"),
+        image: null,
+        gallery: null,
       };
+      console.log("aqaaa", submitData);
 
       await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/tours/${params.id}`,
@@ -167,7 +143,7 @@ export function EditTour({ params }: { params: { id: string } }) {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Edit Tour</CardTitle>
+        <CardTitle>რედაქტირება</CardTitle>
       </CardHeader>
       <CardContent>
         {errorMessage && (
@@ -314,7 +290,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                     {mainImagePreview && (
                       <div className="mt-2">
                         <Image
-                          src={mainImagePreview}
+                          src={`http://localhost:3001${mainImagePreview}`}
                           alt="Main image preview"
                           width={400}
                           height={300}
@@ -348,7 +324,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                         {galleryPreviews.map((preview, index) => (
                           <div key={index} className="relative">
                             <Image
-                              src={preview}
+                              src={`http://localhost:3001${preview}`}
                               alt={`Gallery image ${index + 1}`}
                               width={200}
                               height={200}

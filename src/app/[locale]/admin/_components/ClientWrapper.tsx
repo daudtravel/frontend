@@ -31,7 +31,7 @@ export const ClientWrapper = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 relative overflow-y-hidden ">
       <div
         className={`${
           isSidebarOpen ? "w-64" : "w-20"
@@ -59,7 +59,7 @@ export const ClientWrapper = () => {
           </button>
         </nav>
       </div>
-      <div className="flex-1 overflow-auto p-8">{renderContent()}</div>
+      <div className="flex-1 overflow-auto p-8 h-full">{renderContent()}</div>
     </div>
   );
 };

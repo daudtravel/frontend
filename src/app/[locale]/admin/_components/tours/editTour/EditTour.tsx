@@ -35,6 +35,7 @@ export function EditTour({ params }: { params: { id: string } }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
@@ -91,6 +92,13 @@ export function EditTour({ params }: { params: { id: string } }) {
   };
 
   const removeGalleryImage = (index: number) => {
+    const imageToRemove = galleryPreviews[index];
+
+    // If the image is not a base64 string (i.e., it's a server path), add it to deletedImages
+    if (!imageToRemove.startsWith("data:image")) {
+      setDeletedImages((prev) => [...prev, imageToRemove]);
+    }
+
     const newGalleryPreviews = galleryPreviews.filter((_, i) => i !== index);
     setGalleryPreviews(newGalleryPreviews);
     form.setValue("gallery", newGalleryPreviews);
@@ -106,10 +114,15 @@ export function EditTour({ params }: { params: { id: string } }) {
         total_price: form.getValues("total_price"),
         reservation_price: form.getValues("reservation_price"),
         localizations: form.getValues("localizations"),
-        image: null,
-        gallery: null,
+        image: form.getValues("image")?.startsWith("data:image")
+          ? form.getValues("image")
+          : null,
+
+        gallery: form
+          .getValues("gallery")
+          ?.filter((img: string) => img.startsWith("data:image")),
+        deleteImages: deletedImages.length > 0 ? deletedImages : null,
       };
-      console.log("aqaaa", submitData);
 
       await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/tours/${params.id}`,
@@ -290,11 +303,16 @@ export function EditTour({ params }: { params: { id: string } }) {
                     {mainImagePreview && (
                       <div className="mt-2">
                         <Image
-                          src={`http://localhost:3001${mainImagePreview}`}
+                          src={
+                            mainImagePreview.startsWith("data:")
+                              ? mainImagePreview
+                              : `http://localhost:3001${mainImagePreview}`
+                          }
                           alt="Main image preview"
-                          width={400}
-                          height={300}
-                          className="max-h-48 object-cover rounded"
+                          width={800} // Increased from 400
+                          height={600} // Increased from 300
+                          className="w-full h-auto max-h-48 object-cover rounded"
+                          quality={100} // Added quality prop
                         />
                       </div>
                     )}
@@ -320,15 +338,20 @@ export function EditTour({ params }: { params: { id: string } }) {
                     </FormControl>
 
                     {galleryPreviews.length > 0 && (
-                      <div className="mt-2 grid grid-cols-3 gap-2">
+                      <div className="mt-2 grid grid-cols-3 gap-2 h-32">
                         {galleryPreviews.map((preview, index) => (
                           <div key={index} className="relative">
                             <Image
-                              src={`http://localhost:3001${preview}`}
+                              src={
+                                preview.startsWith("data:")
+                                  ? preview
+                                  : `http://localhost:3001${preview}`
+                              }
                               alt={`Gallery image ${index + 1}`}
-                              width={200}
-                              height={200}
-                              className="w-full h-32 object-cover rounded"
+                              layout="fill"
+                              objectFit="cover"
+                              className="rounded"
+                              quality={100} // Added quality prop
                             />
                             <button
                               type="button"

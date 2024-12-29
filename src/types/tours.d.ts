@@ -1,24 +1,31 @@
-interface TourLocalization {
-  locale: string;
-  name: string;
-  destination: string;
-  description: string;
+export interface PaginationInfo {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
-interface Tour {
-  id: string;
-  localizations: TourLocalization[];
-  duration?: number;
-  total_price?: number;
-  reservation_price?: number;
-  image?: string;
-  gallery?: string[];
-}
-
-
-interface ApiResponse {
+export interface GetToursResponse {
+  message: string;
   data: {
     tours: Tour[];
+    pagination: PaginationInfo;
   };
-  error?: string;
+}
+
+export interface Tour {
+  id: string;
+  localizations: {
+    locale: string;
+    name: string;
+    destination: string;
+    description: string;
+  }[];
+  duration: number;
+  total_price: number;
+  reservation_price: number;
+  image: string;
+  gallery: string[];
+  created_at: Date;
+  updated_at: Date;
 }

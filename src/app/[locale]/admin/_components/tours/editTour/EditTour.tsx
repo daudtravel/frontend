@@ -351,7 +351,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                               layout="fill"
                               objectFit="cover"
                               className="rounded"
-                              quality={100} // Added quality prop
+                              quality={100}
                             />
                             <button
                               type="button"

@@ -44,7 +44,7 @@ const CoverSection = () => {
             alt={image.alt}
             layout="fill"
             objectFit="cover"
-            className="w-full h-full object-center brightness-75"
+            className="w-full h-full object-center brightness-50"
           />
         </motion.div>
       ))}
@@ -55,7 +55,7 @@ const CoverSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-7xl font-bold h-24 sm:h-16 lg:h-20 mb-4 bg-clip-text text-transparent bg-textGradient"
+            className="text-4xl md:text-7xl font-bold h-24 sm:h-16 lg:h-24 mb-4 bg-clip-text text-transparent bg-textGradient"
           >
             {t("findEmotions")}
           </motion.h1>

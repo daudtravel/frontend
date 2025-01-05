@@ -24,7 +24,6 @@ const TransferSection = () => {
     },
   ];
 
-  // Animation variants for container
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -36,7 +35,6 @@ const TransferSection = () => {
     },
   };
 
-  // Animation variants for features
   const featureVariants = {
     hidden: {
       opacity: 0,
@@ -56,7 +54,6 @@ const TransferSection = () => {
     },
   };
 
-  // Animation variants for the header
   const headerVariants = {
     hidden: {
       opacity: 0,
@@ -74,7 +71,6 @@ const TransferSection = () => {
     },
   };
 
-  // Animation variants for the divider line
   const lineVariants = {
     hidden: {
       width: 0,
@@ -91,7 +87,6 @@ const TransferSection = () => {
     },
   };
 
-  // Animation variants for the CTA button
   const buttonVariants = {
     hidden: {
       opacity: 0,
@@ -123,11 +118,10 @@ const TransferSection = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#f2f5ff]">
-      <div className="container mx-auto px-4 py-12 relative z-10">
-        {/* Header */}
+    <section className="relative overflow-hidden bg-[#f2f5ff] px-4 md:px-20 pb-12">
+      <div className="w-full relative z-10">
         <motion.div
-          className="text-center mb-5 md:mb-10"
+          className="text-center"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -141,10 +135,8 @@ const TransferSection = () => {
             variants={lineVariants}
           />
         </motion.div>
-
-        {/* Features Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-6xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8  w-full items-start"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -175,14 +167,12 @@ const TransferSection = () => {
               >
                 {feature.icon}
               </motion.div>
-              <h3 className="text-base font-semibold text-black mb-3">
+              <h3 className="text-sm md:text-base font-semibold text-black mb-3">
                 {feature.title}
               </h3>
             </motion.div>
           ))}
         </motion.div>
-
-        {/* CTA Button */}
         <motion.div
           className="text-center text-xl mt-6 md:mt-12"
           variants={buttonVariants}
@@ -195,7 +185,9 @@ const TransferSection = () => {
             whileTap="tap"
             variants={buttonVariants}
           >
-            <Button className="text-xl px-8 py-6">Book Your Transfer</Button>
+            <Button className=" text-base md:text-lg px-7 py-4">
+              Book Your Transfer
+            </Button>
           </motion.div>
         </motion.div>
       </div>

@@ -29,6 +29,7 @@ import {
 } from "./editTourValidator";
 import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
+import { Switch } from "@/src/components/ui/switch";
 
 export function EditTour({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +62,9 @@ export function EditTour({ params }: { params: { id: string } }) {
           reservation_price: tour.reservation_price,
           image: tour.image,
           gallery: tour.gallery || [],
+          public: tour.public,
         };
+        console.log(formData);
         form.reset(formData);
         setMainImagePreview(tour.image);
         setGalleryPreviews(tour.gallery || []);
@@ -114,6 +117,7 @@ export function EditTour({ params }: { params: { id: string } }) {
         total_price: form.getValues("total_price"),
         reservation_price: form.getValues("reservation_price"),
         localizations: form.getValues("localizations"),
+        public: form.getValues("public"),
         image: form.getValues("image")?.startsWith("data:image")
           ? form.getValues("image")
           : null,
@@ -172,11 +176,28 @@ export function EditTour({ params }: { params: { id: string } }) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="public"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormLabel className="text-base">ხილვადობა</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isSubmitting}
+                      aria-label="Toggle tour visibility"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
             <div className="w-full grid grid-cols-2 gap-2">
               {SUPPORTED_LOCALES.map((locale, index) => (
                 <div key={locale} className="space-y-2 p-4 border rounded-lg">
                   <h3 className="text-lg font-semibold capitalize">
-                    {locale} Translation
+                    {locale} თარგმანი
                   </h3>
 
                   <FormField

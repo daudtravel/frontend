@@ -16,11 +16,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
+import { Tour } from "@/src/types/tours";
 
 const api = {
-  fetchTours: async (): Promise<ApiResponse> => {
-    const response = await axios.get<ApiResponse>(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/tours`
+  fetchTours: async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/toursAll`
     );
     return response.data;
   },
@@ -30,7 +31,7 @@ export function ToursList() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery<ApiResponse>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["tours"],
     queryFn: api.fetchTours,
   });
@@ -89,7 +90,7 @@ export function ToursList() {
           </div>
 
           <div className="space-y-4">
-            {tours.map((tour) => (
+            {tours.map((tour: Tour) => (
               <Card
                 key={tour.id}
                 className="overflow-hidden hover:shadow-md transition-shadow"

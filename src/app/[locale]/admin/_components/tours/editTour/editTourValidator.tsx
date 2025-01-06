@@ -19,23 +19,21 @@ const TourSchema = z.object({
     })
     .nonnegative("Duration must be zero or positive")
     .optional(),
-
   total_price: z
     .number({
       invalid_type_error: "Total price must be a number",
     })
     .nonnegative("Total price must be zero or positive")
     .optional(),
-
   reservation_price: z
     .number({
       invalid_type_error: "Reservation price must be a number",
     })
     .nonnegative("Reservation price must be zero or positive")
     .optional(),
-
   image: z.string().optional(),
   gallery: z.array(z.string()).optional(),
+  public: z.boolean(),
 });
 
 export type TourFormData = z.infer<typeof TourSchema>;
@@ -53,6 +51,7 @@ export const editTourValidator = (initialData?: Partial<TourFormData>) => {
       duration: 0,
       total_price: 0,
       reservation_price: 0,
+      public: false,
       image: "",
       gallery: [],
       ...initialData,

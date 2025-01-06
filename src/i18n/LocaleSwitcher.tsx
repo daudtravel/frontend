@@ -50,7 +50,7 @@ export default function LocaleSwitcher() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-2 h-9 px-2 py-3 rounded-md bg-white text-black border border-input hover:bg-accent hover:text-accent-foreground">
+        <button className="flex items-center gap-2 rounded-full h-9 px-3 py-3 bg-white text-black border border-input hover:bg-gray-50  hover:text-accent-foreground">
           <CurrentFlag />
           <ChevronDownIcon className="h-4 w-4 opacity-50" />
         </button>

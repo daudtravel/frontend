@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { MapPin, ArrowRight, Filter, X } from "lucide-react";
 import {
@@ -16,26 +16,46 @@ import { Button } from "@/src/components/ui/button";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import ToursSectionLoader from "@/src/components/shared/loader/ToursSectionLoader";
 
 export default function ToursSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const destination = searchParams.get("destination") || undefined;
-  const initialMinPrice = parseFloat(searchParams.get("minPrice") || "50");
-  const initialMaxPrice = parseFloat(searchParams.get("maxPrice") || "500");
+  const params = useParams();
+  const locale = params.locale;
+  const urlDestination = searchParams.get("destination") || undefined;
+  const urlMinPrice = parseFloat(searchParams.get("minPrice") || "0");
+  const urlMaxPrice = parseFloat(searchParams.get("maxPrice") || "5000");
   const [selectedDestination, setSelectedDestination] = useState<
     string | undefined
-  >(destination);
+  >(urlDestination);
   const [priceRange, setPriceRange] = useState<[number, number]>([
-    initialMinPrice,
-    initialMaxPrice,
+    urlMinPrice,
+    urlMaxPrice,
   ]);
 
+  const [queryParams, setQueryParams] = useState({
+    destination: urlDestination,
+    minPrice: urlMinPrice,
+    maxPrice: urlMaxPrice,
+  });
+
   const { data: toursData, isLoading } = useQuery({
-    queryKey: ["tours", "list", destination],
+    queryKey: [
+      "tours",
+      "list",
+      queryParams.destination,
+      queryParams.minPrice,
+      queryParams.maxPrice,
+    ],
     queryFn: async () => {
       const response = await axiosInstance.get("/tours", {
-        params: { destination },
+        params: {
+          destination: queryParams.destination,
+          locale,
+          minPrice: queryParams.minPrice,
+          maxPrice: queryParams.maxPrice,
+        },
       });
       return response.data;
     },
@@ -46,45 +66,57 @@ export default function ToursSection() {
   const { data: filtersData, isLoading: filtersLoading } = useQuery({
     queryKey: ["tours", "filters"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/tours");
+      const response = await axiosInstance.get("/tours", {
+        params: { locale },
+      });
       return response.data;
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
+
   const handleSearch = () => {
+    setQueryParams({
+      destination: selectedDestination,
+      minPrice: priceRange[0],
+      maxPrice: priceRange[1],
+    });
+
     const params = new URLSearchParams();
     if (selectedDestination) {
       params.set("destination", selectedDestination);
     }
+    params.set("minPrice", priceRange[0].toString());
+    params.set("maxPrice", priceRange[1].toString());
     router.push(`/tours?${params.toString()}`);
-  };
-
-  const destinationHandler = (value: string) => {
-    setSelectedDestination(value);
   };
 
   const handleReset = () => {
     setSelectedDestination(undefined);
+    setPriceRange([0, 5000]);
+    setQueryParams({
+      destination: undefined,
+      minPrice: 0,
+      maxPrice: 5000,
+    });
     router.push("/tours");
   };
-  console.log(toursData);
 
   return (
-    <section className="container md:px-20 px-4 pt-10 md:pt-20 pb-20">
+    <main className="container min-h-screen md:px-20 px-4 pt-10 md:pt-20 pb-20">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="col-span-1 bg-gray-50 p-6 rounded-xl">
           <h3 className="text-xl font-bold mb-4 flex items-center">
             <Filter className="mr-2 w-5 h-5" /> Filters
           </h3>
           {filtersLoading ? (
-            <div className="text-center">Loading tours...</div>
+            <ToursSectionLoader />
           ) : (
             <div className="mb-6">
               <h4 className="font-semibold mb-2">Location</h4>
               <Select
                 value={selectedDestination ?? "Select"}
-                onValueChange={destinationHandler}
+                onValueChange={setSelectedDestination}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Location">
@@ -92,16 +124,17 @@ export default function ToursSection() {
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {filtersData?.tours?.length > 0 &&
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    filtersData?.tours?.map((item: any, index: number) => (
-                      <SelectItem
-                        key={item.destination || index}
-                        value={item.translations.en.name}
-                      >
-                        {item.translations.en.name}
-                      </SelectItem>
-                    ))}
+                  {filtersData?.data?.tours?.length > 0 &&
+                    filtersData?.data?.tours?.map(
+                      (item: any, index: number) => (
+                        <SelectItem
+                          key={item.id || index}
+                          value={item.localizations[0].destination}
+                        >
+                          {item.localizations[0].destination}
+                        </SelectItem>
+                      )
+                    )}
                 </SelectContent>
               </Select>
             </div>
@@ -111,10 +144,10 @@ export default function ToursSection() {
             <div className="flex items-center space-x-4">
               <span className="w-10 text-right">${priceRange[0]}</span>
               <Slider
-                defaultValue={[50, 500]}
+                defaultValue={[0, 5000]}
                 min={50}
                 max={500}
-                step={50}
+                step={10}
                 value={priceRange}
                 onValueChange={(value) =>
                   setPriceRange(value as [number, number])
@@ -141,9 +174,8 @@ export default function ToursSection() {
 
         <div className="col-span-3 space-y-6">
           {isLoading ? (
-            <div className="text-center">Loading tours...</div>
-          ) : toursData.data.tours ? (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            <ToursSectionLoader />
+          ) : toursData?.data?.tours ? (
             toursData.data.tours.map((item: any, index: number) => (
               <div
                 key={index}
@@ -208,6 +240,6 @@ export default function ToursSection() {
           )}
         </div>
       </div>
-    </section>
+    </main>
   );
 }

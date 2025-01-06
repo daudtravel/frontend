@@ -26,6 +26,7 @@ export interface Tour {
   reservation_price: number;
   image: string;
   gallery: string[];
+  public: boolean;
   created_at: Date;
   updated_at: Date;
 }

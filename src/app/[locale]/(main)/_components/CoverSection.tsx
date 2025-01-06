@@ -44,13 +44,12 @@ const CoverSection = () => {
             alt={image.alt}
             layout="fill"
             objectFit="cover"
-            className="w-full h-full object-center brightness-60"
+            className="w-full h-full object-center brightness-70"
           />
         </motion.div>
       ))}
       <div className="absolute inset-0 z-30 flex flex-col items-center justify-center px-4">
         <div className="text-center space-y-8">
-          */
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

@@ -22,7 +22,9 @@ export default function Header() {
   return (
     <header className="top-0 w-full bg-[#f2f5ff] shadow-md z-50">
       <div className="flex w-full items-center justify-between px-4 md:px-20 h-20">
-        <div className="font-bold text-xl">Logo</div>
+        <Link href="/">
+          <div className="font-bold text-xl">Logo</div>
+        </Link>
         <nav className="md:flex items-center gap-3 md:gap-5 hidden">
           <Link href="/" className="text-base font-medium text-black">
             {t("main")}

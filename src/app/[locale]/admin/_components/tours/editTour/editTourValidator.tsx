@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export const SUPPORTED_LOCALES = ["en", "ka", "ru"] as const;
+export const SUPPORTED_LOCALES = ["en", "ka", "ru", "ar", "tr"] as const;
 
 const TranslationSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALES),
@@ -10,7 +10,6 @@ const TranslationSchema = z.object({
   destination: z.string().optional(),
   description: z.string().optional(),
 });
-
 
 const TourSchema = z.object({
   localizations: z.array(TranslationSchema),

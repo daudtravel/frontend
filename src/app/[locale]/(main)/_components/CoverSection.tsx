@@ -44,7 +44,7 @@ const CoverSection = () => {
             alt={image.alt}
             layout="fill"
             objectFit="cover"
-            className="w-full h-full object-center brightness-50"
+            className="w-full h-full object-center brightness-60"
           />
         </motion.div>
       ))}

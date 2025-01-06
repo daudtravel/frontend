@@ -1,0 +1,9 @@
+{
+  "main": "Main",
+  "tours": "Tours",
+  "about": "About us",
+  "contact": "Contact",
+  "signin": "Sign in",
+  "signup": "Sign up",
+  "logout": "Log out"
+}

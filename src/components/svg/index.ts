@@ -13,3 +13,8 @@ export { default as X } from "@img/svg/X.svg";
 export { default as Ellipse } from "@img/svg/Ellipse.svg";
 export { default as Case } from "@img/svg/Case.svg";
 export { default as WorldMap } from "@img/svg/WorldMap.svg";
+export { default as English } from "@img/svg/English.svg";
+export { default as Georgian } from "@img/svg/Georgian.svg";
+export { default as Russian } from "@img/svg/Russian.svg";
+export { default as Arabian } from "@img/svg/Arabian.svg";
+export { default as Turkey } from "@img/svg/Turkey.svg";

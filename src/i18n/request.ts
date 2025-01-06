@@ -12,8 +12,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Load all JSON files for the current locale
   const messages = {
     meta: (await import(`../messages/${locale}/meta.json`)).default,
-    contact: (await import(`../messages/${locale}/contact.json`)).default,
+    header: (await import(`../messages/${locale}/header.json`)).default,
     main: (await import(`../messages/${locale}/main.json`)).default,
+    contact: (await import(`../messages/${locale}/contact.json`)).default,
+
   };
 
   return {

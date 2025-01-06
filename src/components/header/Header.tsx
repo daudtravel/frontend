@@ -5,8 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
 import { LogIn, UserPlus, User, LogOut } from "lucide-react";
 import { useAuth } from "@/src/auth/authProvider";
+import { useTranslations } from "next-intl";
+
+import LocaleSwitcher from "@/src/i18n/LocaleSwitcher";
 
 export default function Header() {
+  const t = useTranslations("header");
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated, isLoading: isUserLoading, logout } = useAuth();
@@ -20,44 +24,38 @@ export default function Header() {
       <div className="flex w-full items-center justify-between px-4 md:px-20 h-20">
         <div className="font-bold text-xl">Logo</div>
         <nav className="md:flex items-center gap-3 md:gap-5 hidden">
-          <Link href="/" className="text-sm font-medium text-black">
-            HOME
+          <Link href="/" className="text-base font-medium text-black">
+            {t("main")}
           </Link>
-          <Link href="/contact" className="text-sm font-medium text-black">
-            CONTACT
+          <Link href="/tours" className="text-base font-medium text-black">
+            {t("tours")}
           </Link>
-          <Link href="/tours" className="text-sm font-medium text-black">
-            TOURS
+          <Link href="/about" className="text-base font-medium text-black">
+            {t("about")}
           </Link>
-          <Link href="/about" className="text-sm font-medium text-black">
-            ABOUT
-          </Link>
-          <Link href="/profile" className="text-sm font-medium text-black">
-            PROFILE
+          <Link href="/contact" className="text-base font-medium text-black">
+            {t("contact")}
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-5">
             {!isAuthenticated ? (
               <>
                 <Button
-                  variant="outline"
-                  size="sm"
                   disabled={isUserLoading}
                   onClick={() => authClickHandler("signin")}
-                  className="text-black hover:text-gray-900 hover:bg-gray-100"
+                  className="text-white h-9"
                 >
-                  <LogIn className="mr-2 h-4 w-4" />
-                  {isUserLoading ? "Checking..." : "Sign In"}
+                  <LogIn className="mr-1 h-3 w-3" />
+                  {isUserLoading ? "Checking..." : t("signin")}
                 </Button>
 
                 <Button
-                  size="sm"
                   disabled={isUserLoading}
                   onClick={() => authClickHandler("signup")}
-                  className="bg-blue-600 text-white hover:bg-blue-700"
+                  className="text-white h-9"
                 >
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  {isUserLoading ? "Checking..." : "Sign Up"}
+                  <UserPlus className="mr-1 h-4 w-4" />
+                  {isUserLoading ? "Checking..." : t("signup")}
                 </Button>
               </>
             ) : (
@@ -73,11 +71,12 @@ export default function Header() {
                   className="bg-red-600 text-white hover:bg-red-700"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  Logout
+                  {t("logout")}
                 </Button>
               </div>
             )}
           </div>
+          <LocaleSwitcher />
         </nav>
       </div>
     </header>

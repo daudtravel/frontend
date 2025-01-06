@@ -22,10 +22,9 @@ import {
   FormItem,
   FormMessage,
 } from "@/src/components/ui/form";
- 
+
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useAuth } from "@/src/auth/authProvider";
- 
 
 interface SignInCredentials {
   email: string;
@@ -95,6 +94,11 @@ export default function SignInModal() {
     }
   };
 
+  const authClickHandler = (name: string) => {
+    router.replace(`${pathname}?${name}`);
+    setIsOpen(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="flex md:h-[600px] max-w-4xl p-0 border-none md:rounded-md overflow-hidden">
@@ -127,14 +131,11 @@ export default function SignInModal() {
             </p>
             <div className="relative my-6">
               <Separator />
-              <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-sm text-gray-500">
-                Or continue with
-              </span>
             </div>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
+                className="space-y-6"
               >
                 <FormField
                   control={form.control}
@@ -191,7 +192,10 @@ export default function SignInModal() {
           <div className="mt-6">
             <p className="mt-4 text-center text-sm text-gray-500">
               Don&apos;t have an account?{" "}
-              <button className="font-medium text-gray-900 hover:underline">
+              <button
+                onClick={() => authClickHandler("signup")}
+                className="font-medium text-gray-900 hover:underline"
+              >
                 Sign up
               </button>
             </p>

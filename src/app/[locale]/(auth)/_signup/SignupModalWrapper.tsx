@@ -25,6 +25,11 @@ export default function SignupModalWrapper() {
   const [open, setIsOpen] = useState(false);
   const [isVerificationStep, setIsVerificationStep] = useState(false);
 
+  const authClickHandler = (name: string) => {
+    router.replace(`${pathname}?${name}`);
+    setIsOpen(false);
+  };
+
   const modalCloseClickHandler = () => {
     if (status !== null) {
       const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -111,7 +116,10 @@ export default function SignupModalWrapper() {
           {!isVerificationStep && (
             <p className="mt-4 text-center text-sm text-gray-500">
               Already have an account?
-              <button className="font-medium text-gray-900 hover:underline ml-1">
+              <button
+                onClick={() => authClickHandler("signin")}
+                className="font-medium text-gray-900 hover:underline ml-1"
+              >
                 Sign in
               </button>
             </p>

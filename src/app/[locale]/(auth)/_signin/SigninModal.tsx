@@ -26,6 +26,7 @@ import {
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useAuth } from "@/src/auth/authProvider";
 
+
 interface SignInCredentials {
   email: string;
   password: string;
@@ -85,6 +86,7 @@ export default function SignInModal() {
       modalCloseClickHandler();
       form.reset();
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const err = error as any;
       const errorMessage =
         err.response?.data?.message || "Error signing in. Please try again.";

@@ -17,6 +17,7 @@ import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import ToursSectionLoader from "@/src/components/shared/loader/ToursSectionLoader";
+import { Tour } from "@/src/types/tours";
 
 export default function ToursSection() {
   const router = useRouter();
@@ -126,7 +127,7 @@ export default function ToursSection() {
                 <SelectContent>
                   {filtersData?.data?.tours?.length > 0 &&
                     filtersData?.data?.tours?.map(
-                      (item: any, index: number) => (
+                      (item: Tour, index: number) => (
                         <SelectItem
                           key={item.id || index}
                           value={item.localizations[0].destination}
@@ -176,7 +177,7 @@ export default function ToursSection() {
           {isLoading ? (
             <ToursSectionLoader />
           ) : toursData?.data?.tours ? (
-            toursData.data.tours.map((item: any, index: number) => (
+            toursData.data.tours.map((item: Tour, index: number) => (
               <div
                 key={index}
                 className="flex bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -187,7 +188,7 @@ export default function ToursSection() {
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
-                    alt={item.image_url ?? "alt"}
+                    alt={item.image ?? "alt"}
                   />
                 </div>
                 <div className="w-2/3 p-6 flex flex-col justify-between">

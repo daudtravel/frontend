@@ -23,7 +23,7 @@ import { Textarea } from "@/src/components/ui/textarea";
 import { Loader2, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { createTourValidator, TourFormData } from "./CreateTourValidator";
+import {  TourFormData, useCreateTourValidator } from "./CreateTourValidator";
 import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 
@@ -34,7 +34,7 @@ const CreateTour = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
-  const form = createTourValidator();
+  const form = useCreateTourValidator();
 
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -65,10 +65,7 @@ const CreateTour = () => {
       setErrorMessage(null);
       setSuccessMessage(null);
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/create_tour`,
-        data
-      );
+      await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/create_tour`, data);
 
       setSuccessMessage("ტური წარმატებით შეიქმნა");
       form.reset();
@@ -226,7 +223,7 @@ const CreateTour = () => {
             <FormField
               control={form.control}
               name="image"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>მთავარი სურათი</FormLabel>
                   <FormControl>
@@ -259,7 +256,7 @@ const CreateTour = () => {
             <FormField
               control={form.control}
               name="gallery"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>გალერეა (არასავალდებულო)</FormLabel>
                   <FormControl>

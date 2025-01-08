@@ -38,7 +38,7 @@ const TourSchema = z.object({
 
 export type TourFormData = z.infer<typeof TourSchema>;
 
-export const editTourValidator = (initialData?: Partial<TourFormData>) => {
+export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
   return useForm<TourFormData>({
     resolver: zodResolver(TourSchema),
     defaultValues: {

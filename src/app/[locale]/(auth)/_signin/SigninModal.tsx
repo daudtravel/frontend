@@ -89,7 +89,7 @@ export default function SignInModal() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const err = error as any;
       const errorMessage =
-        err.response?.data?.message || "Error signing in. Please try again.";
+        err.response?.data?.message || "Error signing in. Please try again!.";
       alert(errorMessage);
     } finally {
       setIsLoading(false);

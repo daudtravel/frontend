@@ -23,7 +23,7 @@ import { Textarea } from "@/src/components/ui/textarea";
 import { Loader2, X } from "lucide-react";
 import Image from "next/image";
 import {
-  editTourValidator,
+  useEditTourValidator,
   SUPPORTED_LOCALES,
   TourFormData,
 } from "./editTourValidator";
@@ -40,7 +40,7 @@ export function EditTour({ params }: { params: { id: string } }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
-  const form = editTourValidator();
+  const form = useEditTourValidator();
 
   useEffect(() => {
     const fetchTourDetails = async () => {
@@ -69,13 +69,14 @@ export function EditTour({ params }: { params: { id: string } }) {
         setMainImagePreview(tour.image);
         setGalleryPreviews(tour.gallery || []);
       } catch (error) {
+        console.log(error);
         setErrorMessage("Failed to load tour details");
       } finally {
         setIsLoading(false);
       }
     };
     fetchTourDetails();
-  }, []);
+  }, [form, params.id]);
 
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -107,7 +108,7 @@ export function EditTour({ params }: { params: { id: string } }) {
     form.setValue("gallery", newGalleryPreviews);
   };
 
-  const onSubmit = async (data: TourFormData) => {
+  const onSubmit = async () => {
     try {
       setIsSubmitting(true);
       setErrorMessage(null);
@@ -310,7 +311,7 @@ export function EditTour({ params }: { params: { id: string } }) {
               <FormField
                 control={form.control}
                 name="image"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Main Image</FormLabel>
                     <FormControl>
@@ -345,7 +346,7 @@ export function EditTour({ params }: { params: { id: string } }) {
               <FormField
                 control={form.control}
                 name="gallery"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Gallery Images</FormLabel>
                     <FormControl>

@@ -47,12 +47,12 @@ export default function WhyUsSection() {
   useEffect(() => {
     if (!isVisible) return;
 
-    const duration = 2000; // Animation duration in milliseconds
-    const steps = 40; // Number of steps for the animation
+    const duration = 2000;
+    const steps = 40;
     const interval = duration / steps;
     let step = 0;
-
-    const incrementStats = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const incrementStats = (finalStats: any) => {
       const progress = step / steps;
       setStats({
         clients: Math.round(finalStats.clients * progress),
@@ -65,15 +65,16 @@ export default function WhyUsSection() {
 
     const animationInterval = setInterval(() => {
       if (step <= steps) {
-        incrementStats();
+        incrementStats(finalStats);
       } else {
         clearInterval(animationInterval);
-        // Ensure final values are set
         setStats(finalStats);
       }
     }, interval);
 
-    return () => clearInterval(animationInterval);
+    return () => {
+      clearInterval(animationInterval);
+    };
   }, [isVisible]);
 
   const statCards = [

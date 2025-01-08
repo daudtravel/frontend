@@ -37,7 +37,8 @@ const TourSchema = z.object({
 
 export type TourFormData = z.infer<typeof TourSchema>;
 
-export const createTourValidator = () => {
+// Rename function to start with "use" to follow React Hook naming conventions
+export const useCreateTourValidator = () => {
   return useForm<TourFormData>({
     resolver: zodResolver(TourSchema),
     defaultValues: {

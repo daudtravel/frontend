@@ -2,7 +2,7 @@
   "name": "daud-travel",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
+   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "set PORT=4000 && next start",

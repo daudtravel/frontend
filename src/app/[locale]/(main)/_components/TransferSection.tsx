@@ -185,7 +185,7 @@ const TransferSection = () => {
             whileTap="tap"
             variants={buttonVariants}
           >
-            <Button className=" text-base md:text-lg px-7 py-4">
+            <Button className=" text-sm md:text-lg px-7 py-3">
               Book Your Transfer
             </Button>
           </motion.div>

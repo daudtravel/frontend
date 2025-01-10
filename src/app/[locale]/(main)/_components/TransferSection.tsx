@@ -11,7 +11,7 @@ const TransferSection = () => {
       title: "Modern Vehicle",
     },
     {
-      icon: <Clock className="w-8 h-8 text-[orange] mb-4" />,
+      icon: <Clock className="w-8 h-8 text-[#ffa500] mb-4" />,
       title: "24/7 Availability",
     },
     {

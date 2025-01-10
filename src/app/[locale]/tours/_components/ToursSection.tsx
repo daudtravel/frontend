@@ -3,21 +3,21 @@
 import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { MapPin, ArrowRight, Filter, X } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-} from "@/src/components/ui/select";
-import { Slider } from "@/src/components/ui/slider";
+import { MapPin, ArrowRight } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { axiosInstance } from "@/src/utlis/axiosInstance";
+ 
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import ToursSectionLoader from "@/src/components/shared/loader/ToursSectionLoader";
 import { Tour } from "@/src/types/tours";
+import TourFilters from "./TourFilters";
+import { axiosInstance } from "@/src/utlis/axiosInstance";
+
+interface QueryParams {
+  destination: string | undefined;
+  minPrice: number;
+  maxPrice: number;
+}
 
 export default function ToursSection() {
   const router = useRouter();
@@ -27,15 +27,8 @@ export default function ToursSection() {
   const urlDestination = searchParams.get("destination") || undefined;
   const urlMinPrice = parseFloat(searchParams.get("minPrice") || "0");
   const urlMaxPrice = parseFloat(searchParams.get("maxPrice") || "5000");
-  const [selectedDestination, setSelectedDestination] = useState<
-    string | undefined
-  >(urlDestination);
-  const [priceRange, setPriceRange] = useState<[number, number]>([
-    urlMinPrice,
-    urlMaxPrice,
-  ]);
 
-  const [queryParams, setQueryParams] = useState({
+  const [queryParams, setQueryParams] = useState<QueryParams>({
     destination: urlDestination,
     minPrice: urlMinPrice,
     maxPrice: urlMaxPrice,
@@ -76,25 +69,27 @@ export default function ToursSection() {
     gcTime: 30 * 60 * 1000,
   });
 
-  const handleSearch = () => {
+  const handleSearch = (filters: {
+    destination?: string;
+    minPrice: number;
+    maxPrice: number;
+  }) => {
     setQueryParams({
-      destination: selectedDestination,
-      minPrice: priceRange[0],
-      maxPrice: priceRange[1],
+      destination: filters.destination || undefined,
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
     });
 
     const params = new URLSearchParams();
-    if (selectedDestination) {
-      params.set("destination", selectedDestination);
+    if (filters.destination) {
+      params.set("destination", filters.destination);
     }
-    params.set("minPrice", priceRange[0].toString());
-    params.set("maxPrice", priceRange[1].toString());
+    params.set("minPrice", filters.minPrice.toString());
+    params.set("maxPrice", filters.maxPrice.toString());
     router.push(`/tours?${params.toString()}`);
   };
 
   const handleReset = () => {
-    setSelectedDestination(undefined);
-    setPriceRange([0, 5000]);
     setQueryParams({
       destination: undefined,
       minPrice: 0,
@@ -106,72 +101,15 @@ export default function ToursSection() {
   return (
     <main className="container min-h-screen md:px-20 px-4 pt-10 md:pt-20 pb-20">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="col-span-1 bg-gray-50 p-6 rounded-xl">
-          <h3 className="text-xl font-bold mb-4 flex items-center">
-            <Filter className="mr-2 w-5 h-5" /> Filters
-          </h3>
-          {filtersLoading ? (
-            <ToursSectionLoader />
-          ) : (
-            <div className="mb-6">
-              <h4 className="font-semibold mb-2">Location</h4>
-              <Select
-                value={selectedDestination ?? "Select"}
-                onValueChange={setSelectedDestination}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Location">
-                    {selectedDestination || "Select Location"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {filtersData?.data?.tours?.length > 0 &&
-                    filtersData?.data?.tours?.map(
-                      (item: Tour, index: number) => (
-                        <SelectItem
-                          key={item.id || index}
-                          value={item.localizations[0].destination}
-                        >
-                          {item.localizations[0].destination}
-                        </SelectItem>
-                      )
-                    )}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          <div className="mb-6">
-            <h4 className="font-semibold mb-2">Price Range</h4>
-            <div className="flex items-center space-x-4">
-              <span className="w-10 text-right">${priceRange[0]}</span>
-              <Slider
-                defaultValue={[0, 5000]}
-                min={50}
-                max={500}
-                step={10}
-                value={priceRange}
-                onValueChange={(value) =>
-                  setPriceRange(value as [number, number])
-                }
-                className="flex-grow"
-              />
-              <span className="w-10 text-left">${priceRange[1]}</span>
-            </div>
-          </div>
-          <div className="flex space-x-2">
-            <Button onClick={handleSearch} className="w-full">
-              Search
-            </Button>
-            <Button
-              onClick={handleReset}
-              variant="outline"
-              size="icon"
-              className="hover:bg-red-50"
-            >
-              <X className="h-4 w-4 text-red-500" />
-            </Button>
-          </div>
-        </div>
+        <TourFilters
+          initialDestination={urlDestination}
+          initialMinPrice={urlMinPrice}
+          initialMaxPrice={urlMaxPrice}
+          filtersData={filtersData}
+          isLoading={filtersLoading}
+          onSearch={handleSearch}
+          onReset={handleReset}
+        />
 
         <div className="col-span-3 space-y-6">
           {isLoading ? (
@@ -180,9 +118,9 @@ export default function ToursSection() {
             toursData.data.tours.map((item: Tour, index: number) => (
               <div
                 key={index}
-                className="flex bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
+                className="md:flex-row flex-col flex bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
               >
-                <div className="relative w-1/3 min-h-[250px]">
+                <div className="relative w-full md:w-1/3 h-[200px] md:h-[250px]">
                   <Image
                     src={`http://localhost:3001${item?.image}`}
                     fill
@@ -191,10 +129,10 @@ export default function ToursSection() {
                     alt={item.image ?? "alt"}
                   />
                 </div>
-                <div className="w-2/3 p-6 flex flex-col justify-between">
+                <div className="w-full md:w-2/3 p-6 flex flex-col justify-between">
                   <div>
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className="font-bold text-2xl line-clamp-1">
+                    <div className="flex justify-between items-center md:items-start mb-4">
+                      <h3 className="font-bold text-base md:text-2xl line-clamp-1">
                         {item.localizations[0].name}
                       </h3>
                       <div className="bg-gray-100 rounded-full px-3 py-1 flex items-center">
@@ -209,26 +147,28 @@ export default function ToursSection() {
                         <span className="font-semibold text-xs block mb-1">
                           Total Price
                         </span>
-                        <p className="text-lg font-bold">${item.total_price}</p>
+                        <p className="md:text-lg text-sm font-bold">
+                          ${item.total_price}
+                        </p>
                       </div>
                       <div>
                         <span className="font-semibold text-xs block mb-1">
                           Duration
                         </span>
-                        <p className="text-lg">{item.duration}</p>
+                        <p className="md:text-lg text-sm">{item.duration}</p>
                       </div>
                       <div>
                         <span className="font-semibold text-xs block mb-1">
                           Reservation
                         </span>
-                        <p className="text-lg font-bold">
+                        <p className="text-sm md:text-lg font-bold">
                           ${item.reservation_price}
                         </p>
                       </div>
                     </div>
                   </div>
                   <Link href={`/tours/${item.id}`}>
-                    <Button className="w-full">
+                    <Button className="w-full text-sm">
                       Explore Tour
                       <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Button>

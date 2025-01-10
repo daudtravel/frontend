@@ -56,8 +56,8 @@ function Page() {
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-1/2 lg:mt-0">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-center bg-clip-text text-transparent bg-mainGradient">
+        <div className="w-full lg:w-1/2 lg:mt-0  px-4 md:px-0">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center bg-clip-text text-transparent bg-mainGradient">
             About us
           </h1>
 

@@ -7,6 +7,7 @@ import { useAuth } from "@/src/auth/authProvider";
 import { useTranslations } from "next-intl";
 import LocaleSwitcher from "@/src/i18n/LocaleSwitcher";
 import AuthLoader from "../shared/loader/AuthLoader";
+import BurgerMenu from "./BurgerMenu";
 
 export default function Header() {
   const t = useTranslations("header");
@@ -87,6 +88,7 @@ export default function Header() {
           </div>
           <LocaleSwitcher />
         </nav>
+        <BurgerMenu />
       </div>
     </header>
   );

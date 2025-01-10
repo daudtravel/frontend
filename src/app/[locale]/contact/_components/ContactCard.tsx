@@ -74,11 +74,11 @@ const ContactCard: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen py-10 relative">
-      <div className="w-full max-w-5xl flex flex-col h-full md:flex-row gap-6 px-4 md:px-0">
+    <div className="flex justify-center items-center min-h-screen py-10 relative md:px-10">
+      <div className="w-full max-w-5xl  flex flex-col h-full md:flex-row gap-6 px-4">
         <Card className="w-full md:w-1/3  border border-gray-300 shadow-lg bg-[#f2f5ff]">
           <CardHeader>
-            <CardTitle className="text-xl font-bold text-center md:text-start">
+            <CardTitle className="text-base md:text-xl font-bold text-center md:text-start">
               Contact Information
             </CardTitle>
           </CardHeader>
@@ -87,7 +87,9 @@ const ContactCard: React.FC = () => {
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 mt-1" />
                 <div>
-                  <h3 className="font-semibold">Our Office</h3>
+                  <h3 className="text-sm md:text-base font-semibold">
+                    Our Office
+                  </h3>
                   <p className="text-sm text-gray-600">
                     <a
                       href="https://www.google.com/maps/place/Daud+Travel/@41.6443898,41.6346718,696m/data=!3m2!1e3!4b1!4m6!3m5!1s0x406787f6f7466e93:0x69bea43bb941487c!8m2!3d41.6443898!4d41.6346718!16s%2Fg%2F11s2jbmn0l?entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw%3D%3D"
@@ -104,7 +106,7 @@ const ContactCard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5" />
                 <div>
-                  <h3 className="font-semibold">Phone</h3>
+                  <h3 className="font-semibold text-sm md:text-bas">Phone</h3>
                   <p className="text-sm text-gray-600">
                     <a
                       href={`tel:${CONTACT_INFO.phone.replace(/[^0-9+]/g, "")}`}
@@ -119,7 +121,7 @@ const ContactCard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5" />
                 <div>
-                  <h3 className="font-semibold">Email</h3>
+                  <h3 className="font-semibold text-sm md:text-bas">Email</h3>
                   <p className="text-sm text-gray-600">
                     <a
                       href={`mailto:${CONTACT_INFO.email}`}
@@ -132,7 +134,7 @@ const ContactCard: React.FC = () => {
               </div>
             </div>
             <div className="pt-6 border-t">
-              <h3 className="font-semibold mb-4 text-center md:text-start">
+              <h3 className="font-semibold text-base md:text-lg mb-4 text-center md:text-start">
                 Follow Us
               </h3>
               <div className="grid grid-cols-5 gap-y-4 items-center">
@@ -207,7 +209,7 @@ const ContactCard: React.FC = () => {
 
         <Card className="w-full  md:w-2/3 border-gray-300  shadow-lg min-h-[32rem] bg-[#f2f5ff]">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center md:text-start">
+            <CardTitle className="text-base md:text-2xl font-bold text-center md:text-start">
               Send us a Message
             </CardTitle>
             <CardDescription>

@@ -11,7 +11,7 @@ const TransferSection = () => {
       title: "Modern Vehicle",
     },
     {
-      icon: <Clock className="w-8 h-8 text-[orange] mb-4" />,
+      icon: <Clock className="w-8 h-8 text-[#ffa500] mb-4" />,
       title: "24/7 Availability",
     },
     {
@@ -185,7 +185,7 @@ const TransferSection = () => {
             whileTap="tap"
             variants={buttonVariants}
           >
-            <Button className=" text-base md:text-lg px-7 py-4">
+            <Button className=" text-sm md:text-lg px-7 py-3">
               Book Your Transfer
             </Button>
           </motion.div>

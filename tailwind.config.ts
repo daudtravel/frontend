@@ -17,11 +17,8 @@ const config: Config = {
     backgroundTest2: "url('/images/MountainOverlay.png')",
     paperGradient: "linear-gradient(180deg, rgba(255, 255, 255, 0.53) 0%, #FFFFFF 180%)",
     mainGradient: "linear-gradient(to right, #FF6B6B, #FF8E53, #FFA41B)",
-    // Hover state with deeper, richer colors
     mainGradientHover: "linear-gradient(to right, #E74C3C, #FF5733, #FFA502)",
-    // Text gradient with better contrast and readability
     textGradient: "linear-gradient(to right, #FFD700, #FFF3B0, #FFFFFF)",
-    // Header gradient with sophisticated tone
     headerGradient: "linear-gradient(to right, #FF8C42, #FFB347, #FFD460)",
     trans: "linear-gradient(to right, rgba(255, 107, 107, 1), rgba(255, 142, 83, 0.8), rgba(255, 164, 27, 0.8))",
   },

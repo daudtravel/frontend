@@ -64,11 +64,11 @@ const ReviewsSection = () => {
         }}
         className="mt-6 w-full p-0 "
       >
-        <CarouselContent className="gap-4 mx-4 md:mx-20 px-4">
+        <CarouselContent className="gap-2 md:gap-4 mx-4 md:mx-20">
           {reviews.map((item, index) => (
             <CarouselItem
               key={index}
-              className="w-full rounded-xl border  border-gray-300 bg-[#f2f5ff] md:basis-1/2 lg:basis-1/3"
+              className="w-full rounded-xl border border-gray-300 bg-[#f2f5ff] md:basis-1/2 lg:basis-1/3"
             >
               <div className="flex h-full flex-col justify-between p-6">
                 <div>
@@ -80,9 +80,9 @@ const ReviewsSection = () => {
                       />
                     ))}
                   </div>
-                  <p className="mb-4 text-sm text-gray-600">{item.comment}</p>
+                  <p className="md:mb-4 mb-2 text-xs md:text-sm text-gray-600">{item.comment}</p>
                 </div>
-                <p className="font-semibold">{item.name}</p>
+                <p className="md:text-base text-sm font-semibold">{item.name}</p>
               </div>
             </CarouselItem>
           ))}

@@ -30,6 +30,7 @@ import {
 import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 import { Switch } from "@/src/components/ui/switch";
+import { axiosInstance } from "@/src/utlis/axiosInstance";
 
 export function EditTour({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -46,9 +47,7 @@ export function EditTour({ params }: { params: { id: string } }) {
     const fetchTourDetails = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/tours/${params.id}`
-        );
+        const response = await axiosInstance.get(`/tours/${params.id}`);
         const tour = response.data.data.tour;
         const formData: TourFormData = {
           localizations: SUPPORTED_LOCALES.map((locale) => ({
@@ -129,10 +128,7 @@ export function EditTour({ params }: { params: { id: string } }) {
         deleteImages: deletedImages.length > 0 ? deletedImages : null,
       };
 
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/tours/${params.id}`,
-        submitData
-      );
+      await axiosInstance.put(`/tours/${params.id}`, submitData);
 
       setSuccessMessage("Tour updated successfully");
       router.push("?tours=all");
@@ -328,7 +324,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                           src={
                             mainImagePreview.startsWith("data:")
                               ? mainImagePreview
-                              : `http://localhost:3001${mainImagePreview}`
+                              : `https://api.daudtravel.com${mainImagePreview}`
                           }
                           alt="Main image preview"
                           width={800} // Increased from 400
@@ -367,7 +363,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                               src={
                                 preview.startsWith("data:")
                                   ? preview
-                                  : `http://localhost:3001${preview}`
+                                  : `https://api.daudtravel.com${preview}`
                               }
                               alt={`Gallery image ${index + 1}`}
                               layout="fill"

@@ -17,12 +17,11 @@ import {
   AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
 import { Tour } from "@/src/types/tours";
+import { axiosInstance } from "@/src/utlis/axiosInstance";
 
 const api = {
   fetchTours: async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/toursAll`
-    );
+    const response = await axiosInstance.get(`/toursAll`);
     return response.data;
   },
 };
@@ -101,7 +100,7 @@ export function ToursList() {
                       <div className="relative h-12 w-12 rounded-lg overflow-hidden">
                         {tour.image ? (
                           <Image
-                            src={`http://localhost:3001${tour.image}`}
+                            src={`https://api.daudtravel.com${tour.image}`}
                             alt={tour.localizations[0]?.name || "Tour image"}
                             fill
                             className="object-cover rounded-full"

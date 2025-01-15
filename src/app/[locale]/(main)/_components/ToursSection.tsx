@@ -21,16 +21,11 @@ import { useParams } from "next/navigation";
 
 const fetchToursData = async (locale: string) => {
   try {
-    const response = await axiosInstance.get(
-      `https://api.daudtravel.com/api/tours`,
-      {
-        params: { locale },
-      }
-    );
+    const response = await axiosInstance.get(`/tours?locale=${locale}`);
     return response.data;
-  } catch (error) {
-    console.error("Error fetching tours data:", error);
-    throw error;
+  } catch (err) {
+    console.error("Error fetching tours data:", err);
+    throw err;
   }
 };
 

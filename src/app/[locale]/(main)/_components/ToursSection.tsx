@@ -19,6 +19,21 @@ import Link from "next/link";
 import PoPularToursLoader from "@/src/components/shared/loader/PoPularToursLoader";
 import { useParams } from "next/navigation";
 
+const fetchToursData = async (locale: string) => {
+  try {
+    const response = await axiosInstance.get(
+      `https://api.daudtravel.com/api/tours`,
+      {
+        params: { locale },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tours data:", error);
+    throw error;
+  }
+};
+
 export default function ToursSection() {
   const t = useTranslations("main");
   const params = useParams();
@@ -26,14 +41,7 @@ export default function ToursSection() {
 
   const { data: toursData, isLoading } = useQuery({
     queryKey: ["tours", "list"],
-    queryFn: async () => {
-      const response = await axiosInstance.get("/tours", {
-        params: {
-          locale: locale,
-        },
-      });
-      return response.data;
-    },
+    queryFn: async () => fetchToursData(locale as string),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });

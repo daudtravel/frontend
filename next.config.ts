@@ -1,9 +1,9 @@
+import type { NextConfig } from 'next';
 import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   experimental: {
     turbo: {
       rules: {
@@ -14,7 +14,7 @@ const nextConfig = {
       },
     },
   },
-  webpack(config: { module: { rules: { test: RegExp; use: { loader: string; options: { icon: boolean; }; }; }[]; }; }) {
+  webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
       use: { loader: "@svgr/webpack", options: { icon: true } },
@@ -24,7 +24,15 @@ const nextConfig = {
   },
   
   images: {
-    domains: ["localhost"  ],  
+    remotePatterns: [
+      {
+        protocol: "https", 
+        hostname: "api.daudtravel.com",
+        port: "",
+        pathname: "/uploads/**",
+      },
+    ],
+    domains: ["localhost"],
   },
   async rewrites() {
     return [
@@ -36,5 +44,4 @@ const nextConfig = {
   },
 };
 
- 
 export default withNextIntl(nextConfig);

@@ -13,6 +13,13 @@ export interface GetToursResponse {
   };
 }
 
+
+export interface ToursQueryParams {
+  destination: string | undefined;
+  minPrice: number;
+  maxPrice: number;
+}
+
 export interface Tour {
   id: string;
   localizations: {

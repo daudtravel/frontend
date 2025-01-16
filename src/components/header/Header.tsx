@@ -37,6 +37,9 @@ export default function Header() {
           <Link href="/tours" className="text-base font-medium text-black">
             {t("tours")}
           </Link>
+          <Link href="/transfers" className="text-base font-medium text-black">
+            {t("transfers")}
+          </Link>
           <Link href="/about" className="text-base font-medium text-black">
             {t("about")}
           </Link>

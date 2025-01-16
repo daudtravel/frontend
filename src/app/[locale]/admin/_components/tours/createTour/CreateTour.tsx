@@ -23,9 +23,10 @@ import { Textarea } from "@/src/components/ui/textarea";
 import { Loader2, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {  TourFormData, useCreateTourValidator } from "./CreateTourValidator";
+import { TourFormData, useCreateTourValidator } from "./CreateTourValidator";
 import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
+import { axiosInstance } from "@/src/utlis/axiosInstance";
 
 const CreateTour = () => {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -65,7 +66,7 @@ const CreateTour = () => {
       setErrorMessage(null);
       setSuccessMessage(null);
 
-      await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/create_tour`, data);
+      await axiosInstance.post(`/create_tour`, data);
 
       setSuccessMessage("ტური წარმატებით შეიქმნა");
       form.reset();

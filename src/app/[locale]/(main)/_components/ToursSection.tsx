@@ -113,7 +113,7 @@ export default function ToursSection() {
                     <CardContent className="p-0 h-full ">
                       <Link href={`/tours/${tour.id}`}>
                         <Image
-                          src={`http://localhost:3001${tour.image}`}
+                          src={`https://api.daudtravel.com${tour.image}`}
                           alt={tour.localizations[0].destination}
                           fill
                           className="object-cover"

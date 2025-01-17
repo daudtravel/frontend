@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -94,11 +95,11 @@ export default function ToursSection() {
   };
 
   return (
-    <main className="w-full min-h-screen md:pl-20 md:pr-36 px-4 pt-10 md:pt-20 pb-20">
+    <main className="w-full min-h-screen md:pl-20 md:pr-20 xl:pr-36 px-4 pt-6 md:pt-20 pb-20">
       <div className="md:hidden mb-4">
         <Button
           onClick={() => setShowFilters(!showFilters)}
-          className="w-full flex items-center justify-center gap-2"
+          className="w-full flex items-center justify-center gap-2 h-8"
         >
           <Filter className="w-4 h-4" />
           {showFilters ? "Hide Filters" : "Show Filters"}
@@ -107,7 +108,7 @@ export default function ToursSection() {
 
       <div className="flex flex-col md:flex-row md:justify-between justify-start w-full gap-10 md:gap-5 xl:gap-16">
         <div
-          className={`w-full xl:w-[550px] ${showFilters ? "block" : "hidden md:block"}`}
+          className={`w-full lg:w-[500px] xl:w-[550px] ${showFilters ? "block" : "hidden md:block"}`}
         >
           <TourFilters
             initialDestination={urlDestination}
@@ -123,7 +124,7 @@ export default function ToursSection() {
           <ToursSectionLoader />
         ) : (
           <div
-            className={`w-full grid md:grid-cols-1 lg:grid-cols-2 md:gap-5 gap-10 xl:gap-12 ${showFilters ? "hidden md:grid" : "grid"}`}
+            className={`w-full grid  lg:grid-cols-2 gap-10 md:gap-5 xl:gap-12 ${showFilters ? "hidden md:grid" : "grid"}`}
           >
             {toursData?.data?.tours.length ? (
               toursData.data.tours.map((item: Tour, index: number) => (

@@ -30,7 +30,7 @@ export default function Header() {
         <Link href="/">
           <div>Logo</div>
         </Link>
-        <nav className="md:flex items-center gap-3 md:gap-5 hidden">
+        <nav className="lg:flex items-center gap-3 md:gap-5 hidden">
           <Link href="/" className="text-base font-medium text-black">
             {t("main")}
           </Link>

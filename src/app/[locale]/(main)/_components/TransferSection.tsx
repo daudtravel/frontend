@@ -3,6 +3,7 @@
 import { Car, Clock, Shield, MapPin } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const TransferSection = () => {
   const transferFeatures = [
@@ -185,9 +186,11 @@ const TransferSection = () => {
             whileTap="tap"
             variants={buttonVariants}
           >
-            <Button className=" text-sm md:text-lg px-7 py-3">
-              Book Your Transfer
-            </Button>
+            <Link href="/transfers">
+              <Button className=" text-sm md:text-lg px-7 py-3">
+                Book Your Transfer
+              </Button>
+            </Link>
           </motion.div>
         </motion.div>
       </div>

@@ -1,7 +1,8 @@
 import { useRouter } from "next/navigation";
-import { Plus, Loader2, Pencil, MapPin, Clock, Trash } from "lucide-react";
+import { Plus, Loader2, Pencil, User, Trash } from "lucide-react";
 import Image from "next/image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -15,39 +16,45 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
-import { Tour } from "@/src/types/tours";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 
+interface Driver {
+  id: string;
+  firstName: string;
+  lastName: string;
+  image?: string;
+}
+
 const api = {
-  fetchTours: async () => {
-    const response = await axiosInstance.get(`/toursAll`);
+  fetchDrivers: async () => {
+    const response = await axiosInstance.get(`/driversAll`);
     return response.data;
   },
 };
 
-export function ToursList() {
+export function DriversList() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tours"],
-    queryFn: api.fetchTours,
+    queryKey: ["drivers"],
+    queryFn: api.fetchDrivers,
   });
 
-  const handleEditTour = (tourId: string) => {
-    router.push(`?tours=${tourId}`);
+  const handleEditDriver = (driverId: string) => {
+    router.push(`?drivers=${driverId}`);
   };
 
-  const handleCreateTour = () => {
-    router.push("?tours=createTour");
+  const handleCreateDriver = () => {
+    router.push("?drivers=createDriver");
   };
 
-  const handleDeleteTour = async (id: string) => {
+  const handleDeleteDriver = async (id: string) => {
     try {
-      await axiosInstance.delete(`/tours/${id}`);
-      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/drivers/${id}`);
+      queryClient.invalidateQueries({ queryKey: ["drivers"] });
     } catch (error) {
-      console.error("Failed to delete tour:", error);
+      console.error("Failed to delete driver:", error);
     }
   };
 
@@ -59,94 +66,75 @@ export function ToursList() {
     );
   }
 
-  const tours = data?.data?.tours || [];
+  const drivers = data?.data?.drivers || [];
 
   return (
     <div className="container mx-auto px-4 space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-bold">ტურები</h1>
-        <Button onClick={handleCreateTour} className="flex items-center gap-2">
+        <h1 className="text-xl font-bold">მძღოლები</h1>
+        <Button
+          onClick={handleCreateDriver}
+          className="flex items-center gap-2"
+        >
           <Plus className="h-5 w-5" />
-          <span>ტურის დამატება</span>
+          <span>მძღოლის დამატება</span>
         </Button>
       </div>
-      {tours.length === 0 && !error ? (
+      {drivers.length === 0 && !error ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 rounded-lg">
-          <p className="text-gray-500 text-lg mb-4">ტურები არ მოიძებნა</p>
-          <Button onClick={handleCreateTour} variant="outline">
-            დაამატე პირველი ტური
+          <p className="text-gray-500 text-lg mb-4">მძღოლები არ მოიძებნა</p>
+          <Button onClick={handleCreateDriver} variant="outline">
+            დაამატე პირველი მძღოლი
           </Button>
         </div>
       ) : (
         <div className="space-y-4">
           <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-gray-100 rounded-lg font-medium text-sm text-gray-600">
             <div className="col-span-1">სურათი</div>
-            <div className="col-span-3">ტურის დასახელება</div>
-            <div className="col-span-3">დანიშნულების ადგილი</div>
-            <div className="col-span-2">ხანგრძლივობა</div>
-            <div className="col-span-2">ფასი</div>
+            <div className="col-span-5">სახელი</div>
+            <div className="col-span-4">გვარი</div>
+            <div className="col-span-2">მოქმედებები</div>
           </div>
 
           <div className="space-y-4">
-            {tours.map((tour: Tour) => (
+            {drivers.map((driver: Driver) => (
               <Card
-                key={tour.id}
+                key={driver.id}
                 className="overflow-hidden hover:shadow-md transition-shadow"
               >
                 <CardContent className="p-4">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     <div className="col-span-1">
                       <div className="relative h-12 w-12 rounded-lg overflow-hidden">
-                        {tour.image ? (
+                        {driver.image ? (
                           <Image
-                            src={`https://api.daudtravel.com${tour.image}`}
-                            alt={tour.localizations[0]?.name || "Tour image"}
+                            src={`https://api.daudtravel.com${driver.image}`}
+                            alt={`${driver.firstName} ${driver.lastName}`}
                             fill
                             className="object-cover rounded-full"
                             priority={false}
                           />
                         ) : (
                           <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                            <MapPin className="h-6 w-6 text-gray-400" />
+                            <User className="h-6 w-6 text-gray-400" />
                           </div>
                         )}
                       </div>
                     </div>
 
-                    <div className="col-span-3">
+                    <div className="col-span-5">
                       <span className="font-semibold">
-                        {tour.localizations[0]?.name || "Unnamed Tour"}
+                        {driver.firstName || "უცნობი"}
                       </span>
                     </div>
 
-                    <div className="col-span-3 flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-sm truncate">
-                        {tour.localizations[0]?.destination ||
-                          "არ არის მითითებული"}
+                    <div className="col-span-4">
+                      <span className="font-semibold">
+                        {driver.lastName || "უცნობი"}
                       </span>
                     </div>
 
-                    <div className="col-span-2 flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-sm">
-                        {tour.duration
-                          ? `${tour.duration} დღე`
-                          : "არ არის მითითებული"}
-                      </span>
-                    </div>
-
-                    <div className="col-span-2 font-medium">
-                      {tour.total_price ? (
-                        `${tour.total_price}₾`
-                      ) : (
-                        <span className="text-gray-500">
-                          არ არის მითითებული
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="col-span-1 flex justify-end">
+                    <div className="col-span-2 flex justify-end">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
@@ -159,15 +147,15 @@ export function ToursList() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>ტურის წაშლა</AlertDialogTitle>
+                            <AlertDialogTitle>მძღოლის წაშლა</AlertDialogTitle>
                             <AlertDialogDescription>
-                              დარწმუნებული ხართ რომ გსურთ ტურის წაშლა?
+                              დარწმუნებული ხართ რომ გსურთ მძღოლის წაშლა?
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>გაუქმება</AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => handleDeleteTour(tour.id)}
+                              onClick={() => handleDeleteDriver(driver.id)}
                               className="bg-red-500 hover:bg-red-600"
                             >
                               წაშლა
@@ -179,7 +167,7 @@ export function ToursList() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEditTour(tour.id)}
+                        onClick={() => handleEditDriver(driver.id)}
                         className="text-gray-600 hover:text-black"
                       >
                         <Pencil className="h-4 w-4" />
@@ -196,4 +184,4 @@ export function ToursList() {
   );
 }
 
-export default ToursList;
+export default DriversList;

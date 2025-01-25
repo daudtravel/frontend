@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
         pathname: "/uploads/**",
       },
     ],
-    domains: ["localhost"],
+    domains: ["localhost", "api.daudtravel.com"],
   },
   async rewrites() {
     return [

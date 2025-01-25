@@ -16,7 +16,7 @@ export default function BurgerMenu() {
   const closeSheet = () => setIsOpen(false);
 
   return (
-    <header className="w-full flex md:hidden items-center">
+    <header className="w-full flex lg:hidden items-center">
       <div className="ml-auto flex items-center space-x-4">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>

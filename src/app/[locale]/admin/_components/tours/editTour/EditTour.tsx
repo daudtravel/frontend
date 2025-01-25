@@ -63,7 +63,6 @@ export function EditTour({ params }: { params: { id: string } }) {
           gallery: tour.gallery || [],
           public: tour.public,
         };
-        console.log(formData);
         form.reset(formData);
         setMainImagePreview(tour.image);
         setGalleryPreviews(tour.gallery || []);
@@ -96,8 +95,6 @@ export function EditTour({ params }: { params: { id: string } }) {
 
   const removeGalleryImage = (index: number) => {
     const imageToRemove = galleryPreviews[index];
-
-    // If the image is not a base64 string (i.e., it's a server path), add it to deletedImages
     if (!imageToRemove.startsWith("data:image")) {
       setDeletedImages((prev) => [...prev, imageToRemove]);
     }
@@ -241,8 +238,6 @@ export function EditTour({ params }: { params: { id: string } }) {
                 </div>
               ))}
             </div>
-
-            {/* Tour Details */}
             <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
@@ -281,7 +276,6 @@ export function EditTour({ params }: { params: { id: string } }) {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="reservation_price"
@@ -301,8 +295,6 @@ export function EditTour({ params }: { params: { id: string } }) {
                 )}
               />
             </div>
-
-            {/* Images */}
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -327,10 +319,10 @@ export function EditTour({ params }: { params: { id: string } }) {
                               : `https://api.daudtravel.com${mainImagePreview}`
                           }
                           alt="Main image preview"
-                          width={800} // Increased from 400
-                          height={600} // Increased from 300
+                          width={800}
+                          height={600}
                           className="w-full h-auto max-h-48 object-cover rounded"
-                          quality={100} // Added quality prop
+                          quality={100}
                         />
                       </div>
                     )}
@@ -338,7 +330,6 @@ export function EditTour({ params }: { params: { id: string } }) {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="gallery"
@@ -354,7 +345,6 @@ export function EditTour({ params }: { params: { id: string } }) {
                         disabled={isSubmitting}
                       />
                     </FormControl>
-
                     {galleryPreviews.length > 0 && (
                       <div className="mt-2 grid grid-cols-3 gap-2 h-32">
                         {galleryPreviews.map((preview, index) => (
@@ -382,13 +372,11 @@ export function EditTour({ params }: { params: { id: string } }) {
                         ))}
                       </div>
                     )}
-
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>

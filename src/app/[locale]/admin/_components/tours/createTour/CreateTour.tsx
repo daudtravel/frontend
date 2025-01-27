@@ -22,11 +22,12 @@ import {
 import { Textarea } from "@/src/components/ui/textarea";
 import { Loader2, X } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { TourFormData, useCreateTourValidator } from "./CreateTourValidator";
 import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CreateTour = () => {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -36,7 +37,9 @@ const CreateTour = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
   const form = useCreateTourValidator();
-
+  const queryClient = useQueryClient();
+  const params = useParams();
+  const locale = params.locale as string;
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -69,6 +72,7 @@ const CreateTour = () => {
       await axiosInstance.post(`/create_tour`, data);
 
       setSuccessMessage("ტური წარმატებით შეიქმნა");
+      await queryClient.invalidateQueries({ queryKey: ["transfers", locale] });
       form.reset();
       setMainImagePreview(null);
       setGalleryPreviews([]);

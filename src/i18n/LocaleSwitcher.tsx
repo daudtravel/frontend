@@ -41,7 +41,9 @@ export default function LocaleSwitcher() {
 
   const handleLocaleChange = (newLocale: Locale) => {
     const pathWithoutLocale = pathname.replace(`/${currentLocale}`, "");
-    const newPath = `/${newLocale}${pathWithoutLocale || ""}`;
+    const searchParams = new URLSearchParams(window.location.search).toString();
+    const queryString = searchParams ? `?${searchParams}` : "";
+    const newPath = `/${newLocale}${pathWithoutLocale || ""}${queryString}`;
     router.replace(newPath);
   };
 

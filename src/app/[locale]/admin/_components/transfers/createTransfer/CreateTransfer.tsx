@@ -19,12 +19,13 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
-  TransferFormData,
+  CreateTransferFormData,
   useCreateTransferValidator,
 } from "./CreateTransferValidator";
 import { transfersAPI } from "@/src/routes/transfers";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CreateTransfer = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,14 +33,18 @@ const CreateTransfer = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
   const form = useCreateTransferValidator();
+  const queryClient = useQueryClient();
+  const params = useParams();
+  const locale = params.locale as string;
 
-  const onSubmit = async (data: TransferFormData) => {
+  const onSubmit = async (data: CreateTransferFormData) => {
     try {
       setIsSubmitting(true);
       setErrorMessage(null);
       setSuccessMessage(null);
       await transfersAPI.post(data);
       setSuccessMessage("ტრანსფერი წარმატებით შეიქმნა");
+      await queryClient.invalidateQueries({ queryKey: ["transfers", locale] });
       form.reset();
       router.push(`?transfers=all`);
     } catch (error) {

@@ -1,9 +1,13 @@
-import { TransferFormData } from "../app/[locale]/admin/_components/transfers/createTransfer/CreateTransferValidator";
+ 
+import { CreateTransferFormData } from "../app/[locale]/admin/_components/transfers/createTransfer/CreateTransferValidator";
+import { TransferFormData } from "../app/[locale]/admin/_components/transfers/editTransfer/EditTransferValidator";
 import { axiosInstance } from "../utlis/axiosInstance";
 
 export const transfersAPI = {
-  get: async () => {
-    const response = await axiosInstance.get(`/transfers`);
+  get: async (locale: string) => {
+    const response = await axiosInstance.get(`/transfers`, {
+      params: { locale }
+    });
     return response.data;
   },
   getById: async (id: string,) => {
@@ -12,10 +16,10 @@ export const transfersAPI = {
   },
   
   delete: async (id: string) => {
-    const response = await axiosInstance.delete(`/transfers/${id}`);
+    const response = await axiosInstance.delete(`/delete_transfer/${id}`);
     return response.data;
   },
-  post: async (data: TransferFormData) => {
+  post: async (data: CreateTransferFormData) => {
     const response = await axiosInstance.post(`/create_transfers`, data);
     return response.data;
   },

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Menu, UserCheck, Truck, Users, X } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ToursList } from "./tours/toursList/ToursList";
 import { TransfersList } from "./transfers/transfersList/TransfersList";
 import CreateTour from "./tours/createTour/CreateTour";
@@ -10,24 +10,32 @@ import { EditTour } from "./tours/editTour/EditTour";
 import CreateTransfer from "./transfers/createTransfer/CreateTransfer";
 import { DriversList } from "./drivers/driversList/DriversList";
 import EditTransfer from "./transfers/editTransfer/EditTransfer";
-// import CreateDriver from "./drivers/createDriver/CreateDriver";
+import CreateDriver from "./drivers/createDriver/CreateDriver";
 
 export const ClientWrapper = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+
   const tours = searchParams.get("tours");
   const transfers = searchParams.get("transfers");
   const drivers = searchParams.get("drivers");
 
   useEffect(() => {
     if (!tours && !transfers && !drivers) {
-      router.push("?tours=all");
+      // Keep the current pathname (which includes locale) and only add the query parameter
+      router.push(`${pathname}?tours=all`);
     }
-  }, [tours, transfers, drivers, router]);
+  }, [tours, transfers, drivers, router, pathname]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // Helper function to navigate while preserving the current pathname
+  const navigate = (query: string) => {
+    router.push(`${pathname}${query}`);
   };
 
   const renderContent = () => {
@@ -47,7 +55,6 @@ export const ClientWrapper = () => {
     if (transfers === "createTransfer") {
       return <CreateTransfer />;
     }
-
     if (transfers && transfers !== "all" && transfers !== "createTransfer") {
       return <EditTransfer params={{ id: transfers }} />;
     }
@@ -55,13 +62,10 @@ export const ClientWrapper = () => {
     if (drivers === "all") {
       return <DriversList />;
     }
-    // if (drivers === "createDriver") {
-    //   return <CreateDriver />;
-    // }
-    // Uncomment if needed
-    // if (drivers && drivers !== "all" && drivers !== "createDriver") {
-    //   return <EditDriver params={{ id: drivers }} />;
-    // }
+
+    if (drivers === "createDriver") {
+      return <CreateDriver />;
+    }
   };
 
   return (
@@ -85,7 +89,7 @@ export const ClientWrapper = () => {
 
         <nav className="mt-4 space-y-1">
           <button
-            onClick={() => router.push("?tours=all")}
+            onClick={() => navigate("?tours=all")}
             className={`flex w-full items-center p-4 hover:bg-gray-100 ${
               tours ? "bg-gray-100" : ""
             }`}
@@ -95,7 +99,7 @@ export const ClientWrapper = () => {
           </button>
 
           <button
-            onClick={() => router.push("?transfers=all")}
+            onClick={() => navigate("?transfers=all")}
             className={`flex w-full items-center p-4 hover:bg-gray-100 ${
               transfers ? "bg-gray-100" : ""
             }`}
@@ -105,7 +109,7 @@ export const ClientWrapper = () => {
           </button>
 
           <button
-            onClick={() => router.push("?drivers=all")}
+            onClick={() => navigate("?drivers=all")}
             className={`flex w-full items-center p-4 hover:bg-gray-100 ${
               drivers ? "bg-gray-100" : ""
             }`}

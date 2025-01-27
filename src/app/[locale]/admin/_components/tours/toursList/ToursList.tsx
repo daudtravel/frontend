@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Plus, Loader2, Pencil, MapPin, Clock, Trash } from "lucide-react";
 import Image from "next/image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16,23 +16,20 @@ import {
   AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
 import { Tour } from "@/src/types/tours";
-import { axiosInstance } from "@/src/utlis/axiosInstance";
-
-const api = {
-  fetchTours: async () => {
-    const response = await axiosInstance.get(`/toursAll`);
-    return response.data;
-  },
-};
+import { toursAPI } from "@/src/routes/tours";
 
 export function ToursList() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const params = useParams();
+  const locale = params.locale as string;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tours"],
-    queryFn: api.fetchTours,
+    queryKey: ["tours", locale],
+    queryFn: () => toursAPI.get(locale || "ka"),
   });
+
+  console.log(data);
 
   const handleEditTour = (tourId: string) => {
     router.push(`?tours=${tourId}`);
@@ -44,7 +41,7 @@ export function ToursList() {
 
   const handleDeleteTour = async (id: string) => {
     try {
-      await axiosInstance.delete(`/tours/${id}`);
+      await toursAPI.delete(id);
       queryClient.invalidateQueries({ queryKey: ["tours"] });
     } catch (error) {
       console.error("Failed to delete tour:", error);

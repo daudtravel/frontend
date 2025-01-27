@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Plus, Loader2, Pencil, User, Trash } from "lucide-react";
 import Image from "next/image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
+import { driversAPI } from "@/src/routes/drivers";
 
 interface Driver {
   id: string;
@@ -25,20 +26,15 @@ interface Driver {
   image?: string;
 }
 
-const api = {
-  fetchDrivers: async () => {
-    const response = await axiosInstance.get(`/driversAll`);
-    return response.data;
-  },
-};
-
 export function DriversList() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const params = useParams();
+  const locale = params.locale as string;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["drivers"],
-    queryFn: api.fetchDrivers,
+    queryKey: ["drivers", locale],
+    queryFn: () => driversAPI.get(locale),
   });
 
   const handleEditDriver = (driverId: string) => {
@@ -51,7 +47,7 @@ export function DriversList() {
 
   const handleDeleteDriver = async (id: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/drivers/${id}`);
+      await driversAPI.delete(id);
       queryClient.invalidateQueries({ queryKey: ["drivers"] });
     } catch (error) {
       console.error("Failed to delete driver:", error);
@@ -67,7 +63,7 @@ export function DriversList() {
   }
 
   const drivers = data?.data?.drivers || [];
-
+  console.log(drivers);
   return (
     <div className="container mx-auto px-4 space-y-6">
       <div className="flex justify-between items-center mb-6">

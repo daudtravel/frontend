@@ -27,10 +27,10 @@ const TransfersSchema = z.object({
   date: z.string(),
 });
 
-export type TransferFormData = z.infer<typeof TransfersSchema>;
+export type CreateTransferFormData = z.infer<typeof TransfersSchema>;
 
 export const useCreateTransferValidator = () => {
-  return useForm<TransferFormData>({
+  return useForm<CreateTransferFormData>({
     resolver: zodResolver(TransfersSchema),
     defaultValues: {
       localizations: [

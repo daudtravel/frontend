@@ -22,7 +22,6 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   TransferFormData,
-
   SUPPORTED_LOCALES,
   useEditTransferValidator,
 } from "./EditTransferValidator";
@@ -41,13 +40,19 @@ export function EditTransfer({ params }: { params: { id: string } }) {
       try {
         setIsLoading(true);
         const response = await transfersAPI.getById(params.id);
-        const transfer = response.data.data.transfer;
+
+        const transfer = response.data;
+        console.log(transfer);
 
         const formData: TransferFormData = {
           localizations: SUPPORTED_LOCALES.map((locale) => ({
             locale,
-            start_location: transfer.localizations[0]?.start_location || "",
-            end_location: transfer.localizations[0]?.end_location || "",
+            start_location:
+              transfer.localizations.find((loc: { locale: string }) => loc.locale === locale)
+                ?.start_location || "",
+            end_location:
+              transfer.localizations.find((loc: { locale: string }) => loc.locale === locale)
+                ?.end_location || "",
           })),
           total_price: transfer.total_price,
           reservation_price: transfer.reservation_price,

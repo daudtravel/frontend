@@ -6,8 +6,8 @@ export const SUPPORTED_LOCALES = ["en", "ka", "ru", "ar", "tr"] as const;
 
 const TransfersLocalizationSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALES),
-  start_location: z.string().min(1, "Start location is required"),
-  end_location: z.string().min(1, "End location is required"),
+  start_location: z.string().optional(),
+  end_location: z.string().optional(),
 });
 
 const TransfersSchema = z.object({

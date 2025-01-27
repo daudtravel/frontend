@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const TranslationSchema = z.object({
+const LocalizationsSchema = z.object({
   locale: z.string(),
   name: z.string().min(1, "სახელი სავალდებულოა"),
   destination: z.string().min(1, "დანიშნულების ადგილი სავალდებულოა"),
@@ -11,7 +11,7 @@ const TranslationSchema = z.object({
 
 const TourSchema = z.object({
   localizations: z
-    .array(TranslationSchema)
+    .array(LocalizationsSchema)
     .length(1, "ლოკალიზაცია სავალდებულოა"),
   duration: z
     .number({
@@ -36,8 +36,6 @@ const TourSchema = z.object({
 });
 
 export type TourFormData = z.infer<typeof TourSchema>;
-
-// Rename function to start with "use" to follow React Hook naming conventions
 export const useCreateTourValidator = () => {
   return useForm<TourFormData>({
     resolver: zodResolver(TourSchema),
@@ -60,4 +58,4 @@ export const useCreateTourValidator = () => {
   });
 };
 
-export type { TranslationSchema, TourSchema };
+export type { LocalizationsSchema, TourSchema };

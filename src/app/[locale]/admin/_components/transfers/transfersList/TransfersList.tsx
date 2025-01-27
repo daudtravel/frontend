@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Plus,
   Loader2,
@@ -27,11 +27,14 @@ import { transfersAPI } from "@/src/routes/transfers";
 export function TransfersList() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const params = useParams();
+  const locale = params.locale as string;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["transfers"],
-    queryFn: transfersAPI.get,
+    queryKey: ["transfers", locale],
+    queryFn: () => transfersAPI.get(locale),
   });
+
   const transfers = data?.data || [];
 
   const handleDeleteTransfer = async (id: string) => {

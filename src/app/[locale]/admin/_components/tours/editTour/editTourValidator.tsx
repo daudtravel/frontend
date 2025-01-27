@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 export const SUPPORTED_LOCALES = ["en", "ka", "ru", "ar", "tr"] as const;
 
-const TranslationSchema = z.object({
+const LocalizationsSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALES),
   name: z.string().optional(),
   destination: z.string().optional(),
@@ -12,7 +12,7 @@ const TranslationSchema = z.object({
 });
 
 const TourSchema = z.object({
-  localizations: z.array(TranslationSchema),
+  localizations: z.array(LocalizationsSchema),
   duration: z
     .number({
       invalid_type_error: "Duration must be a number",
@@ -60,4 +60,4 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
   });
 };
 
-export type { TranslationSchema, TourSchema };
+export type { LocalizationsSchema, TourSchema };

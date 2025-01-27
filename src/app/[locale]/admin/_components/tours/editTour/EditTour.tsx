@@ -49,12 +49,19 @@ export function EditTour({ params }: { params: { id: string } }) {
         setIsLoading(true);
         const response = await axiosInstance.get(`/tours/${params.id}`);
         const tour = response.data.data.tour;
+        console.log(tour, "here");
         const formData: TourFormData = {
           localizations: SUPPORTED_LOCALES.map((locale) => ({
             locale,
-            name: tour.translations[locale]?.name || "",
-            destination: tour.translations[locale]?.destination || "",
-            description: tour.translations[locale]?.description || "",
+            name:
+              tour.localizations.find((l: any) => l.locale === locale)?.name ||
+              "",
+            destination:
+              tour.localizations.find((l: any) => l.locale === locale)
+                ?.destination || "",
+            description:
+              tour.localizations.find((l: any) => l.locale === locale)
+                ?.description || "",
           })),
           duration: tour.duration,
           total_price: tour.total_price,
@@ -142,6 +149,8 @@ export function EditTour({ params }: { params: { id: string } }) {
       setIsSubmitting(false);
     }
   };
+
+  console.log(form.getValues(), "this");
 
   if (isLoading) {
     return (

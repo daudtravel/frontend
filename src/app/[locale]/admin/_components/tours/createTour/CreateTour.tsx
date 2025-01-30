@@ -40,6 +40,7 @@ const CreateTour = () => {
   const queryClient = useQueryClient();
   const params = useParams();
   const locale = params.locale as string;
+
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -69,15 +70,17 @@ const CreateTour = () => {
       setErrorMessage(null);
       setSuccessMessage(null);
 
-      await axiosInstance.post(`/create_tour`, data);
+      const response = await axiosInstance.post(`/create_tour`, data);
+      console.log(response);
 
       setSuccessMessage("ტური წარმატებით შეიქმნა");
-      await queryClient.invalidateQueries({ queryKey: ["transfers", locale] });
+      await queryClient.invalidateQueries({ queryKey: ["tours", locale] });
       form.reset();
       setMainImagePreview(null);
       setGalleryPreviews([]);
       router.push(`?tours=all`);
     } catch (error) {
+      console.log(error);
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data.message || "An error occurred";
         setErrorMessage(errorMessage);
@@ -111,13 +114,13 @@ const CreateTour = () => {
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="localizations.0.name"
+                  name="localizations.0.start_location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ტურის სახელი</FormLabel>
+                      <FormLabel>საწყისი ლოკაცია</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="შეიყვანეთ ტურის სახელი"
+                          placeholder="შეიყვანეთ საწყისი ლოკაცია"
                           {...field}
                           disabled={isSubmitting}
                         />
@@ -128,14 +131,22 @@ const CreateTour = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="localizations.0.destination"
+                  name="localizations.0.next_location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>დანიშნულების ადგილი</FormLabel>
+                      <FormLabel>შემდეგი ლოკაციები</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="შეიყვანეთ დანიშნულების ადგილი"
-                          {...field}
+                          placeholder="მაგ: თბილისი, ბათუმი"
+                          value={field.value?.join(", ") || ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                .split(",")
+                                .map((s) => s.trim())
+                                .filter(Boolean)
+                            )
+                          }
                           disabled={isSubmitting}
                         />
                       </FormControl>
@@ -144,6 +155,7 @@ const CreateTour = () => {
                   )}
                 />
               </div>
+
               <FormField
                 control={form.control}
                 name="localizations.0.description"
@@ -169,13 +181,12 @@ const CreateTour = () => {
                 name="duration"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>ხანგრძლივობა (დღე)</FormLabel>
+                    <FormLabel>ხანგრძლივობა</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
-                        placeholder="ტურის ხანგრძლივობა"
+                        type="text"
+                        placeholder="მაგ: 3 დღე"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
                         disabled={isSubmitting}
                       />
                     </FormControl>

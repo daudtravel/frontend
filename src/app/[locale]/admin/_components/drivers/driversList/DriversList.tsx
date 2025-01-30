@@ -2,7 +2,6 @@ import { useParams, useRouter } from "next/navigation";
 import { Plus, Loader2, Pencil, User, Trash } from "lucide-react";
 import Image from "next/image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -16,7 +15,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
-import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { driversAPI } from "@/src/routes/drivers";
 
 interface Driver {

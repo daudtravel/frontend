@@ -5,6 +5,7 @@ export const toursAPI = {
         const response = await axiosInstance.get(`/toursAll`, {
             params: { locale }
           });
+          
       return response.data;
     },
     delete: async (id: string) => {

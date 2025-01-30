@@ -5,6 +5,12 @@ export interface PaginationInfo {
   totalPages: number;
 }
 
+export interface ToursQueryParams {
+  start_location: string | undefined;
+  minPrice: number;
+  maxPrice: number;
+}
+
 export interface GetToursResponse {
   message: string;
   data: {
@@ -13,27 +19,20 @@ export interface GetToursResponse {
   };
 }
 
-
-export interface ToursQueryParams {
-  destination: string | undefined;
-  minPrice: number;
-  maxPrice: number;
-}
-
 export interface Tour {
   id: string;
   localizations: {
     locale: string;
-    name: string;
-    destination: string;
-    description: string;
+    start_location?: string;
+    next_location?: string[];
+    description?: string;
   }[];
-  duration: number;
+  duration?: string;
   total_price: number;
   reservation_price: number;
-  image: string;
-  gallery: string[];
   public: boolean;
+  image: string;
+  gallery?: string[];
   created_at: Date;
   updated_at: Date;
 }

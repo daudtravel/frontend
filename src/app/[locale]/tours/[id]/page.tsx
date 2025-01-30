@@ -60,7 +60,7 @@ const TourDetails = () => {
   }
 
   const destination =
-    data.localizations?.[0]?.destination || "Destination not available";
+    data.localizations?.[0]?.start_location || "Destination not available";
   const description =
     data.localizations?.[0]?.description || "No description available";
   const gallery = data.gallery || [];
@@ -179,7 +179,7 @@ const TourDetails = () => {
                 Gallery
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
-                {data.gallery.map((item, index) => (
+                {data.gallery && data?.gallery.map((item, index) => (
                   <PhotoView
                     key={index}
                     src={`https://api.daudtravel.com${item}`}

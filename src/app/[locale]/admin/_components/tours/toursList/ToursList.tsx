@@ -29,8 +29,6 @@ export function ToursList() {
     queryFn: () => toursAPI.get(locale || "ka"),
   });
 
-  console.log(data);
-
   const handleEditTour = (tourId: string) => {
     router.push(`?tours=${tourId}`);
   };
@@ -58,15 +56,17 @@ export function ToursList() {
 
   const tours = data?.data?.tours || [];
 
+
   return (
-    <div className="container mx-auto px-4 space-y-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-bold">ტურები</h1>
+    <div className="container mx-auto px-4 py-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">ტურები</h1>
         <Button onClick={handleCreateTour} className="flex items-center gap-2">
           <Plus className="h-5 w-5" />
           <span>ტურის დამატება</span>
         </Button>
       </div>
+
       {tours.length === 0 && !error ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 rounded-lg">
           <p className="text-gray-500 text-lg mb-4">ტურები არ მოიძებნა</p>
@@ -76,116 +76,136 @@ export function ToursList() {
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-gray-100 rounded-lg font-medium text-sm text-gray-600">
+          <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-100 rounded-lg font-medium text-sm text-gray-600">
             <div className="col-span-1">სურათი</div>
-            <div className="col-span-3">ტურის დასახელება</div>
-            <div className="col-span-3">დანიშნულების ადგილი</div>
-            <div className="col-span-2">ხანგრძლივობა</div>
+            <div className="col-span-3">საწყისი ლოკაცია</div>
+            <div className="col-span-3">შემდეგი ლოკაციები</div>
+            <div className="col-span-2">დრო</div>
             <div className="col-span-2">ფასი</div>
+            <div className="col-span-1 text-right">მოქმედებები</div>
           </div>
 
           <div className="space-y-4">
-            {tours.map((tour: Tour) => (
-              <Card
-                key={tour.id}
-                className="overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <CardContent className="p-4">
-                  <div className="grid grid-cols-12 gap-4 items-center">
-                    <div className="col-span-1">
-                      <div className="relative h-12 w-12 rounded-lg overflow-hidden">
-                        {tour.image ? (
-                          <Image
-                            src={`https://api.daudtravel.com${tour.image}`}
-                            alt={tour.localizations[0]?.name || "Tour image"}
-                            fill
-                            className="object-cover rounded-full"
-                            priority={false}
-                          />
-                        ) : (
-                          <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                            <MapPin className="h-6 w-6 text-gray-400" />
+            {tours.map((tour: Tour) => {
+              const mainLocalization = tour.localizations[0] || {};
+
+              return (
+                <Card
+                  key={tour.id}
+                  className="overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                      <div className="col-span-1">
+                        <div className="relative h-14 w-14 rounded-lg overflow-hidden">
+                          {tour.image ? (
+                            <Image
+                              src={`https://api.daudtravel.com${tour.image}`}
+                              alt={
+                                mainLocalization.start_location || "Tour image"
+                              }
+                              fill
+                              className="object-cover"
+                              priority={false}
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-gray-200 flex items-center justify-center">
+                              <MapPin className="h-6 w-6 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-span-3">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <span className="font-medium">
+                            {mainLocalization.start_location ||
+                              "არ არის მითითებული"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="col-span-3">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <span className="text-sm text-gray-600">
+                            {mainLocalization.next_location?.join(", ") ||
+                              "არ არის მითითებული"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="col-span-2">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <span className="text-sm text-gray-600">
+                            {tour.duration || "არ არის მითითებული"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="col-span-2">
+                        <div className="space-y-1">
+                          <div className="font-medium">
+                            {tour.total_price ? (
+                              `${tour.total_price}₾`
+                            ) : (
+                              <span className="text-gray-500">
+                                არ არის მითითებული
+                              </span>
+                            )}
                           </div>
-                        )}
+                          <div className="text-sm text-gray-500">
+                            სარეზერვო: {tour.reservation_price}₾
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col-span-1 flex justify-end gap-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditTour(tour.id)}
+                          className="text-gray-600 hover:text-gray-900"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-gray-600 hover:text-red-600"
+                            >
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>ტურის წაშლა</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                დარწმუნებული ხართ რომ გსურთ ტურის წაშლა?
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>გაუქმება</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteTour(tour.id)}
+                                className="bg-red-500 hover:bg-red-600"
+                              >
+                                წაშლა
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
-
-                    <div className="col-span-3">
-                      <span className="font-semibold">
-                        {tour.localizations[0]?.name || "Unnamed Tour"}
-                      </span>
-                    </div>
-
-                    <div className="col-span-3 flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-sm truncate">
-                        {tour.localizations[0]?.destination ||
-                          "არ არის მითითებული"}
-                      </span>
-                    </div>
-
-                    <div className="col-span-2 flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-sm">
-                        {tour.duration
-                          ? `${tour.duration} დღე`
-                          : "არ არის მითითებული"}
-                      </span>
-                    </div>
-
-                    <div className="col-span-2 font-medium">
-                      {tour.total_price ? (
-                        `${tour.total_price}₾`
-                      ) : (
-                        <span className="text-gray-500">
-                          არ არის მითითებული
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="col-span-1 flex justify-end">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-gray-600 hover:text-black"
-                          >
-                            <Trash className="h-4 w-4 text-red-700" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>ტურის წაშლა</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              დარწმუნებული ხართ რომ გსურთ ტურის წაშლა?
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>გაუქმება</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDeleteTour(tour.id)}
-                              className="bg-red-500 hover:bg-red-600"
-                            >
-                              წაშლა
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditTour(tour.id)}
-                        className="text-gray-600 hover:text-black"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       )}

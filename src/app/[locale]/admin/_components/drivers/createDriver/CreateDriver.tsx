@@ -27,6 +27,7 @@ import {
 
 import { useQueryClient } from "@tanstack/react-query";
 import { driversAPI } from "@/src/routes/drivers";
+import Image from "next/image";
 
 const CreateDriver = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -131,6 +132,7 @@ const CreateDriver = () => {
             <FormField
               control={form.control}
               name="image"
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               render={({ field: { onChange, ...field } }) => (
                 <FormItem>
                   <FormLabel>ფოტო</FormLabel>
@@ -145,7 +147,8 @@ const CreateDriver = () => {
                       />
                       {imagePreview && (
                         <div className="mt-2">
-                          <img
+                          <Image
+                            fill
                             src={imagePreview}
                             alt="Preview"
                             className="w-32 h-32 object-cover rounded"

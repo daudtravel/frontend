@@ -114,7 +114,7 @@ export default function ToursSection() {
                       <Link href={`/tours/${tour.id}`}>
                         <Image
                           src={`https://api.daudtravel.com${tour.image}`}
-                          alt={tour.localizations[0].destination}
+                          alt={tour?.localizations[0].start_location || "alt"}
                           fill
                           className="object-cover"
                         />
@@ -133,7 +133,7 @@ export default function ToursSection() {
                             >
                               <Location className="fill-white w-5 h-5" />
                               <h3 className="text-white text-lg font-semibold">
-                                {tour.localizations[0].destination}
+                                {tour.localizations[0].start_location}
                               </h3>
                             </motion.div>
                           </div>

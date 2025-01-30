@@ -28,7 +28,7 @@ const TourCard = ({ tour }: { tour: Tour }) => {
           className={`object-cover transition-opacity duration-300 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
-          alt={tour.localizations[0].destination}
+          alt={tour.localizations[0].start_location || "alt"}
           onLoad={() => setImageLoaded(true)}
           onError={() => setImageError(true)}
           priority={false}
@@ -44,7 +44,7 @@ const TourCard = ({ tour }: { tour: Tour }) => {
         <div className="flex items-center">
           <MapPin className="w-6 h-6 mr-2 text-main" />
           <span className="text-sm md:text-xl line-clamp-1">
-            {tour.localizations[0].destination}
+            {tour.localizations[0].start_location}
           </span>
         </div>
         <div className="flex flex-row justify-between w-full text-gray-600 items-center">
@@ -87,13 +87,13 @@ export default function ToursSection() {
   const searchParams = useSearchParams();
   const params = useParams();
   const locale = params.locale;
-  const urlDestination = searchParams.get("destination") || undefined;
+  const urlStartLocation = searchParams.get("start_location") || undefined;
   const urlMinPrice = parseFloat(searchParams.get("minPrice") || "0");
   const urlMaxPrice = parseFloat(searchParams.get("maxPrice") || "5000");
   const [showFilters, setShowFilters] = useState(false);
 
   const [queryParams, setQueryParams] = useState<ToursQueryParams>({
-    destination: urlDestination,
+    start_location: urlStartLocation,
     minPrice: urlMinPrice,
     maxPrice: urlMaxPrice,
   });
@@ -102,14 +102,14 @@ export default function ToursSection() {
     queryKey: [
       "tours",
       "list",
-      queryParams.destination,
+      queryParams.start_location,
       queryParams.minPrice,
       queryParams.maxPrice,
     ],
     queryFn: async () => {
       const response = await axiosInstance.get("/tours", {
         params: {
-          destination: queryParams.destination,
+          start_location: queryParams.start_location,
           locale,
           minPrice: queryParams.minPrice,
           maxPrice: queryParams.maxPrice,
@@ -136,19 +136,19 @@ export default function ToursSection() {
   });
 
   const handleSearch = (filters: {
-    destination?: string;
+    start_location?: string;
     minPrice: number;
     maxPrice: number;
   }) => {
     setQueryParams({
-      destination: filters.destination || undefined,
+      start_location: filters.start_location || undefined,
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
     });
 
     const params = new URLSearchParams();
-    if (filters.destination) {
-      params.set("destination", filters.destination);
+    if (filters.start_location) {
+      params.set("start_location", filters.start_location);
     }
     params.set("minPrice", filters.minPrice.toString());
     params.set("maxPrice", filters.maxPrice.toString());
@@ -158,7 +158,7 @@ export default function ToursSection() {
 
   const handleReset = () => {
     setQueryParams({
-      destination: undefined,
+      start_location: undefined,
       minPrice: 0,
       maxPrice: 5000,
     });
@@ -185,7 +185,7 @@ export default function ToursSection() {
           }`}
         >
           <TourFilters
-            initialDestination={urlDestination}
+            urlStartLocation={urlStartLocation}
             initialMinPrice={urlMinPrice}
             initialMaxPrice={urlMaxPrice}
             filtersData={filtersData}

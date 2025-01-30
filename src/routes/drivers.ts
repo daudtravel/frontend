@@ -9,6 +9,7 @@ export const driversAPI = {
     });
     return response.data;
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   post: async (data: any) => {
     const response = await axiosInstance.post(`/add_driver`, data);
     return response.data;

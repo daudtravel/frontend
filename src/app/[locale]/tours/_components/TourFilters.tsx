@@ -13,13 +13,13 @@ import { Tour } from "@/src/types/tours";
 import FilterSectionLoader from "@/src/components/shared/loader/FilterSectionLoader";
 
 interface FilterValues {
-  destination?: string;
+  start_location?: string;
   minPrice: number;
   maxPrice: number;
 }
 
 interface TourFiltersProps {
-  initialDestination?: string;
+  urlStartLocation?: string;
   initialMinPrice: number;
   initialMaxPrice: number;
   filtersData?: { data?: { tours?: Tour[] } };
@@ -32,7 +32,7 @@ interface TourFiltersProps {
 }
 
 export default function TourFilters({
-  initialDestination,
+  urlStartLocation,
   initialMinPrice,
   initialMaxPrice,
   filtersData,
@@ -42,20 +42,20 @@ export default function TourFilters({
 }: TourFiltersProps) {
   const [selectedDestination, setSelectedDestination] = useState<
     string | undefined
-  >(initialDestination || "all");
+  >(urlStartLocation || "all");
   const [priceRange, setPriceRange] = useState<[number, number]>([
     initialMinPrice,
     initialMaxPrice,
   ]);
 
   useEffect(() => {
-    setSelectedDestination(initialDestination || "all");
+    setSelectedDestination(urlStartLocation || "all");
     setPriceRange([initialMinPrice, initialMaxPrice]);
-  }, [initialDestination, initialMinPrice, initialMaxPrice]);
+  }, [urlStartLocation, initialMinPrice, initialMaxPrice]);
 
   const handleSearch = () => {
     onSearch({
-      destination:
+      start_location:
         selectedDestination === "all" ? undefined : selectedDestination,
       minPrice: priceRange[0],
       maxPrice: priceRange[1],
@@ -72,7 +72,7 @@ export default function TourFilters({
   const uniqueDestinations = Array.from(
     new Set(
       tours
-        .map((tour) => tour.localizations[0]?.destination)
+        .map((tour) => tour.localizations[0]?.start_location)
         .filter((destination): destination is string => !!destination)
     )
   ).sort();

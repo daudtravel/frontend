@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const LocalizationsSchema = z.object({
   locale: z.string(),
-  name: z.string().min(1, "სახელი სავალდებულოა"),
-  destination: z.string().min(1, "დანიშნულების ადგილი სავალდებულოა"),
+  start_location: z.string().min(1, "საწყისი ლოკაცია სავალდებულოა"),
+  next_location: z.array(z.string()).default([]),
   description: z.string().min(1, "აღწერა სავალდებულოა"),
 });
 
@@ -13,12 +13,7 @@ const TourSchema = z.object({
   localizations: z
     .array(LocalizationsSchema)
     .length(1, "ლოკალიზაცია სავალდებულოა"),
-  duration: z
-    .number({
-      required_error: "ხანგრძლივობა სავალდებულოა",
-      invalid_type_error: "გთხოვთ შეიყვანოთ რიცხვი",
-    })
-    .min(0, "ხანგრძლივობა უნდა იყოს დადებითი რიცხვი"),
+  duration: z.string().min(1, "ხანგრძლივობა სავალდებულოა"),
   total_price: z
     .number({
       required_error: "ფასი სავალდებულოა",
@@ -31,11 +26,13 @@ const TourSchema = z.object({
       invalid_type_error: "გთხოვთ შეიყვანოთ რიცხვი",
     })
     .min(0, "დაჯავშნის ფასი უნდა იყოს დადებითი რიცხვი"),
+  public: z.boolean().default(true),
   image: z.string().min(1, "მთავარი სურათი სავალდებულოა"),
   gallery: z.array(z.string()).optional(),
 });
 
 export type TourFormData = z.infer<typeof TourSchema>;
+
 export const useCreateTourValidator = () => {
   return useForm<TourFormData>({
     resolver: zodResolver(TourSchema),
@@ -43,18 +40,19 @@ export const useCreateTourValidator = () => {
       localizations: [
         {
           locale: "ka",
-          name: "",
-          destination: "",
+          start_location: "",
+          next_location: [],
           description: "",
         },
       ],
-      duration: 0,
+      duration: "",
       total_price: 0,
       reservation_price: 0,
+      public: true,
       image: "",
       gallery: [],
     },
-    mode: "onChange", // This will trigger validation on change
+    mode: "onChange",
   });
 };
 

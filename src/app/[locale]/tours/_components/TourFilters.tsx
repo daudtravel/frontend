@@ -82,7 +82,7 @@ export default function TourFilters({
   }
 
   return (
-    <div className="bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-lg p-6">
+    <div className="bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-xs p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-bold flex items-center">
           <Filter className="mr-2 w-5 h-5" />

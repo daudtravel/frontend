@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { MapPin, ArrowRight, Filter, AlertCircle } from "lucide-react";
+import {
+  MapPin,
+  ArrowRight,
+  Filter,
+  AlertCircle,
+  BadgeDollarSign,
+  CalendarDaysIcon,
+  MoreHorizontal,
+} from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -15,20 +23,21 @@ import { axiosInstance } from "@/src/utlis/axiosInstance";
 const TourCard = ({ tour }: { tour: Tour }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const nextLocations = tour.localizations[0]?.next_location || [];
+  const startLocation = tour.localizations[0]?.start_location;
+  const endLocation = nextLocations[nextLocations.length - 1];
 
   return (
-    <div className="md:flex-col flex-col w-full flex bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-      <div className="relative w-full md:w-full h-[200px] md:h-[230px]">
+    <div className="flex flex-col md:flex-col w-full bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-xs overflow-hidden transition-all duration-300 hover:shadow-lg">
+      <div className="relative w-full h-[200px] md:h-[230px]">
         {!imageLoaded && !imageError && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
         <Image
           src={`https://api.daudtravel.com${tour?.image}`}
           fill
-          className={`object-cover transition-opacity duration-300 ${
-            imageLoaded ? "opacity-100" : "opacity-0"
-          }`}
-          alt={tour.localizations[0].start_location || "alt"}
+          className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+          alt="Tour location"
           onLoad={() => setImageLoaded(true)}
           onError={() => setImageError(true)}
           priority={false}
@@ -40,39 +49,86 @@ const TourCard = ({ tour }: { tour: Tour }) => {
           </div>
         )}
       </div>
-      <div className="w-full px-6 py-6 gap-5 flex flex-col justify-between">
-        <div className="flex items-center">
-          <MapPin className="w-6 h-6 mr-2 text-main" />
-          <span className="text-sm md:text-xl line-clamp-1">
-            {tour.localizations[0].start_location}
-          </span>
-        </div>
-        <div className="flex flex-row justify-between w-full text-gray-600 items-center">
-          <div className="flex flex-col items-center">
-            <span className="font-semibold text-xs block mb-1">
-              Total Price
+      <div className="w-full py-4 px-4 flex flex-col gap-2">
+        <div className=" md:flex items-center justify-between">
+          <div className="flex items-center flex-row gap-2">
+            <MapPin className="w-4 h-4 text-main" />
+            <span className="text-sm">საწყისი ლოკაცია:</span>
+            <span className="text-sm line-clamp-1">
+              {startLocation || "Unknown Location"}
             </span>
-            <p className="md:text-lg text-sm font-bold">
-              ${tour.total_price.toLocaleString()}
-            </p>
           </div>
-          <div className="h-8 w-px bg-gray-300" />
-          <div className="flex flex-col items-center">
-            <span className="font-semibold text-xs block mb-1">Duration</span>
-            <p className="md:text-lg text-sm">{tour.duration}</p>
-          </div>
-          <div className="h-8 w-px bg-gray-300" />
-          <div className="flex flex-col items-center">
-            <span className="font-semibold text-xs block mb-1">
-              Reservation
-            </span>
-            <p className="text-sm md:text-lg font-bold">
-              ${tour.reservation_price.toLocaleString()}
-            </p>
+          <div className=" hidden xl:flex items-center flex-row gap-2">
+            <CalendarDaysIcon className="w-4 h-4 text-main mb-1" />
+            <span className="text-sm">{tour.duration}</span>
+            <span className="text-sm mb-1">დღე/ღამე</span>
           </div>
         </div>
-        <Link className="w-full" href={`/tours/${tour.id}`}>
-          <Button className="w-full text-sm h-8 group">
+        <div className="xl:hidden flex items-center flex-row gap-2">
+          <CalendarDaysIcon className="w-4 h-4 text-main mb-1" />
+          <span className="text-sm">{tour.duration}</span>
+          <span className="text-sm mb-1">დღე/ღამე</span>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <BadgeDollarSign className="w-4 h-4 text-main" />
+            <span className="text-sm">ჯავშნის ღირებულება:</span>
+            <span className="text-sm">$ {tour.reservation_price}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <BadgeDollarSign className="w-4 h-4 text-main" />
+            <span className="text-sm">სრული ღირებულება:</span>
+            <span className="text-sm">$ {tour.total_price}</span>
+          </div>
+        </div>
+
+        {nextLocations.length > 0 && (
+          <>
+            <div className="xl:hidden relative py-4">
+              <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
+              <div className="flex justify-between items-center relative">
+                <div className="flex flex-col items-center relative">
+                  <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                  <span className="text-xs font-medium text-center w-20 mt-2">
+                    {startLocation}
+                  </span>
+                </div>
+                {nextLocations.length > 1 && (
+                  <div className="flex flex-col items-center relative px-2">
+                    <MoreHorizontal className="w-5 h-5 text-main z-10" />
+                    <span className="text-xs font-medium text-gray-500 text-center mt-2">
+                      +{nextLocations.length - 1} stops
+                    </span>
+                  </div>
+                )}
+                <div className="flex flex-col items-center relative">
+                  <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                  <span className="text-xs font-medium text-center w-20 mt-2">
+                    {endLocation}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="hidden xl:block relative py-4">
+              <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
+              <div className="relative flex justify-between items-center">
+                {[startLocation, ...nextLocations].map((location, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center relative"
+                  >
+                    <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                    <span className="text-xs font-medium text-center w-20 mt-2 line-clamp-2">
+                      {location}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+        <Link className="block w-full mt-2" href={`/tours/${tour.id}`}>
+          <Button className="w-full h-8 group">
             Explore Tour
             <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Button>

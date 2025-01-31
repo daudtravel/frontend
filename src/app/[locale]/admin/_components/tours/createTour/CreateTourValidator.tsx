@@ -13,7 +13,7 @@ const TourSchema = z.object({
   localizations: z
     .array(LocalizationsSchema)
     .length(1, "ლოკალიზაცია სავალდებულოა"),
-  duration: z.string().min(1, "ხანგრძლივობა სავალდებულოა"),
+  duration: z.string().optional(),
   total_price: z
     .number({
       required_error: "ფასი სავალდებულოა",

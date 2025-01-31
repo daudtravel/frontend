@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { Textarea } from "@/src/components/ui/textarea";
-import { Loader2, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { TourFormData, useCreateTourValidator } from "./CreateTourValidator";
@@ -28,6 +28,7 @@ import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
+import RichTextFormField from "@/src/components/textEditor/TextEditor";
 
 const CreateTour = () => {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -135,28 +136,67 @@ const CreateTour = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>შემდეგი ლოკაციები</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="მაგ: თბილისი, ბათუმი"
-                          value={field.value?.join(", ") || ""}
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value
-                                .split(",")
-                                .map((s) => s.trim())
-                                .filter(Boolean)
-                            )
-                          }
+                      <div className="space-y-2">
+                        {(Array.isArray(field.value) ? field.value : []).map(
+                          (location, locationIndex) => (
+                            <div key={locationIndex} className="flex gap-2">
+                              <Input
+                                value={location}
+                                onChange={(e) => {
+                                  const newLocations = [
+                                    ...(Array.isArray(field.value)
+                                      ? field.value
+                                      : []),
+                                  ];
+                                  newLocations[locationIndex] = e.target.value;
+                                  field.onChange(newLocations);
+                                }}
+                                disabled={isSubmitting}
+                                placeholder={`ლოკაცია ${locationIndex + 1}`}
+                              />
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => {
+                                  const newLocations = (
+                                    Array.isArray(field.value)
+                                      ? field.value
+                                      : []
+                                  ).filter((_, i) => i !== locationIndex);
+                                  field.onChange(newLocations);
+                                }}
+                                disabled={isSubmitting}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )
+                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const currentLocations = Array.isArray(field.value)
+                              ? field.value
+                              : [];
+                            field.onChange([...currentLocations, ""]);
+                          }}
                           disabled={isSubmitting}
-                        />
-                      </FormControl>
+                          className="w-full"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          ლოკაციის დამატება
+                        </Button>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="localizations.0.description"
                 render={({ field }) => (
@@ -172,6 +212,12 @@ const CreateTour = () => {
                     <FormMessage />
                   </FormItem>
                 )}
+              /> */}
+              <RichTextFormField
+                form={form}
+                name="localizations.0.description"
+                label="აღწერა"
+                disabled={isSubmitting}
               />
             </div>
 

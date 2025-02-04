@@ -19,7 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import { Textarea } from "@/src/components/ui/textarea";
 import { Loader2, Plus, X } from "lucide-react";
 import Image from "next/image";
 import {
@@ -31,6 +30,7 @@ import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 import { Switch } from "@/src/components/ui/switch";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
+import RichTextEditor from "@/src/components/textEditor/TextEditor";
 
 export function EditTour({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -311,7 +311,12 @@ export function EditTour({ params }: { params: { id: string } }) {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea {...field} disabled={isSubmitting} />
+                          <RichTextEditor
+                            value={field.value}
+                            onChange={field.onChange}
+                            disabled={isSubmitting}
+                            placeholder="Enter description"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

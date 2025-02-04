@@ -11,6 +11,7 @@ import {
   Minus,
   MoreHorizontal,
   ArrowDown,
+  Bus,
 } from "lucide-react";
 import {
   Dialog,
@@ -26,6 +27,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import TourLoader from "@/src/components/shared/loader/TourLoader";
 import { toursAPI } from "@/src/routes/tours";
+import renderDescription from "@/src/components/textEditor/RenderText";
 
 const TourDetails = () => {
   const params = useParams();
@@ -65,8 +67,6 @@ const TourDetails = () => {
     );
   }
 
-  const destination =
-    data.localizations?.[0]?.start_location || "Destination not available";
   const description =
     data.localizations?.[0]?.description || "No description available";
   const gallery = data.gallery || [];
@@ -128,15 +128,6 @@ const TourDetails = () => {
     </Dialog>
   );
 
-  const RichTextContent = ({ content }) => {
-    return (
-      <div
-        dangerouslySetInnerHTML={{ __html: content }}
-        className="text-gray-600 mb-6 md:mb-8 text-base md:text-lg leading-relaxed"
-      />
-    );
-  };
-
   return (
     <PhotoProvider>
       <section className="w-full px-4 md:px-20 py-10">
@@ -167,6 +158,11 @@ const TourDetails = () => {
                   <>
                     <div className="xl:hidden relative py-4">
                       <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
+                      <div className="absolute left-0 right-0 top-1/3 transform -translate-y-1/2">
+                        <div className="animate-[moveRight_10s_linear_infinite]">
+                          <Bus className="w-6 h-6 text-blue-600" />
+                        </div>
+                      </div>
                       <div className="flex justify-between items-center relative">
                         <div className="flex flex-col items-center relative">
                           <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
@@ -195,6 +191,11 @@ const TourDetails = () => {
                     </div>
                     <div className="hidden xl:block relative py-4">
                       <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
+                      <div className="absolute left-0 right-0 top-1/3 transform -translate-y-1/2">
+                        <div className="animate-[moveRight_10s_linear_infinite]">
+                          <Bus className="w-6 h-6 text-blue-600" />
+                        </div>
+                      </div>
                       <div className="relative flex justify-between items-center">
                         {[startLocation, ...nextLocations].map(
                           (location, index) => (
@@ -213,10 +214,20 @@ const TourDetails = () => {
                     </div>
                   </>
                 )}
-                <p className="text-gray-600 mb-6 md:mb-8 text-base md:text-lg leading-relaxed">
-                  {description}
-                </p>
-                <RichTextContent content={description} />
+                <div className="text-gray-600 mb-6 md:mb-8 text-base md:text-lg leading-relaxed">
+                  {renderDescription(description)}
+                </div>
+
+                <style jsx>{`
+                  @keyframes moveRight {
+                    from {
+                      transform: translateX(-2rem) translateY(-50%);
+                    }
+                    to {
+                      transform: translateX(calc(100% + 2rem)) translateY(-50%);
+                    }
+                  }
+                `}</style>
               </div>
               <div className="space-y-4 md:space-y-6">
                 <div className="flex items-center gap-4 text-gray-600">

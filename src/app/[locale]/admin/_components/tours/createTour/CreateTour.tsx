@@ -19,7 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import { Textarea } from "@/src/components/ui/textarea";
 import { Loader2, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -28,7 +27,9 @@ import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
-import RichTextFormField from "@/src/components/textEditor/TextEditor";
+import RichTextEditor from "@/src/components/textEditor/TextEditor";
+
+ 
 
 const CreateTour = () => {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -213,11 +214,23 @@ const CreateTour = () => {
                   </FormItem>
                 )}
               /> */}
-              <RichTextFormField
-                form={form}
+              <FormField
+                control={form.control}
                 name="localizations.0.description"
-                label="აღწერა"
-                disabled={isSubmitting}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>აღწერა</FormLabel>
+                    <FormControl>
+                      <RichTextEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={isSubmitting}
+                        placeholder="შეიყვანეთ ტურის აღწერა"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 

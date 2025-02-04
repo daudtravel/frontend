@@ -1,142 +1,167 @@
-import { useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import React, { useState } from "react";
 import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/src/components/ui/form";
- 
- 
-import {
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Heading2,
-  Underline,
-  Quote,
-} from "lucide-react";
-import { cn } from "@/src/utlis/cn";
-import { Toggle } from "../ui/toggle";
+  Editor,
+  EditorState,
+  RichUtils,
+  convertToRaw,
+  convertFromRaw,
+  CompositeDecorator,
+  ContentState,
+  DraftEntityType,
+  ContentBlock,
+} from "draft-js";
+import "draft-js/dist/Draft.css";
 
-const Tiptap = ({ onChange, value, disabled }) => {
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: value,
-    editorProps: {
-      attributes: {
-        class: cn(
-          "w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
-          "min-h-[150px] focus-visible:outline-none focus-visible:ring-2",
-          "focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        ),
-      },
-    },
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
-  });
+const findLinkEntities = (
+  contentBlock: ContentBlock,
+  callback: (start: number, end: number) => void,
+  contentState: ContentState
+) => {
+  contentBlock.findEntityRanges((character) => {
+    const entityKey = character.getEntity();
+    return (
+      entityKey !== null &&
+      contentState.getEntity(entityKey).getType() === "LINK"
+    );
+  }, callback);
+};
 
-  if (!editor) {
-    return null;
-  }
+const Link = (props: {
+  contentState: ContentState;
+  entityKey: string;
+  children: React.ReactNode;
+}) => {
+  const { url } = props.contentState.getEntity(props.entityKey).getData();
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-2">
-        <Toggle
-          size="sm"
-          pressed={editor.isActive("bold")}
-          onPressedChange={() => editor.chain().focus().toggleBold().run()}
-          disabled={disabled}
+    <a
+      href={url.startsWith("http") ? url : `https://${url}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 underline"
+    >
+      {props.children}
+    </a>
+  );
+};
+
+interface RichTextEditorProps {
+  value?: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+}
+
+const RichTextEditor: React.FC<RichTextEditorProps> = ({
+  value,
+  onChange,
+  placeholder,
+  disabled,
+}) => {
+  const decorator = new CompositeDecorator([
+    {
+      strategy: findLinkEntities,
+      component: Link,
+    },
+  ]);
+
+  const [editorState, setEditorState] = useState(
+    value
+      ? EditorState.createWithContent(
+          convertFromRaw(JSON.parse(value)),
+          decorator
+        )
+      : EditorState.createEmpty(decorator)
+  );
+
+  const handleEditorChange = (newEditorState: EditorState) => {
+    setEditorState(newEditorState);
+    const contentState = newEditorState.getCurrentContent();
+    onChange(JSON.stringify(convertToRaw(contentState)));
+  };
+
+  const toggleInlineStyle = (style: string) => {
+    handleEditorChange(RichUtils.toggleInlineStyle(editorState, style));
+  };
+
+  const toggleBlockType = (blockType: string) => {
+    handleEditorChange(RichUtils.toggleBlockType(editorState, blockType));
+  };
+
+  const addLink = () => {
+    const selection = editorState.getSelection();
+    const contentState = editorState.getCurrentContent();
+    const url = window.prompt("Enter the URL")?.trim();
+
+    if (url) {
+      // Ensure URL has a protocol
+      const formattedUrl = url.startsWith("http") ? url : `https://${url}`;
+
+      const contentStateWithEntity = contentState.createEntity(
+        "LINK" as DraftEntityType,
+        "MUTABLE",
+        { url: formattedUrl }
+      );
+      const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+      const newEditorState = EditorState.push(
+        editorState,
+        contentStateWithEntity,
+        "apply-entity"
+      );
+
+      handleEditorChange(
+        RichUtils.toggleLink(newEditorState, selection, entityKey)
+      );
+    }
+  };
+
+  return (
+    <div className="border rounded p-2">
+      <div className="flex space-x-2 mb-2">
+        <button
+          type="button"
+          onClick={() => toggleInlineStyle("BOLD")}
+          className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
         >
-          <Bold className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive("italic")}
-          onPressedChange={() => editor.chain().focus().toggleItalic().run()}
-          disabled={disabled}
+          B
+        </button>
+        <button
+          type="button"
+          onClick={() => toggleInlineStyle("ITALIC")}
+          className="bg-green-500 text-white px-2 py-1 rounded text-sm"
         >
-          <Italic className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive("underline")}
-          onPressedChange={() => editor.chain().focus().toggleUnderline().run()}
-          disabled={disabled}
+          I
+        </button>
+        <button
+          type="button"
+          onClick={() => toggleBlockType("ordered-list-item")}
+          className="bg-purple-500 text-white px-2 py-1 rounded text-sm"
         >
-          <Underline className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive("heading")}
-          onPressedChange={() =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run()
-          }
-          disabled={disabled}
+          OL
+        </button>
+        <button
+          type="button"
+          onClick={() => toggleBlockType("unordered-list-item")}
+          className="bg-red-500 text-white px-2 py-1 rounded text-sm"
         >
-          <Heading2 className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive("bulletList")}
-          onPressedChange={() =>
-            editor.chain().focus().toggleBulletList().run()
-          }
-          disabled={disabled}
+          UL
+        </button>
+        <button
+          type="button"
+          onClick={addLink}
+          className="bg-indigo-500 text-white px-2 py-1 rounded text-sm"
         >
-          <List className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive("orderedList")}
-          onPressedChange={() =>
-            editor.chain().focus().toggleOrderedList().run()
-          }
-          disabled={disabled}
-        >
-          <ListOrdered className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive("blockquote")}
-          onPressedChange={() =>
-            editor.chain().focus().toggleBlockquote().run()
-          }
-          disabled={disabled}
-        >
-          <Quote className="h-4 w-4" />
-        </Toggle>
+          Link
+        </button>
       </div>
-      <EditorContent editor={editor} />
+      <Editor
+        editorState={editorState}
+        onChange={handleEditorChange}
+        placeholder={placeholder}
+        readOnly={disabled}
+      />
     </div>
   );
 };
 
-const RichTextFormField = ({ form, name, label, disabled = false }) => {
-  return (
-    <FormField
-      control={form.control}
-      name={name}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <Tiptap
-              value={field.value}
-              onChange={field.onChange}
-              disabled={disabled}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-};
-
-export default RichTextFormField;
+export default RichTextEditor;

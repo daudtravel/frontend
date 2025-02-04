@@ -9,23 +9,22 @@ const LocalizationsSchema = z.object({
   description: z.string().min(1, "აღწერა სავალდებულოა"),
 });
 
+const PriceSchema = z.object({
+  total_price: z.number().positive("Total price must be positive").optional(),
+  reservation_price: z
+    .number()
+    .positive("Reservation price must be positive")
+    .optional(),
+});
+
+const MonthlyPricesSchema = z.record(PriceSchema).optional();
+
 const TourSchema = z.object({
   localizations: z
     .array(LocalizationsSchema)
     .length(1, "ლოკალიზაცია სავალდებულოა"),
-  duration: z.string().optional(),
-  total_price: z
-    .number({
-      required_error: "ფასი სავალდებულოა",
-      invalid_type_error: "გთხოვთ შეიყვანოთ რიცხვი",
-    })
-    .min(0, "ფასი უნდა იყოს დადებითი რიცხვი"),
-  reservation_price: z
-    .number({
-      required_error: "დაჯავშნის ფასი სავალდებულოა",
-      invalid_type_error: "გთხოვთ შეიყვანოთ რიცხვი",
-    })
-    .min(0, "დაჯავშნის ფასი უნდა იყოს დადებითი რიცხვი"),
+  duration: z.string().min(1),
+  prices: MonthlyPricesSchema,
   public: z.boolean().default(true),
   image: z.string().min(1, "მთავარი სურათი სავალდებულოა"),
   gallery: z.array(z.string()).optional(),
@@ -46,8 +45,7 @@ export const useCreateTourValidator = () => {
         },
       ],
       duration: "",
-      total_price: 0,
-      reservation_price: 0,
+      prices: {},
       public: true,
       image: "",
       gallery: [],

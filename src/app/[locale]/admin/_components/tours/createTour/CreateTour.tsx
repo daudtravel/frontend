@@ -5,11 +5,11 @@ import axios from "axios";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
@@ -22,14 +22,33 @@ import {
 import { Loader2, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { TourFormData, useCreateTourValidator } from "./CreateTourValidator";
 import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
 import RichTextEditor from "@/src/components/textEditor/TextEditor";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/src/components/ui/accordion";
+import { TourFormData, useCreateTourValidator } from "./CreateTourValidator";
 
- 
+const MONTHS = [
+  "იანვარი",
+  "თებერვალი",
+  "მარტი",
+  "აპრილი",
+  "მაისი",
+  "ივნისი",
+  "ივლისი",
+  "აგვისტო",
+  "სექტემბერი",
+  "ოქტომბერი",
+  "ნოემბერი",
+  "დეკემბერი",
+];
 
 const CreateTour = () => {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -72,7 +91,31 @@ const CreateTour = () => {
       setErrorMessage(null);
       setSuccessMessage(null);
 
-      const response = await axiosInstance.post(`/create_tour`, data);
+      const formattedPrices: {
+        [key: string]: { total_price: number; reservation_price: number };
+      } = {};
+
+      for (let i = 1; i <= 12; i++) {
+        const monthKey = i.toString();
+        // Cast the prices to the correct type
+        const monthPrice = (
+          data.prices as {
+            [key: string]: { total_price: number; reservation_price: number };
+          }
+        )[monthKey];
+
+        formattedPrices[monthKey] = {
+          total_price: monthPrice?.total_price || 0,
+          reservation_price: monthPrice?.reservation_price || 0,
+        };
+      }
+
+      const formattedData = {
+        ...data,
+        prices: formattedPrices,
+      };
+
+      const response = await axiosInstance.post(`/create_tour`, formattedData);
       console.log(response);
 
       setSuccessMessage("ტური წარმატებით შეიქმნა");
@@ -196,24 +239,6 @@ const CreateTour = () => {
                   )}
                 />
               </div>
-
-              {/* <FormField
-                control={form.control}
-                name="localizations.0.description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>აღწერა</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="შეიყვანეთ ტურის აღწერა"
-                        {...field}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
               <FormField
                 control={form.control}
                 name="localizations.0.description"
@@ -253,47 +278,69 @@ const CreateTour = () => {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="total_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>საერთო ფასი</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="ტურის საერთო ფასი"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="reservation_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>დაჯავშნის ფასი</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="დაჯავშნის ფასი"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="monthly-prices">
+                <AccordionTrigger>თვიური ფასები</AccordionTrigger>
+                <AccordionContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {MONTHS.map((month, index) => {
+                      const monthNumber = (index + 1).toString();
+                      return (
+                        <Card key={monthNumber} className="p-4">
+                          <h3 className="font-medium mb-2">{month}</h3>
+                          <div className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name={`prices.${monthNumber}.total_price`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>საერთო ფასი</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      placeholder="საერთო ფასი"
+                                      {...field}
+                                      onChange={(e) =>
+                                        field.onChange(Number(e.target.value))
+                                      }
+                                      disabled={isSubmitting}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name={`prices.${monthNumber}.reservation_price`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>დაჯავშნის ფასი</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      placeholder="დაჯავშნის ფასი"
+                                      {...field}
+                                      onChange={(e) =>
+                                        field.onChange(Number(e.target.value))
+                                      }
+                                      disabled={isSubmitting}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
             <FormField
               control={form.control}

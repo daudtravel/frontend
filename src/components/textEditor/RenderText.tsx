@@ -42,7 +42,7 @@ const renderDescription = (rawContent: string | null) => {
 
     return (
       <p
-        className="text-gray-600 mb-6 md:mb-8 text-base md:text-lg leading-relaxed"
+        className="text-gray-600 mb-6 md:mb-8 text-sm  leading-relaxed"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );

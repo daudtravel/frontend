@@ -2,27 +2,24 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogIn, UserPlus, User, LogOut } from "lucide-react";
-import { useAuth } from "@/src/auth/authProvider";
 import { useTranslations } from "next-intl";
 import LocaleSwitcher from "@/src/i18n/LocaleSwitcher";
-import AuthLoader from "../shared/loader/AuthLoader";
 import BurgerMenu from "./BurgerMenu";
 
 export default function Header() {
   const t = useTranslations("header");
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated, isLoading: isUserLoading, logout } = useAuth();
+  // const { user, isAuthenticated, isLoading: isUserLoading, logout } = useAuth();
 
-  const authClickHandler = (name: string) => {
-    router.push(`${pathname}?${name}`);
-  };
+  // const authClickHandler = (name: string) => {
+  //   router.push(`${pathname}?${name}`);
+  // };
 
-  const buttonStyles =
-    "flex items-center gap-2 bg-white cursor-pointer rounded-full px-3 py-2 shadow-sm hover:bg-gray-50 transition-colors";
-  const iconStyles = "h-5 w-5 text-blue-600";
-  const textStyles = "text-sm font-medium text-gray-700";
+  // const buttonStyles =
+  //   "flex items-center gap-2 bg-white cursor-pointer rounded-full px-3 py-2 shadow-sm hover:bg-gray-50 transition-colors";
+  // const iconStyles = "h-5 w-5 text-blue-600";
+  // const textStyles = "text-sm font-medium text-gray-700";
 
   return (
     <header className="top-0 w-full bg-[#f2f5ff] shadow-md z-50">
@@ -47,7 +44,7 @@ export default function Header() {
             {t("contact")}
           </Link>
 
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             {!isAuthenticated ? (
               <>
                 <button
@@ -88,7 +85,7 @@ export default function Header() {
                 </button>
               </div>
             )}
-          </div>
+          </div> */}
           <LocaleSwitcher />
         </nav>
         <BurgerMenu />

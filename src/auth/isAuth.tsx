@@ -13,7 +13,6 @@ export const withAuth = (Component: React.ComponentType) => {
       }
     }, [isLoading, isAuthenticated, router]);
 
-    // If loading or not authenticated, do not render the component
     if (isLoading || !isAuthenticated) {
       return (
         <div className="flex items-center justify-center min-h-screen">
@@ -24,7 +23,6 @@ export const withAuth = (Component: React.ComponentType) => {
       );
     }
 
-    // If authenticated, render the component
     return <Component />;
   };
 };

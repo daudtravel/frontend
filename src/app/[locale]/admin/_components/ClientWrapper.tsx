@@ -24,7 +24,6 @@ export const ClientWrapper = () => {
 
   useEffect(() => {
     if (!tours && !transfers && !drivers) {
-      // Keep the current pathname (which includes locale) and only add the query parameter
       router.push(`${pathname}?tours=all`);
     }
   }, [tours, transfers, drivers, router, pathname]);
@@ -32,8 +31,7 @@ export const ClientWrapper = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  // Helper function to navigate while preserving the current pathname
+  
   const navigate = (query: string) => {
     router.push(`${pathname}${query}`);
   };

@@ -1,15 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+
 import { useTranslations } from "next-intl";
 import LocaleSwitcher from "@/src/i18n/LocaleSwitcher";
 import BurgerMenu from "./BurgerMenu";
 
 export default function Header() {
   const t = useTranslations("header");
-  const router = useRouter();
-  const pathname = usePathname();
+ 
   // const { user, isAuthenticated, isLoading: isUserLoading, logout } = useAuth();
 
   // const authClickHandler = (name: string) => {

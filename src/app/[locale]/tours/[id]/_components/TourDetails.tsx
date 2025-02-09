@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
-import { Plus, Minus, MoreHorizontal, ArrowDown } from "lucide-react";
+import {  MoreHorizontal, ArrowDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,22 +18,22 @@ import Image from "next/image";
 import { toursAPI } from "@/src/routes/tours";
 import renderDescription from "@/src/components/textEditor/RenderText";
 import ToursSectionLoader from "@/src/components/shared/loader/ToursSectionLoader";
+import MonthlyPrices from "./MonthlyPrices";
+import { Prices } from "@/src/types/prices";
 
-const ImageLoader = () => (
-  <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />
-);
+
 
 const TourDetails = () => {
   const params = useParams();
   const id = params.id as string;
   const locale = params.locale as string;
-  const [peopleCount, setPeopleCount] = useState(1);
+ 
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
   const [loadedGalleryImages, setLoadedGalleryImages] = useState<
     Record<number, boolean>
   >({});
   const [isDestinationsOpen, setIsDestinationsOpen] = useState(false);
-
+  
   const {
     data: tourData,
     isLoading,
@@ -44,7 +43,7 @@ const TourDetails = () => {
     queryFn: () => toursAPI.getById(id, locale || "ka"),
   });
 
-  const data = tourData?.data?.tour as Tour | undefined;
+  const data = tourData?.data?.tour as (Tour & { prices: Prices }) | undefined;
 
   if (isLoading) {
     return <ToursSectionLoader />;
@@ -64,32 +63,13 @@ const TourDetails = () => {
 
   if (!data) {
     return (
-      <div className="max-w-7xl mx-auto p-4 sm:p-6">
+      <div className="w-full min-h-screen mx-auto p-4 sm:p-6">
         <Card className="p-6">
           <p className="text-gray-500 text-center">No tour data available</p>
         </Card>
       </div>
     );
   }
-
-  const description =
-    data.localizations?.[0]?.description || "No description available";
-  const gallery = data.gallery || [];
-  const price = data.total_price || 0;
-  const nextLocations = data.localizations[0]?.next_location || [];
-  const startLocation = data.localizations[0]?.start_location;
-  const endLocation = nextLocations[nextLocations.length - 1];
-  const allDestinations = [startLocation, ...nextLocations];
-
-  const handleDecrease = () => {
-    if (peopleCount > 1) {
-      setPeopleCount((prev) => prev - 1);
-    }
-  };
-
-  const handleIncrease = () => {
-    setPeopleCount((prev) => prev + 1);
-  };
 
   const handleGalleryImageLoad = (index: number) => {
     setLoadedGalleryImages((prev) => ({
@@ -133,6 +113,15 @@ const TourDetails = () => {
     </Dialog>
   );
 
+
+   const description =
+    data.localizations?.[0]?.description || "No description available";
+  const gallery = data.gallery || [];
+  const nextLocations = data.localizations[0]?.next_location || [];
+  const startLocation = data.localizations[0]?.start_location;
+  const endLocation = nextLocations[nextLocations.length - 1];
+  const allDestinations = [startLocation, ...nextLocations];
+ 
   return (
     <PhotoProvider>
       <section className="w-full px-4 md:px-20 py-10">
@@ -140,7 +129,7 @@ const TourDetails = () => {
           <div className="w-full md:w-1/2 h-[250px] md:h-[500px] rounded-lg overflow-hidden mb-6">
             <PhotoView src={`https://api.daudtravel.com${data.image}`}>
               <div className="relative w-full h-full">
-                {!mainImageLoaded && <ImageLoader />}
+                {!mainImageLoaded &&   <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />}
                 <Image
                   src={`https://api.daudtravel.com${data.image}`}
                   alt="Tour main view"
@@ -154,6 +143,7 @@ const TourDetails = () => {
               </div>
             </PhotoView>
           </div>
+    
           <Card className="w-full md:w-1/2 mb-6">
             <CardContent className="p-4 md:p-6 flex flex-col h-full">
               <div className="flex-grow">
@@ -211,51 +201,17 @@ const TourDetails = () => {
                   {renderDescription(description)}
                 </span>
               </div>
-
-              <div className="mt-6 md:mt-8 border-t pt-4 md:pt-6">
-                <div className="flex items-center justify-between mb-4 md:mb-6">
-                  <div className="flex items-center gap-2 md:gap-4">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={handleDecrease}
-                      className="h-8 w-8 md:h-10 md:w-10"
-                    >
-                      <Minus className="h-3 w-3 md:h-4 md:w-4" />
-                    </Button>
-                    <span className="text-base md:text-xl font-semibold min-w-[2rem] text-center">
-                      {peopleCount}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={handleIncrease}
-                      className="h-8 w-8 md:h-10 md:w-10"
-                    >
-                      <Plus className="h-3 w-3 md:h-4 md:w-4" />
-                    </Button>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs md:text-sm text-gray-500">
-                      Total price
-                    </p>
-                    <p className="text-xl md:text-3xl font-bold text-blue-600">
-                      ${(price * peopleCount).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-                <Button className="w-full text-base md:text-lg py-4 md:py-6">
-                  Book Now
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </div>
+        <MonthlyPrices
+      prices={data.prices}
+/>
         {gallery.length > 0 && (
           <Card className="w-full mt-6 md:mt-10">
             <CardContent className="p-4 md:p-6">
               <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">
-                Gallery
+                გალერია
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
                 {gallery.map((item, index) => (
@@ -265,7 +221,7 @@ const TourDetails = () => {
                   >
                     <div className="h-[150px] md:h-[220px] rounded-lg overflow-hidden cursor-pointer">
                       <div className="w-full h-full relative">
-                        {!loadedGalleryImages[index] && <ImageLoader />}
+                        {!loadedGalleryImages[index] &&   <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />}
                         <Image
                           src={`https://api.daudtravel.com${item}`}
                           alt={`Gallery image ${index + 1}`}
@@ -283,6 +239,7 @@ const TourDetails = () => {
                   </PhotoView>
                 ))}
               </div>
+             
             </CardContent>
           </Card>
         )}

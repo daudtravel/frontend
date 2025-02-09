@@ -42,7 +42,7 @@ export function EditTransfer({ params }: { params: { id: string } }) {
         const response = await transfersAPI.getById(params.id);
 
         const transfer = response.data;
-        console.log(transfer);
+         
 
         const formData: TransferFormData = {
           localizations: SUPPORTED_LOCALES.map((locale) => ({

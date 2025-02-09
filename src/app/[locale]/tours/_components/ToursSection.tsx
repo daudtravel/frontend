@@ -8,7 +8,6 @@ import {
   ArrowRight,
   Filter,
   AlertCircle,
-  BadgeDollarSign,
   CalendarDaysIcon,
   MoreHorizontal,
 } from "lucide-react";
@@ -69,19 +68,7 @@ const TourCard = ({ tour }: { tour: Tour }) => {
           <span className="text-sm">{tour.duration}</span>
           <span className="text-sm mb-1">დღე/ღამე</span>
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <BadgeDollarSign className="w-4 h-4 text-main" />
-            <span className="text-sm">ჯავშნის ღირებულება:</span>
-            <span className="text-sm">$ {tour.reservation_price}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <BadgeDollarSign className="w-4 h-4 text-main" />
-            <span className="text-sm">სრული ღირებულება:</span>
-            <span className="text-sm">$ {tour.total_price}</span>
-          </div>
-        </div>
-
+      
         {nextLocations.length > 0 && (
           <>
             <div className="xl:hidden relative py-4">

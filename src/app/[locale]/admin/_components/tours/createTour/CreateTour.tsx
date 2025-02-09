@@ -73,7 +73,7 @@ const CreateTour = () => {
       setGalleryPreviews([]);
       router.push(`?tours=all`);
     },
-    onError: (error: any) => {
+    onError: (error) => {
       if (axios.isAxiosError(error) && error.response) {
         setErrorMessage(error.response.data.message || "An error occurred");
       } else {

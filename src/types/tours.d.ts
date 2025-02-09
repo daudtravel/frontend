@@ -28,8 +28,7 @@ export interface Tour {
     description?: string;
   }[];
   duration?: string;
-  total_price: number;
-  reservation_price: number;
+  prices: Record<string, number>;  
   public: boolean;
   image: string;
   gallery?: string[];

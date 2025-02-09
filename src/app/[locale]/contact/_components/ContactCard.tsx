@@ -58,7 +58,7 @@ const ContactCard: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Form submitted:", formData);
+ 
     setLoading(false);
     setFormData(INITIAL_FORM_STATE);
   };

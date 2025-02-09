@@ -1,4 +1,4 @@
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Plus, Loader2, Pencil, MapPin, Clock, Trash } from "lucide-react";
 import Image from "next/image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ import { toursAPI } from "@/src/routes/tours";
 export function ToursList() {
   const router = useRouter();
   const queryClient = useQueryClient();
- 
+
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["tours"],

@@ -78,6 +78,7 @@ export function EditTour({ params }: { params: { id: string } }) {
 
 
 const updateTourMutation = useMutation({
+  //eslint-disable-next-line
   mutationFn: (updatedData: any) => toursAPI.put(params.id, updatedData),
   onSuccess: (response) => {
     if (response.message === "Tour updated successfully") {

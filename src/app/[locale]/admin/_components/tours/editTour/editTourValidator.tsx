@@ -11,21 +11,19 @@ const LocalizationsSchema = z.object({
   description: z.string().optional(),
 });
 
+const PriceSchema = z.object({
+  total_price: z.number().default(0),
+  reservation_price: z.number().default(0),
+});
+
+const MonthlyPricesSchema = z.record(PriceSchema).optional();
+
 const TourSchema = z.object({
   localizations: z
     .array(LocalizationsSchema)
     .min(1, "At least one localization is required"),
   duration: z.string().optional(),
-  total_price: z
-    .number({
-      invalid_type_error: "Total price must be a number",
-    })
-    .positive("Total price must be positive"),
-  reservation_price: z
-    .number({
-      invalid_type_error: "Reservation price must be a number",
-    })
-    .positive("Reservation price must be positive"),
+  prices: MonthlyPricesSchema,
   image: z.string().nullable(),
   gallery: z.array(z.string()).optional().nullable(),
   deleteImages: z.array(z.string()).optional().nullable(),
@@ -45,9 +43,8 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
         description: "",
       })),
       duration: "",
-      total_price: 0,
-      reservation_price: 0,
       public: false,
+      prices: {},
       image: null,
       gallery: [],
       deleteImages: [],

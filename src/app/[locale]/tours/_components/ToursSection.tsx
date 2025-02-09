@@ -163,7 +163,7 @@ export default function ToursSection() {
       queryParams.maxPrice,
     ],
     queryFn: async () => {
-      const response = await axiosInstance.get("/tours", {
+      const response = await axiosInstance.get("/toursAll", {
         params: {
           start_location: queryParams.start_location,
           locale,

@@ -21,11 +21,10 @@ import {
 } from "@/src/components/ui/card";
 import { Loader2, Plus, X } from "lucide-react";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
-import { axiosInstance } from "@/src/utlis/axiosInstance";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import RichTextEditor from "@/src/components/textEditor/TextEditor";
 import {
   Accordion,
@@ -34,6 +33,7 @@ import {
   AccordionTrigger,
 } from "@/src/components/ui/accordion";
 import { TourFormData, useCreateTourValidator } from "./CreateTourValidator";
+import { toursAPI } from "@/src/routes/tours";
 
 const MONTHS = [
   "იანვარი",
@@ -59,8 +59,59 @@ const CreateTour = () => {
   const router = useRouter();
   const form = useCreateTourValidator();
   const queryClient = useQueryClient();
-  const params = useParams();
-  const locale = params.locale as string;
+
+ 
+
+
+  const mutation = useMutation({
+    mutationFn: (newTour: TourFormData) => toursAPI.post(newTour),
+    onSuccess: async () => {
+      setSuccessMessage("ტური წარმატებით შეიქმნა");
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      form.reset();
+      setMainImagePreview(null);
+      setGalleryPreviews([]);
+      router.push(`?tours=all`);
+    },
+    onError: (error: any) => {
+      if (axios.isAxiosError(error) && error.response) {
+        setErrorMessage(error.response.data.message || "An error occurred");
+      } else {
+        setErrorMessage("მოულოდნელი შეცდომა. გთხოვთ სცადოთ თავიდან");
+      }
+    },
+    onSettled: () => {
+      setIsSubmitting(false);
+    },
+  });
+
+
+  const onSubmit = (data: TourFormData) => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  
+    const formattedPrices: {
+      [key: string]: { total_price: number; reservation_price: number };
+    } = {};
+  
+    for (let i = 1; i <= 12; i++) {
+      const monthKey = i.toString();
+      const monthPrice = data.prices?.[monthKey];
+  
+      formattedPrices[monthKey] = {
+        total_price: monthPrice?.total_price || 0,
+        reservation_price: monthPrice?.reservation_price || 0,
+      };
+    }
+  
+    const formattedData = {
+      ...data,
+      prices: formattedPrices,
+    };
+  
+    mutation.mutate(formattedData);
+  };
 
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -85,57 +136,7 @@ const CreateTour = () => {
     form.setValue("gallery", newGalleryPreviews);
   };
 
-  const onSubmit = async (data: TourFormData) => {
-    try {
-      setIsSubmitting(true);
-      setErrorMessage(null);
-      setSuccessMessage(null);
-
-      const formattedPrices: {
-        [key: string]: { total_price: number; reservation_price: number };
-      } = {};
-
-      for (let i = 1; i <= 12; i++) {
-        const monthKey = i.toString();
-        // Cast the prices to the correct type
-        const monthPrice = (
-          data.prices as {
-            [key: string]: { total_price: number; reservation_price: number };
-          }
-        )[monthKey];
-
-        formattedPrices[monthKey] = {
-          total_price: monthPrice?.total_price || 0,
-          reservation_price: monthPrice?.reservation_price || 0,
-        };
-      }
-
-      const formattedData = {
-        ...data,
-        prices: formattedPrices,
-      };
-
-      const response = await axiosInstance.post(`/create_tour`, formattedData);
-      console.log(response);
-
-      setSuccessMessage("ტური წარმატებით შეიქმნა");
-      await queryClient.invalidateQueries({ queryKey: ["tours", locale] });
-      form.reset();
-      setMainImagePreview(null);
-      setGalleryPreviews([]);
-      router.push(`?tours=all`);
-    } catch (error) {
-      console.log(error);
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data.message || "An error occurred";
-        setErrorMessage(errorMessage);
-      } else {
-        setErrorMessage("მოულოდნელი შეცდომა. გთხოვთ სცადოთ თავიდან");
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  
 
   return (
     <Card className="w-full">
@@ -258,7 +259,6 @@ const CreateTour = () => {
                 )}
               />
             </div>
-
             <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
@@ -311,7 +311,6 @@ const CreateTour = () => {
                                 </FormItem>
                               )}
                             />
-
                             <FormField
                               control={form.control}
                               name={`prices.${monthNumber}.reservation_price`}
@@ -341,7 +340,6 @@ const CreateTour = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-
             <FormField
               control={form.control}
               name="image"
@@ -374,7 +372,6 @@ const CreateTour = () => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="gallery"
@@ -419,7 +416,6 @@ const CreateTour = () => {
                 </FormItem>
               )}
             />
-
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>

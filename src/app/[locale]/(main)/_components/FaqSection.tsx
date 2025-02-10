@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/src/components/ui/accordion";
+import { useTranslations } from "next-intl";
 
 import { useState } from "react";
 
@@ -16,6 +17,7 @@ type AccordionItems = {
 };
 
 export default function FaqSection() {
+  const t = useTranslations("main");
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const items: AccordionItems[] = [
     {
@@ -48,7 +50,7 @@ export default function FaqSection() {
 
   return (
     <section className="bg-[#f2f5ff] w-full px-6 py-12 sm:px-16 md:px-20">
-      <h1 className="text-xl">{"Frequently Asked Questions"}</h1>
+      <h1 className="text-xl">{t("faq")}</h1>
       {items.map((item) => (
         <Accordion
           key={item.value}

@@ -113,10 +113,10 @@ export default function WhyUsSection() {
         <div
           className={`flex flex-col justify-center gap-6 lg:gap-8 lg:w-[470px] transition-all duration-1000 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}
         >
-          <h1 className="text-3xl md:text-3xl md:text-center lg:text-4xl xl:text-5xl text-center font-bold leading-tight">
+          <h1 className="text-2xl md:text-3xl md:text-center lg:text-4xl text-center font-semibold leading-tight">
             {t("whyUs")}
           </h1>
-          <p className="text-slate-700 text-lg text-center">
+          <p className="text-slate-700 text-base text-center">
             {t("trustedPart")}
           </p>
         </div>
@@ -130,17 +130,17 @@ export default function WhyUsSection() {
             {statCards.map(({ Icon, value, label, delay }) => (
               <div
                 key={label}
-                className={`bg-white p-3 md:p-4 shadow-lg rounded-lg flex flex-col items-center transform transition-all duration-700 ${delay} ${
+                className={`bg-white py-3 shadow-lg rounded-lg flex flex-col items-center transform transition-all duration-700 ${delay} ${
                   isVisible
                     ? "opacity-100 translate-y-0 scale-100"
                     : "opacity-0 translate-y-10 scale-95"
                 }`}
               >
                 <Icon className="h-6 w-6 md:h-8 md:w-8 text-primary-500" />
-                <div className="text-xl md:text-2xl lg:text-3xl font-bold">
+                <div className="text-xl md:text-2xl font-semibold">
                   {value.toLocaleString()}+
                 </div>
-                <div className="text-slate-600 text-sm md:text-base">
+                <div className="text-slate-600 text-xs text-center">
                   {label}
                 </div>
               </div>

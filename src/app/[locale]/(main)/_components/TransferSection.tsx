@@ -4,24 +4,27 @@ import { Car, Clock, Shield, MapPin } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 const TransferSection = () => {
+  const t = useTranslations("main");
+
   const transferFeatures = [
     {
       icon: <Car className="w-8 h-8 text-[orange] mb-4" />,
-      title: "Modern Vehicle",
+      title: t("modernCars"),
     },
     {
       icon: <Clock className="w-8 h-8 text-[#ffa500] mb-4" />,
-      title: "24/7 Availability",
+      title: t("available"),
     },
     {
       icon: <Shield className="w-8 h-8 text-[orange] mb-4" />,
-      title: "Licensed Drivers",
+      title: t("licensedDrivers"),
     },
     {
       icon: <MapPin className="w-8 h-8 text-[orange] mb-4" />,
-      title: "Door-to-Door Service",
+      title: t("doorToDoor"),
     },
   ];
 
@@ -55,35 +58,19 @@ const TransferSection = () => {
     },
   };
 
-  const headerVariants = {
+  const headingVariants = {
     hidden: {
       opacity: 0,
-      y: -50,
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         type: "spring",
-        stiffness: 50,
-        damping: 15,
+        stiffness: 100,
+        damping: 20,
         duration: 0.8,
-      },
-    },
-  };
-
-  const lineVariants = {
-    hidden: {
-      width: 0,
-      opacity: 0,
-    },
-    visible: {
-      width: "96px",
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut",
-        delay: 0.4,
       },
     },
   };
@@ -119,23 +106,17 @@ const TransferSection = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#f2f5ff] px-4 md:px-20 pb-12">
+    <section className="relative overflow-hidden bg-[#f2f5ff] px-4 md:px-20 py-12">
       <div className="w-full relative z-10">
-        <motion.div
-          className="text-center"
+        <motion.h2
+          className="text-2xl md:text-3xl mb-6 text-center font-semibold tracking-widest pb-4"
+          variants={headingVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={headerVariants}
+          viewport={{ once: true }}
         >
-          <h2 className="text-2xl md:text-4xl font-bold text-black mb-6">
-            Our Transfer Services !
-          </h2>
-          <motion.div
-            className="h-1 bg-[#5E7CFF] mx-auto"
-            variants={lineVariants}
-          />
-        </motion.div>
+          {t("ourTransferServices")}
+        </motion.h2>
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8  w-full items-start"
           variants={containerVariants}
@@ -168,7 +149,7 @@ const TransferSection = () => {
               >
                 {feature.icon}
               </motion.div>
-              <h3 className="text-sm md:text-base font-semibold text-black mb-3">
+              <h3 className="text-sm md:text-base text-black mb-3">
                 {feature.title}
               </h3>
             </motion.div>
@@ -187,8 +168,8 @@ const TransferSection = () => {
             variants={buttonVariants}
           >
             <Link href="/transfers">
-              <Button className=" text-sm md:text-lg px-7 py-3">
-                Book Your Transfer
+              <Button className="text-sm md:text-base px-4 py-2 md:px-7 h-9">
+                {t("bookTransfer")}
               </Button>
             </Link>
           </motion.div>

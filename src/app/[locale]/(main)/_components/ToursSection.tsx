@@ -69,7 +69,7 @@ export default function ToursSection() {
         <div className="flex flex-col gap-2">
           <motion.h1
             variants={headerVariants}
-            className="text-xl md:text-3xl lg:text-4xl font-bold text-start"
+            className="text-xl md:text-3xl font-semibold text-start"
           >
             {t("popularDestinations")}
           </motion.h1>
@@ -104,7 +104,7 @@ export default function ToursSection() {
                   className="lg:basis-1/2 md:basis-1/2 xl:basis-1/3 md:pr-7 md:pl-0 px-4 lg:pr-10 lg:pl-0 cursor-pointer hover:z-20"
                 >
                   <motion.div
-                    className="relative group overflow-hidden rounded-xl h-[250px] md:h-[340px]"
+                    className="relative group overflow-hidden rounded-xl h-[270px] md:h-[360px]"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * index }}
@@ -132,7 +132,7 @@ export default function ToursSection() {
                               transition={{ duration: 0.4 }}
                             >
                               <Location className="fill-white w-5 h-5" />
-                              <h3 className="text-white text-lg font-semibold">
+                              <h3 className="text-white text-lg font-semisemibold">
                                 {tour.localizations[0].start_location}
                               </h3>
                             </motion.div>

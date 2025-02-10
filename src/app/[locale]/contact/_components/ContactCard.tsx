@@ -23,6 +23,7 @@ import {
   X,
   Youtube,
 } from "@/src/components/svg";
+import { useTranslations } from "next-intl";
 
 interface FormData {
   firstName: string;
@@ -51,6 +52,7 @@ const CONTACT_INFO: ContactInfo = {
 };
 
 const ContactCard: React.FC = () => {
+  const t = useTranslations("contact");
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_STATE);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -79,7 +81,7 @@ const ContactCard: React.FC = () => {
         <Card className="w-full md:w-1/3  border border-gray-300 shadow-lg bg-[#f2f5ff]">
           <CardHeader>
             <CardTitle className="text-base md:text-xl font-bold text-center md:text-start">
-              Contact Information
+             {(t("contactInfo"))}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -88,7 +90,7 @@ const ContactCard: React.FC = () => {
                 <MapPin className="w-5 h-5 mt-1" />
                 <div>
                   <h3 className="text-sm md:text-base font-semibold">
-                    Our Office
+                    {t("ourOffice")}
                   </h3>
                   <p className="text-sm text-gray-600">
                     <a
@@ -106,7 +108,7 @@ const ContactCard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5" />
                 <div>
-                  <h3 className="font-semibold text-sm md:text-bas">Phone</h3>
+                  <h3 className="font-semibold text-sm md:text-bas">{t("phone")}</h3>
                   <p className="text-sm text-gray-600">
                     <a
                       href={`tel:${CONTACT_INFO.phone.replace(/[^0-9+]/g, "")}`}
@@ -121,7 +123,7 @@ const ContactCard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5" />
                 <div>
-                  <h3 className="font-semibold text-sm md:text-bas">Email</h3>
+                  <h3 className="font-semibold text-sm md:text-bas">{t("email")}</h3>
                   <p className="text-sm text-gray-600">
                     <a
                       href={`mailto:${CONTACT_INFO.email}`}
@@ -135,7 +137,7 @@ const ContactCard: React.FC = () => {
             </div>
             <div className="pt-6 border-t">
               <h3 className="font-semibold text-base md:text-lg mb-4 text-center md:text-start">
-                Follow Us
+                {t("followUs")}
               </h3>
               <div className="grid grid-cols-5 gap-y-4 items-center">
                 <a
@@ -202,6 +204,15 @@ const ContactCard: React.FC = () => {
                 >
                   <X className="w-7 h-7" />
                 </a>
+                <a
+                   href="https://www.google.com/maps/place/Daud+Travel/@41.6443898,41.6346718,696m/data=!3m2!1e3!4b1!4m6!3m5!1s0x406787f6f7466e93:0x69bea43bb941487c!8m2!3d41.6443898!4d41.6346718!16s%2Fg%2F11s2jbmn0l?entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw%3D%3D"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   arial-label="Address"
+                  className="hover:fill-main"
+                >
+                 <MapPin className="w-7 h-7"  />
+                </a>
               </div>
             </div>
           </CardContent>
@@ -210,21 +221,20 @@ const ContactCard: React.FC = () => {
         <Card className="w-full  md:w-2/3 border-gray-300  shadow-lg min-h-[32rem] bg-[#f2f5ff]">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base md:text-2xl font-bold text-center md:text-start">
-              Send us a Message
+             {t("sendUsMessage")}
             </CardTitle>
             <CardDescription>
-              Fill out the form below and we ll get back to you soon
+            {t("sendUsDescribe")}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit} className="flex flex-col h-full">
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName">{t("firstName")}</Label>
                   <Input
                     id="firstName"
                     name="firstName"
-                    placeholder="John"
                     value={formData.firstName}
                     onChange={handleChange}
                     required
@@ -232,11 +242,10 @@ const ContactCard: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName">{t("lastName")}</Label>
                   <Input
                     id="lastName"
                     name="lastName"
-                    placeholder="Doe"
                     value={formData.lastName}
                     onChange={handleChange}
                     required
@@ -245,12 +254,11 @@ const ContactCard: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="john@example.com"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -258,11 +266,10 @@ const ContactCard: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
+                <Label htmlFor="message">{t("message")}</Label>
                 <Textarea
                   id="message"
                   name="message"
-                  placeholder="Your message here..."
                   value={formData.message}
                   onChange={handleChange}
                   required
@@ -272,10 +279,10 @@ const ContactCard: React.FC = () => {
               <CardFooter className="mt-auto">
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? (
-                    <span className="flex items-center gap-2">Sending...</span>
+                    <span className="flex items-center gap-2">{t("sending")}</span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      Send Message
+                      {t("sendMessage")}
                       <Send className="w-4 h-4" />
                     </span>
                   )}

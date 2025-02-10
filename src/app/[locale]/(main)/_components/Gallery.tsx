@@ -28,8 +28,8 @@ export default function Gallery() {
   ];
 
   return (
-    <section className="z-10 relative flex h-full w-full flex-col items-center pt-20 pb-12 md:mt-12">
-      <h1 className="absolute top-2 text-2xl tracking-widest font-semibold">
+    <section className="z-10 relative flex h-full w-full flex-col items-center pt-20 py-12 md:mt-12">
+      <h1 className="absolute top-2 text-xl pt-4 text-center md:text-2xl tracking-widest font-semibold">
         {t("imagineYourselfHere")}
       </h1>
       <Carousel opts={{ loop: true }} className="mt-6 w-full">

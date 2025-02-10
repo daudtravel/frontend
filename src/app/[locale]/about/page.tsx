@@ -3,6 +3,7 @@ import About1 from "@img/images/About1.jpg";
 import About3 from "@img/images/About3.jpg";
 import { Locale } from "@/src/i18n/routing";
 import { getTranslations } from "next-intl/server";
+import OwnerSection from "./_components/OwnerSection";
 
 export async function generateMetadata({
   params,
@@ -91,6 +92,7 @@ function Page() {
           </div>
         </div>
       </div>
+      <OwnerSection/>
     </div>
   );
 }

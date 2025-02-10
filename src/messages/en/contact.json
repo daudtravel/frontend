@@ -1,3 +1,14 @@
 {
-  "hello": "hello"
+  "sendUsMessage": "Send Us a Message",
+  "sendUsDescribe": "Fill out the form below and we ll get back to you soon.",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "email": "Email",
+  "message": "Message",
+  "sendMessage": "Send Message",
+  "contactInfo": "Contact Information",
+  "ourOffice": "Our Office",
+  "phone": "Phone",
+  "followUs": "Follow Us",
+  "sending": "Sending..."
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "@/src/components/ui/card";
-import {  MoreHorizontal, ArrowDown } from "lucide-react";
+import { MoreHorizontal, ArrowDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,19 +21,17 @@ import ToursSectionLoader from "@/src/components/shared/loader/ToursSectionLoade
 import MonthlyPrices from "./MonthlyPrices";
 import { Prices } from "@/src/types/prices";
 
-
-
 const TourDetails = () => {
   const params = useParams();
   const id = params.id as string;
   const locale = params.locale as string;
- 
+
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
   const [loadedGalleryImages, setLoadedGalleryImages] = useState<
     Record<number, boolean>
   >({});
   const [isDestinationsOpen, setIsDestinationsOpen] = useState(false);
-  
+
   const {
     data: tourData,
     isLoading,
@@ -113,15 +111,14 @@ const TourDetails = () => {
     </Dialog>
   );
 
-
-   const description =
+  const description =
     data.localizations?.[0]?.description || "No description available";
   const gallery = data.gallery || [];
   const nextLocations = data.localizations[0]?.next_location || [];
   const startLocation = data.localizations[0]?.start_location;
   const endLocation = nextLocations[nextLocations.length - 1];
   const allDestinations = [startLocation, ...nextLocations];
- 
+
   return (
     <PhotoProvider>
       <section className="w-full px-4 md:px-20 py-10">
@@ -129,7 +126,9 @@ const TourDetails = () => {
           <div className="w-full md:w-1/2 h-[250px] md:h-[500px] rounded-lg overflow-hidden mb-6">
             <PhotoView src={`https://api.daudtravel.com${data.image}`}>
               <div className="relative w-full h-full">
-                {!mainImageLoaded &&   <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />}
+                {!mainImageLoaded && (
+                  <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />
+                )}
                 <Image
                   src={`https://api.daudtravel.com${data.image}`}
                   alt="Tour main view"
@@ -143,7 +142,7 @@ const TourDetails = () => {
               </div>
             </PhotoView>
           </div>
-    
+
           <Card className="w-full md:w-1/2 mb-6">
             <CardContent className="p-4 md:p-6 flex flex-col h-full">
               <div className="flex-grow">
@@ -205,8 +204,10 @@ const TourDetails = () => {
           </Card>
         </div>
         <MonthlyPrices
-      prices={data.prices}
-/>
+          group_prices={data.group_prices}
+          individual_prices={data.individual_prices}
+          type={data.type}
+        />
         {gallery.length > 0 && (
           <Card className="w-full mt-6 md:mt-10">
             <CardContent className="p-4 md:p-6">
@@ -221,7 +222,9 @@ const TourDetails = () => {
                   >
                     <div className="h-[150px] md:h-[220px] rounded-lg overflow-hidden cursor-pointer">
                       <div className="w-full h-full relative">
-                        {!loadedGalleryImages[index] &&   <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />}
+                        {!loadedGalleryImages[index] && (
+                          <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />
+                        )}
                         <Image
                           src={`https://api.daudtravel.com${item}`}
                           alt={`Gallery image ${index + 1}`}
@@ -239,7 +242,6 @@ const TourDetails = () => {
                   </PhotoView>
                 ))}
               </div>
-             
             </CardContent>
           </Card>
         )}

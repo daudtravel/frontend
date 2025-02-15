@@ -11,23 +11,22 @@ const LocalizationsSchema = z.object({
   description: z.string().optional(),
 });
 
-const PriceSchema = z.object({
-  total_price: z.number().default(0),
-  reservation_price: z.number().default(0),
-});
-
-const MonthlyPricesSchema = z.record(PriceSchema).optional();
-
 const TourSchema = z.object({
   localizations: z
     .array(LocalizationsSchema)
     .min(1, "At least one localization is required"),
   duration: z.string().optional(),
-  prices: MonthlyPricesSchema,
+  individual_prices: z.any(),
+  group_prices: z.any(),
   image: z.string().nullable(),
   gallery: z.array(z.string()).optional().nullable(),
   deleteImages: z.array(z.string()).optional().nullable(),
   public: z.boolean().default(false),
+  type: z.boolean().default(false),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format")
+    .optional(),
 });
 
 export type TourFormData = z.infer<typeof TourSchema>;
@@ -44,8 +43,20 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
       })),
       duration: "",
       public: false,
-      prices: {},
+      type: false,
+      group_prices: {
+        total_price: undefined,
+        reservation_price: undefined,
+        discounted_price: undefined,
+      },
+      individual_prices: Object.fromEntries(
+        Array.from({ length: 12 }, (_, i) => [
+          (i + 1).toString(),
+          { per_person: {}, room_prices: {} },
+        ])
+      ),
       image: null,
+      date: new Date().toISOString().split("T")[0],
       gallery: [],
       deleteImages: [],
       ...initialData,

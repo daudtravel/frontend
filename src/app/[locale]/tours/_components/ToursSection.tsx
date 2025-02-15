@@ -68,7 +68,7 @@ const TourCard = ({ tour }: { tour: Tour }) => {
           <span className="text-sm">{tour.duration}</span>
           <span className="text-sm mb-1">დღე/ღამე</span>
         </div>
-      
+
         {nextLocations.length > 0 && (
           <>
             <div className="xl:hidden relative py-4">
@@ -150,12 +150,10 @@ export default function ToursSection() {
       queryParams.maxPrice,
     ],
     queryFn: async () => {
-      const response = await axiosInstance.get("/toursAll", {
+      const response = await axiosInstance.get("/tours", {
         params: {
           start_location: queryParams.start_location,
           locale,
-          minPrice: queryParams.minPrice,
-          maxPrice: queryParams.maxPrice,
         },
       });
       return response.data;
@@ -165,10 +163,12 @@ export default function ToursSection() {
     retry: 2,
   });
 
+  console.log(toursData);
+
   const { data: filtersData, isLoading: filtersLoading } = useQuery({
     queryKey: ["tours", "filters"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/tours", {
+      const response = await axiosInstance.get("/toursAll", {
         params: { locale },
       });
       return response.data;

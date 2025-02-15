@@ -30,12 +30,6 @@ import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 import { Switch } from "@/src/components/ui/switch";
 import RichTextEditor from "@/src/components/textEditor/TextEditor";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/src/components/ui/accordion";
 import { toursAPI } from "@/src/routes/tours";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -64,78 +58,130 @@ export function EditTour({ params }: { params: { id: string } }) {
   const [hasNewMainImage, setHasNewMainImage] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [tourType, setTourType] = useState<boolean | null>(null);
   const router = useRouter();
   const form = useEditTourValidator();
   const queryClient = useQueryClient();
 
-  const { data} = useQuery({
+  const { data } = useQuery({
     queryKey: ["tour", params.id],
     queryFn: () => toursAPI.getByIdAllLocales(params.id),
-    refetchOnMount: true,       
-    staleTime: 0, 
-});
+    refetchOnMount: true,
+    staleTime: 0,
+  });
 
+  const updateTourMutation = useMutation({
+    //eslint-disable-next-line
+    mutationFn: (updatedData: any) => toursAPI.put(params.id, updatedData),
+    onSuccess: (response) => {
+      if (response.message === "Tour updated successfully") {
+        setSuccessMessage("Tour updated successfully");
+        queryClient.invalidateQueries({ queryKey: ["tours"] });
+        router.push("?tours=all");
+      } else {
+        setErrorMessage(response.message || "Failed to update tour");
+      }
+    },
+    onError: (error) => {
+      console.error("Error updating tour:", error);
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.message || "Failed to update tour"
+        );
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+    },
+  });
 
+  const onSubmit = async (data: TourFormData) => {
+    try {
+      setIsSubmitting(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      //eslint-disable-next-line
+      const formattedData: any = {
+        ...data,
+        type: tourType,
+      };
 
-const updateTourMutation = useMutation({
-  //eslint-disable-next-line
-  mutationFn: (updatedData: any) => toursAPI.put(params.id, updatedData),
-  onSuccess: (response) => {
-    if (response.message === "Tour updated successfully") {
-      setSuccessMessage("Tour updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["tours"] });
-      router.push("?tours=all");
-    } else {
-      setErrorMessage(response.message || "Failed to update tour");
+      if (tourType) {
+        const individualPrices = Object.fromEntries(
+          Array.from({ length: 12 }, (_, i) => {
+            const monthKey = (i + 1).toString();
+            const monthData = data.individual_prices?.[monthKey];
+
+            const perPersonPrices: Record<string, number> = {};
+            const roomPrices: Record<string, number> = {};
+
+            if (monthData?.per_person) {
+              Object.entries(monthData.per_person).forEach(
+                ([personKey, price]) => {
+                  if (
+                    price !== undefined &&
+                    price !== null &&
+                    price.toString().trim() !== ""
+                  ) {
+                    perPersonPrices[personKey] = Number(price);
+                  }
+                }
+              );
+            }
+
+            if (monthData?.room_prices) {
+              Object.entries(monthData.room_prices).forEach(
+                ([roomKey, price]) => {
+                  if (
+                    price !== undefined &&
+                    price !== null &&
+                    price.toString().trim() !== ""
+                  ) {
+                    roomPrices[roomKey] = Number(price);
+                  }
+                }
+              );
+            }
+
+            return [
+              monthKey,
+              {
+                per_person: perPersonPrices,
+                room_prices: roomPrices,
+              },
+            ];
+          })
+        );
+
+        formattedData.individual_prices = individualPrices;
+        formattedData.group_prices = {};
+      } else {
+        formattedData.group_prices = {
+          total_price: data.group_prices?.total_price,
+          reservation_price: data.group_prices?.reservation_price,
+          discounted_price: data.group_prices?.discounted_price,
+        };
+        formattedData.individual_prices = {};
+      }
+
+      const submitData = {
+        ...formattedData,
+        date: data.date || new Date().toISOString().split("T")[0],
+        duration: data.duration,
+        localizations: data.localizations,
+        public: data.public,
+        ...(hasNewMainImage && { image: data.image }),
+        ...(newGalleryImages.length > 0 && { gallery: newGalleryImages }),
+        ...(deletedImages.length > 0 && { deleteImages: deletedImages }),
+      };
+
+      await updateTourMutation.mutate(submitData);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Failed to update tour");
+    } finally {
+      setIsSubmitting(false);
     }
-  },
-  onError: (error) => {
-    console.error("Error updating tour:", error);
-    if (axios.isAxiosError(error)) {
-      setErrorMessage(
-        error.response?.data?.message || "Failed to update tour"
-      );
-    } else {
-      setErrorMessage("An unexpected error occurred");
-    }
-  },
-});
-
-
-const onSubmit = async (data: TourFormData) => {
-  try {
-    setIsSubmitting(true);
-    setErrorMessage(null);
-
-    const formattedPrices = Object.fromEntries(
-      Array.from({ length: 12 }, (_, i) => {
-        const monthKey = (i + 1).toString();
-        const monthPrice = data.prices?.[monthKey];
-        return [
-          monthKey,
-          {
-            total_price: monthPrice?.total_price || 0,
-            reservation_price: monthPrice?.reservation_price || 0,
-          },
-        ];
-      })
-    );
-
-    const submitData = {
-      duration: data.duration,
-      prices: formattedPrices,
-      localizations: data.localizations,
-      public: data.public,
-      image: hasNewMainImage ? data.image : null,
-      ...(newGalleryImages.length > 0 && { gallery: newGalleryImages }),
-      ...(deletedImages.length > 0 && { deleteImages: deletedImages }),
-    };
-
-    updateTourMutation.mutate(submitData);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -175,41 +221,61 @@ const onSubmit = async (data: TourFormData) => {
     form.setValue("gallery", newGalleryPreviews);
   };
 
-
   useEffect(() => {
     const fetchTourDetails = async () => {
-        if (!data) return;
-        try {
-            setIsLoading(true);
-            const tour = data.data.tour; 
-            const formData: TourFormData = {
-                localizations: SUPPORTED_LOCALES.map((locale) => ({
-                    locale,
-                    start_location: tour.translations[locale]?.start_location || "",
-                    next_location: tour.translations[locale]?.next_location || [],
-                    description: tour.translations[locale]?.description || "",
-                })),
-                duration: tour.duration,
-                prices: tour.prices || {},
-                image: tour.image,
-                gallery: tour.gallery || [],
-                public: tour.public,
-            };
-            form.reset(formData);
-            setMainImagePreview(tour.image);
-            setGalleryPreviews(tour.gallery || []);
-        } catch (error) {
-            console.error(error);
-            setErrorMessage("Failed to load tour details");
-        } finally {
-            setIsLoading(false);
-        }
+      if (!data) return;
+
+      try {
+        setIsLoading(true);
+        const tour = data.data.tour;
+
+        // Ensure date is in YYYY-MM-DD format
+        const formattedDate = tour.date
+          ? tour.date.split("T")[0]
+          : new Date().toISOString().split("T")[0];
+
+        const formData: TourFormData = {
+          type: tour.type,
+          localizations: SUPPORTED_LOCALES.map((locale) => ({
+            locale,
+            start_location: tour.translations[locale]?.start_location || "",
+            next_location: tour.translations[locale]?.next_location || [],
+            description: tour.translations[locale]?.description || "",
+          })),
+          duration: tour.duration,
+          group_prices: tour.group_prices || {
+            total_price: undefined,
+            reservation_price: undefined,
+            discounted_price: undefined,
+          },
+          individual_prices:
+            tour.individual_prices ||
+            Object.fromEntries(
+              Array.from({ length: 12 }, (_, i) => [
+                (i + 1).toString(),
+                { per_person: {}, room_prices: {} },
+              ])
+            ),
+          image: tour.image,
+          gallery: tour.gallery || [],
+          public: tour.public,
+          date: formattedDate,
+        };
+
+        form.reset(formData);
+        setTourType(tour.type);
+        setMainImagePreview(tour.image);
+        setGalleryPreviews(tour.gallery || []);
+      } catch (error) {
+        console.error(error);
+        setErrorMessage("Failed to load tour details");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchTourDetails();
-}, [data, form, params.id]);
-
-  
+  }, [data, form, params.id]);
 
   if (isLoading) {
     return (
@@ -235,8 +301,13 @@ const onSubmit = async (data: TourFormData) => {
             {successMessage}
           </div>
         )}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <h1>
+              <span className="font-bold">ტურის ტიპი:</span>{" "}
+              {tourType ? "ინდივიდუალური" : "ჯგუფური"}{" "}
+            </h1>
             <FormField
               control={form.control}
               name="public"
@@ -334,7 +405,7 @@ const onSubmit = async (data: TourFormData) => {
                             className="w-full"
                           >
                             <Plus className="h-4 w-4 mr-2" />
-                          ლოკაციის დამატება
+                            ლოკაციის დამატება
                           </Button>
                         </div>
                         <FormMessage />
@@ -362,6 +433,21 @@ const onSubmit = async (data: TourFormData) => {
                 </div>
               ))}
             </div>
+            {!tourType && (
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>თარიღი</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} disabled={isSubmitting} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
@@ -382,67 +468,170 @@ const onSubmit = async (data: TourFormData) => {
                 )}
               />
             </div>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="monthly-prices">
-                <AccordionTrigger>ფასები თვეების მიხედვით</AccordionTrigger>
-                <AccordionContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {MONTHS.map((month, index) => {
-                      const monthNumber = (index + 1).toString();
+            <div className="space-y-4">
+              {!tourType && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">ჯგუფური ფასები</h3>
+                  <div className="space-y-3">
+                    <FormField
+                      control={form.control}
+                      name={`group_prices.total_price`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>საერთო ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`group_prices.reservation_price`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>დაჯავშნის ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`group_prices.discounted_price`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ფასდაკლებული ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {tourType && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">ინდივიდუალური ფასები</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {MONTHS.map((month, monthIndex) => {
+                      const monthNumber = (monthIndex + 1).toString();
                       return (
-                        <Card key={monthNumber} className="p-4">
-                          <h3 className="font-medium mb-2">{month}</h3>
+                        <div
+                          key={monthNumber}
+                          className="border rounded-lg p-4"
+                        >
+                          <h4 className="font-medium mb-3">{month}</h4>
                           <div className="space-y-4">
-                            <FormField
-                              control={form.control}
-                              name={`prices.${monthNumber}.total_price`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>სრული ღირებულება</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="Total price"
-                                      {...field}
-                                      onChange={(e) =>
-                                        field.onChange(Number(e.target.value))
-                                      }
-                                      disabled={isSubmitting}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`prices.${monthNumber}.reservation_price`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>ჯავშნის ღირებულება</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="Reservation price"
-                                      {...field}
-                                      onChange={(e) =>
-                                        field.onChange(Number(e.target.value))
-                                      }
-                                      disabled={isSubmitting}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                            {/* Per Person Prices */}
+                            <div>
+                              <h5 className="text-sm font-medium mb-2">
+                                პიროვნული ფასები
+                              </h5>
+                              <div className="grid grid-cols-2 gap-2">
+                                {[1, 2, 3, 4, 5, 6].map((personNum) => (
+                                  <FormField
+                                    key={`person_${monthNumber}_${personNum}`}
+                                    control={form.control}
+                                    name={`individual_prices.${monthNumber}.per_person.${personNum}`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>
+                                          {personNum} პიროვნება
+                                        </FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            type="number"
+                                            {...field}
+                                            onChange={(e) => {
+                                              const value = e.target.value;
+                                              form.setValue(
+                                                `individual_prices.${monthNumber}.per_person.${personNum}`,
+                                                value
+                                                  ? Number(value)
+                                                  : undefined,
+                                                { shouldValidate: true }
+                                              );
+                                            }}
+                                            value={field.value ?? ""}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Room Prices */}
+                            <div>
+                              <h5 className="text-sm font-medium mb-2">
+                                ოთახის ფასები
+                              </h5>
+                              <div className="grid grid-cols-2 gap-2">
+                                {[1, 2, 3, 4, 5].map((roomNum) => (
+                                  <FormField
+                                    key={`room_${monthNumber}_${roomNum}`}
+                                    control={form.control}
+                                    name={`individual_prices.${monthNumber}.room_prices.${roomNum}`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>{roomNum} ოთახი</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            type="number"
+                                            {...field}
+                                            onChange={(e) => {
+                                              const value = e.target.value;
+                                              form.setValue(
+                                                `individual_prices.${monthNumber}.room_prices.${roomNum}`,
+                                                value
+                                                  ? Number(value)
+                                                  : undefined,
+                                                { shouldValidate: true }
+                                              );
+                                            }}
+                                            value={field.value ?? ""}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                        </Card>
+                        </div>
                       );
                     })}
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                </div>
+              )}
+            </div>
+
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -469,7 +658,7 @@ const onSubmit = async (data: TourFormData) => {
                           alt="Main image preview"
                           fill
                           className="w-full h-full object-cover rounded"
-                          quality={100}  
+                          quality={100}
                         />
                       </div>
                     )}

@@ -10,12 +10,7 @@ import {
   Calendar1,
 } from "lucide-react";
 import Link from "next/link";
-import {
-  MapPin,
-  ArrowRight,
-  AlertCircle,
-  MoreHorizontal,
-} from "lucide-react";
+import { MapPin, ArrowRight, AlertCircle, MoreHorizontal } from "lucide-react";
 import { Tour } from "@/src/types/tours";
 import { useState } from "react";
 import Image from "next/image";
@@ -45,7 +40,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
         {!imageLoaded && !imageError && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
-        {/* <Image
+        <Image
           src={`https://api.daudtravel.com${tour?.image}`}
           fill
           className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
@@ -54,7 +49,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
           onError={() => setImageError(true)}
           priority={false}
           loading="lazy"
-        /> */}
+        />
 
         {imageError && (
           <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">

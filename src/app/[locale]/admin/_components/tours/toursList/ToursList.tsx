@@ -101,7 +101,7 @@ export function ToursList() {
                     <div className="grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-2 flex flex-col items-center">
                         <div className="relative h-14 w-14 rounded-lg overflow-hidden bg-gray-200">
-                          {/* {tour.image ? (
+                          {tour.image ? (
                             <Image
                               src={`https://api.daudtravel.com${tour.image}`}
                               alt={
@@ -114,7 +114,7 @@ export function ToursList() {
                             <div className="h-full w-full flex items-center justify-center">
                               <MapPin className="h-6 w-6 text-gray-400" />
                             </div>
-                          )} */}
+                          )}
                         </div>
                         <div className="mt-2 flex items-center gap-2">
                           {tour.type ? (

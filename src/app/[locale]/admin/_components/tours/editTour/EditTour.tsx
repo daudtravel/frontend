@@ -528,7 +528,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                     </FormControl>
                     {mainImagePreview && (
                       <div className="mt-2 w-64 h-40 relative">
-                        {/* <Image
+                        <Image
                           src={
                             mainImagePreview.startsWith("data:")
                               ? mainImagePreview
@@ -538,7 +538,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                           fill
                           className="w-full h-full object-cover rounded"
                           quality={100}
-                        /> */}
+                        />
                       </div>
                     )}
                     <FormMessage />
@@ -564,7 +564,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                       <div className="mt-2 grid grid-cols-5 gap-2 h-32">
                         {galleryPreviews.map((preview, index) => (
                           <div key={index} className="relative">
-                            {/* <Image
+                            <Image
                               src={
                                 preview.startsWith("data:")
                                   ? preview
@@ -575,7 +575,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                               objectFit="cover"
                               className="rounded"
                               quality={100}
-                            /> */}
+                            />
                             <button
                               type="button"
                               onClick={() => removeGalleryImage(index)}

@@ -11,13 +11,19 @@ const LocalizationsSchema = z.object({
   description: z.string().optional(),
 });
 
+const GroupPricesSchema = z.object({
+  total_price: z.number().optional(),
+  reservation_price: z.number().optional(),
+  discounted_price: z.number().optional(),
+});
+
 const TourSchema = z.object({
   localizations: z
     .array(LocalizationsSchema)
     .min(1, "At least one localization is required"),
-  duration: z.string().optional(),
-  individual_prices: z.any(),
-  group_prices: z.any(),
+  day: z.string().optional(),
+  night: z.string().optional(),
+  group_prices: GroupPricesSchema.optional(),
   image: z.string().nullable(),
   gallery: z.array(z.string()).optional().nullable(),
   deleteImages: z.array(z.string()).optional().nullable(),
@@ -41,7 +47,8 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
         next_location: [],
         description: "",
       })),
-      duration: "",
+      day: "",
+      night: "",
       public: false,
       type: false,
       group_prices: {
@@ -49,12 +56,6 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
         reservation_price: undefined,
         discounted_price: undefined,
       },
-      individual_prices: Object.fromEntries(
-        Array.from({ length: 12 }, (_, i) => [
-          (i + 1).toString(),
-          { per_person: {}, room_prices: {} },
-        ])
-      ),
       image: null,
       date: new Date().toISOString().split("T")[0],
       gallery: [],

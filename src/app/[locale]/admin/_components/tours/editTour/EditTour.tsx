@@ -33,21 +33,6 @@ import RichTextEditor from "@/src/components/textEditor/TextEditor";
 import { toursAPI } from "@/src/routes/tours";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const MONTHS = [
-  "იანვარი",
-  "თებერვალი",
-  "მარტი",
-  "აპრილი",
-  "მაისი",
-  "ივნისი",
-  "ივლისი",
-  "აგვისტო",
-  "სექტემბერი",
-  "ოქტომბერი",
-  "ნოემბერი",
-  "დეკემბერი",
-];
-
 export function EditTour({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,8 +56,8 @@ export function EditTour({ params }: { params: { id: string } }) {
   });
 
   const updateTourMutation = useMutation({
-    //eslint-disable-next-line
-    mutationFn: (updatedData: any) => toursAPI.put(params.id, updatedData),
+    mutationFn: (updatedData: TourFormData) =>
+      toursAPI.put(params.id, updatedData),
     onSuccess: (response) => {
       if (response.message === "Tour updated successfully") {
         setSuccessMessage("Tour updated successfully");
@@ -99,74 +84,59 @@ export function EditTour({ params }: { params: { id: string } }) {
       setIsSubmitting(true);
       setErrorMessage(null);
       setSuccessMessage(null);
-      //eslint-disable-next-line
-      const formattedData: any = {
+      const formattedData: TourFormData = {
         ...data,
-        type: tourType,
+        type: tourType ? true : false,
       };
 
       if (tourType) {
-        const individualPrices = Object.fromEntries(
-          Array.from({ length: 12 }, (_, i) => {
-            const monthKey = (i + 1).toString();
-            const monthData = data.individual_prices?.[monthKey];
-
-            const perPersonPrices: Record<string, number> = {};
-            const roomPrices: Record<string, number> = {};
-
-            if (monthData?.per_person) {
-              Object.entries(monthData.per_person).forEach(
-                ([personKey, price]) => {
-                  if (
-                    price !== undefined &&
-                    price !== null &&
-                    price.toString().trim() !== ""
-                  ) {
-                    perPersonPrices[personKey] = Number(price);
-                  }
-                }
-              );
-            }
-
-            if (monthData?.room_prices) {
-              Object.entries(monthData.room_prices).forEach(
-                ([roomKey, price]) => {
-                  if (
-                    price !== undefined &&
-                    price !== null &&
-                    price.toString().trim() !== ""
-                  ) {
-                    roomPrices[roomKey] = Number(price);
-                  }
-                }
-              );
-            }
-
-            return [
-              monthKey,
-              {
-                per_person: perPersonPrices,
-                room_prices: roomPrices,
-              },
-            ];
-          })
-        );
-
-        formattedData.individual_prices = individualPrices;
         formattedData.group_prices = {};
       } else {
-        formattedData.group_prices = {
-          total_price: data.group_prices?.total_price,
-          reservation_price: data.group_prices?.reservation_price,
-          discounted_price: data.group_prices?.discounted_price,
-        };
-        formattedData.individual_prices = {};
+        if (data.group_prices) {
+          const validGroupPrices: Record<string, number> = {};
+
+          if (
+            data.group_prices.total_price !== undefined &&
+            data.group_prices.total_price !== null &&
+            data.group_prices.total_price.toString().trim() !== ""
+          ) {
+            validGroupPrices.total_price = Number(
+              data.group_prices.total_price
+            );
+          }
+
+          if (
+            data.group_prices.reservation_price !== undefined &&
+            data.group_prices.reservation_price !== null &&
+            data.group_prices.reservation_price.toString().trim() !== ""
+          ) {
+            validGroupPrices.reservation_price = Number(
+              data.group_prices.reservation_price
+            );
+          }
+
+          if (
+            data.group_prices.discounted_price !== undefined &&
+            data.group_prices.discounted_price !== null &&
+            data.group_prices.discounted_price.toString().trim() !== ""
+          ) {
+            validGroupPrices.discounted_price = Number(
+              data.group_prices.discounted_price
+            );
+          }
+
+          formattedData.group_prices =
+            Object.keys(validGroupPrices).length > 0 ? validGroupPrices : {};
+        } else {
+          formattedData.group_prices = {};
+        }
       }
 
       const submitData = {
         ...formattedData,
         date: data.date || new Date().toISOString().split("T")[0],
-        duration: data.duration,
+        day: data.day,
+        night: data.night,
         localizations: data.localizations,
         public: data.public,
         ...(hasNewMainImage && { image: data.image }),
@@ -174,7 +144,7 @@ export function EditTour({ params }: { params: { id: string } }) {
         ...(deletedImages.length > 0 && { deleteImages: deletedImages }),
       };
 
-      await updateTourMutation.mutate(submitData);
+      updateTourMutation.mutate(submitData);
     } catch (error) {
       console.error(error);
       setErrorMessage("Failed to update tour");
@@ -228,12 +198,9 @@ export function EditTour({ params }: { params: { id: string } }) {
       try {
         setIsLoading(true);
         const tour = data.data.tour;
-
-        // Ensure date is in YYYY-MM-DD format
         const formattedDate = tour.date
           ? tour.date.split("T")[0]
           : new Date().toISOString().split("T")[0];
-
         const formData: TourFormData = {
           type: tour.type,
           localizations: SUPPORTED_LOCALES.map((locale) => ({
@@ -242,20 +209,14 @@ export function EditTour({ params }: { params: { id: string } }) {
             next_location: tour.translations[locale]?.next_location || [],
             description: tour.translations[locale]?.description || "",
           })),
-          duration: tour.duration,
+          day: tour.day,
+          night: tour.night,
           group_prices: tour.group_prices || {
             total_price: undefined,
             reservation_price: undefined,
             discounted_price: undefined,
           },
-          individual_prices:
-            tour.individual_prices ||
-            Object.fromEntries(
-              Array.from({ length: 12 }, (_, i) => [
-                (i + 1).toString(),
-                { per_person: {}, room_prices: {} },
-              ])
-            ),
+
           image: tour.image,
           gallery: tour.gallery || [],
           public: tour.public,
@@ -451,10 +412,28 @@ export function EditTour({ params }: { params: { id: string } }) {
             <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
-                name="duration"
+                name="day"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>ხანგრძლივობა (დღე/ღამე)</FormLabel>
+                    <FormLabel>დღე</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="string"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="night"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ღამე</FormLabel>
                     <FormControl>
                       <Input
                         type="string"
@@ -530,106 +509,6 @@ export function EditTour({ params }: { params: { id: string } }) {
                   </div>
                 </div>
               )}
-
-              {tourType && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">ინდივიდუალური ფასები</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {MONTHS.map((month, monthIndex) => {
-                      const monthNumber = (monthIndex + 1).toString();
-                      return (
-                        <div
-                          key={monthNumber}
-                          className="border rounded-lg p-4"
-                        >
-                          <h4 className="font-medium mb-3">{month}</h4>
-                          <div className="space-y-4">
-                            {/* Per Person Prices */}
-                            <div>
-                              <h5 className="text-sm font-medium mb-2">
-                                პიროვნული ფასები
-                              </h5>
-                              <div className="grid grid-cols-2 gap-2">
-                                {[1, 2, 3, 4, 5, 6].map((personNum) => (
-                                  <FormField
-                                    key={`person_${monthNumber}_${personNum}`}
-                                    control={form.control}
-                                    name={`individual_prices.${monthNumber}.per_person.${personNum}`}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>
-                                          {personNum} პიროვნება
-                                        </FormLabel>
-                                        <FormControl>
-                                          <Input
-                                            type="number"
-                                            {...field}
-                                            onChange={(e) => {
-                                              const value = e.target.value;
-                                              form.setValue(
-                                                `individual_prices.${monthNumber}.per_person.${personNum}`,
-                                                value
-                                                  ? Number(value)
-                                                  : undefined,
-                                                { shouldValidate: true }
-                                              );
-                                            }}
-                                            value={field.value ?? ""}
-                                          />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Room Prices */}
-                            <div>
-                              <h5 className="text-sm font-medium mb-2">
-                                ოთახის ფასები
-                              </h5>
-                              <div className="grid grid-cols-2 gap-2">
-                                {[1, 2, 3, 4, 5].map((roomNum) => (
-                                  <FormField
-                                    key={`room_${monthNumber}_${roomNum}`}
-                                    control={form.control}
-                                    name={`individual_prices.${monthNumber}.room_prices.${roomNum}`}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>{roomNum} ოთახი</FormLabel>
-                                        <FormControl>
-                                          <Input
-                                            type="number"
-                                            {...field}
-                                            onChange={(e) => {
-                                              const value = e.target.value;
-                                              form.setValue(
-                                                `individual_prices.${monthNumber}.room_prices.${roomNum}`,
-                                                value
-                                                  ? Number(value)
-                                                  : undefined,
-                                                { shouldValidate: true }
-                                              );
-                                            }}
-                                            value={field.value ?? ""}
-                                          />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="space-y-4">
@@ -649,7 +528,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                     </FormControl>
                     {mainImagePreview && (
                       <div className="mt-2 w-64 h-40 relative">
-                        <Image
+                        {/* <Image
                           src={
                             mainImagePreview.startsWith("data:")
                               ? mainImagePreview
@@ -659,7 +538,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                           fill
                           className="w-full h-full object-cover rounded"
                           quality={100}
-                        />
+                        /> */}
                       </div>
                     )}
                     <FormMessage />
@@ -685,7 +564,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                       <div className="mt-2 grid grid-cols-5 gap-2 h-32">
                         {galleryPreviews.map((preview, index) => (
                           <div key={index} className="relative">
-                            <Image
+                            {/* <Image
                               src={
                                 preview.startsWith("data:")
                                   ? preview
@@ -696,7 +575,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                               objectFit="cover"
                               className="rounded"
                               quality={100}
-                            />
+                            /> */}
                             <button
                               type="button"
                               onClick={() => removeGalleryImage(index)}

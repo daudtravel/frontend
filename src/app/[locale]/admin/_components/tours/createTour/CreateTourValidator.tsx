@@ -19,10 +19,10 @@ export const TourSchema = z.object({
   localizations: z
     .array(TranslationSchema)
     .min(1, "At least one localization is required"),
-  duration: z.string().min(1, "Duration is required"),
+  day: z.string().optional(),
+  night: z.string().optional(),
   group_prices: GroupPricesSchema.optional(),
   type: z.boolean().default(false),
-  individual_prices: z.any(),
   image: z
     .string()
     .regex(/^data:image\/[a-zA-Z]+;base64,/, "Invalid image format"),
@@ -52,23 +52,18 @@ export const useCreateTourValidator = () => {
           description: "",
         },
       ],
-      duration: "",
+      day: "",
+      night: "",
       type: false,
       group_prices: {
         total_price: undefined,
         reservation_price: undefined,
         discounted_price: undefined,
       },
-      individual_prices: Object.fromEntries(
-        Array.from({ length: 12 }, (_, i) => [
-          (i + 1).toString(),
-          { per_person: {}, room_prices: {} },
-        ])
-      ),
       public: false,
       image: "",
       gallery: [],
-      date: new Date().toISOString().split("T")[0], // Default to current date in YYYY-MM-DD format
+      date: new Date().toISOString().split("T")[0],
     },
     mode: "onChange",
   });

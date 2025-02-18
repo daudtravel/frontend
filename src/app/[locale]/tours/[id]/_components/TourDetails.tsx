@@ -125,7 +125,7 @@ const TourDetails = () => {
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           <div className="w-full md:w-1/2 h-[250px] md:h-[500px] rounded-lg overflow-hidden mb-6">
             <PhotoView src={`https://api.daudtravel.com${data.image}`}>
-              <div className="relative w-full h-full">
+              {/* <div className="relative w-full h-full">
                 {!mainImageLoaded && (
                   <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />
                 )}
@@ -139,7 +139,7 @@ const TourDetails = () => {
                   }`}
                   onLoad={() => setMainImageLoaded(true)}
                 />
-              </div>
+              </div> */}
             </PhotoView>
           </div>
 
@@ -225,7 +225,7 @@ const TourDetails = () => {
                         {!loadedGalleryImages[index] && (
                           <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />
                         )}
-                        <Image
+                        {/* <Image
                           src={`https://api.daudtravel.com${item}`}
                           alt={`Gallery image ${index + 1}`}
                           fill
@@ -236,7 +236,7 @@ const TourDetails = () => {
                               : "opacity-0"
                           }`}
                           onLoad={() => handleGalleryImageLoad(index)}
-                        />
+                        /> */}
                       </div>
                     </div>
                   </PhotoView>

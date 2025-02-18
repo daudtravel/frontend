@@ -1,0 +1,20 @@
+{
+    "allTourTypes": "ყველა ტიპის ტური",
+    "groupTourType": "ჯგუფური ტური",
+    "individualTourType": "ინდივიდუალური ტური",
+    "tourType": "ტურის ტიპი",
+    "startLocation": "საწყისი ლოკაცია",
+    "allLocations": "ყველა ლოკაცია",
+    "selectLocation": "აირჩიეთ ლოკაცია",
+    "search": "ძებნა",
+    "filter": "ფილტრი",
+    "agreement": "შეთანხმებით",
+    "day": "დღე",
+    "night": "ღამე",
+    "price": "ფასი",
+    "viewDetails": "სრულად",
+    "startDate": "დაწყების თარიღი",
+    "stops": "გაჩერება",
+    "hideFilter": "ფილტრის დალამვა",
+    "showFilter": "ფილტრის ჩვენება"
+}

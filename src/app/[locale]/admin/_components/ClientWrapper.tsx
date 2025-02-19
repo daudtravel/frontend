@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, UserCheck, Truck, Users, X } from "lucide-react";
+import { Menu, UserCheck, Truck, Users, X, LogOut } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ToursList } from "./tours/toursList/ToursList";
 import { TransfersList } from "./transfers/transfersList/TransfersList";
@@ -11,6 +11,7 @@ import CreateTransfer from "./transfers/createTransfer/CreateTransfer";
 import { DriversList } from "./drivers/driversList/DriversList";
 import EditTransfer from "./transfers/editTransfer/EditTransfer";
 import CreateDriver from "./drivers/createDriver/CreateDriver";
+import { useAuth } from "@/src/auth/authProvider";
 
 export const ClientWrapper = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -22,16 +23,23 @@ export const ClientWrapper = () => {
   const transfers = searchParams.get("transfers");
   const drivers = searchParams.get("drivers");
 
+  const { logout } = useAuth();
+
   useEffect(() => {
-    if (!tours && !transfers && !drivers) {
+    const hasNoParams =
+      !searchParams.has("tours") &&
+      !searchParams.has("transfers") &&
+      !searchParams.has("drivers");
+
+    if (hasNoParams) {
       router.push(`${pathname}?tours=all`);
     }
-  }, [tours, transfers, drivers, router, pathname]);
+  }, [pathname]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  
+
   const navigate = (query: string) => {
     router.push(`${pathname}${query}`);
   };
@@ -114,6 +122,14 @@ export const ClientWrapper = () => {
           >
             <Users size={20} />
             {isSidebarOpen && <span className="ml-4">მძღოლები</span>}
+          </button>
+
+          <button
+            onClick={logout}
+            className={`flex w-full items-center p-4 text-[red] `}
+          >
+            <LogOut size={20} />
+            {isSidebarOpen && <span className="ml-4">გამოსვლა</span>}
           </button>
         </nav>
       </div>

@@ -1,3 +1,4 @@
+"use client"
 import {
   Carousel,
   CarouselContent,
@@ -6,63 +7,96 @@ import {
   CarouselPrevious,
 } from "@/src/components/ui/carousel";
 import { StarIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { motion } from "framer-motion";
+import { Button } from "@/src/components/ui/button";
 
 const reviews = [
   {
     id: 1,
-    name: "Alice Johnson",
     rating: 5,
     comment:
-      "Absolutely stunning! The cottage exceeded all our expectations. Can't wait to come back!",
+    "Thank you to everyone at Davut Travel for such a pleasant tour 🩷🩷 I want to visit many more beautiful corners of Georgia with you, you are the best",
   },
   {
     id: 2,
-    name: "Bob Smith",
     rating: 4,
     comment:
-      "Great location, very peaceful. The amenities were top-notch. Highly recommend for a weekend getaway.",
+      "رحلة ممتازة والسائق عمر يمتاز باللغه العربيه وممتع للغايه",
   },
   {
     id: 3,
-    name: "Carol Davis",
     rating: 5,
     comment:
-      "We had an amazing time. The cottage was spotless and the surroundings were breathtaking.",
+      "Mashallah, their service is very upscale, beautiful places, and in addition to that, good manners, may God grant them success.",
   },
   {
     id: 4,
-    name: "David Brown",
     rating: 5,
     comment:
-      "Perfect place to unwind and reconnect with nature. The hosts were incredibly helpful and friendly.",
+      "داوود تعاملت معه شخص محترم واذا هو مشغول يرسل عليك سايق محترم ولا يقصر ب اي حاجه تبيها ، من واقع تجربه انصحكم فيه وبالسعر سمح ولا يقصر . اشكرك اخ داوود",
   },
   {
     id: 5,
-    name: "Eva Wilson",
     rating: 4,
     comment:
-      "Cozy, comfortable, and charming. We enjoyed every moment of our stay. Will definitely return!",
+      "شركة رائعة جدا.  والأهم من ذلك أن لديهم سائقين مسلمين",
   },
   {
     id: 6,
-    name: "Frank Miller",
     rating: 5,
     comment:
-      "A hidden gem! The attention to detail in the cottage's decor and amenities was impressive.",
-  },
+    "فريق متعاون وممتاز ويساعدك في إيجاد أنسب الأسعار ويأخذك الى اماكن جميلة وممتعه للتنزه",
+  }
 ];
 
 const ReviewsSection = () => {
+  const t = useTranslations("main");
+
+  const buttonVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 20,
+        delay: 0.5,
+      },
+    },
+    hover: {
+      scale: 1.05,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+      },
+    },
+    tap: {
+      scale: 0.95,
+    },
+  };
+
   return (
     <section className="md:pt-12 md:pb-20 pb-12 flex w-full flex-col items-center">
-      <h1 className="text-2xl md:text-4xl text-center mb-5 md:mb-10">
-        What Our Guests Say
-      </h1>
+      <motion.h1 
+        className="text-2xl md:text-3xl text-center mb-5 md:mb-10"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={buttonVariants}
+      >
+        {t("guestReviews")}
+      </motion.h1>
       <Carousel
         opts={{
           align: "start",
         }}
-        className="mt-6 w-full p-0 "
+        className="mt-6 w-full p-0"
       >
         <CarouselContent className="gap-2 md:gap-4 mx-4 md:mx-20">
           {reviews.map((item, index) => (
@@ -82,17 +116,35 @@ const ReviewsSection = () => {
                   </div>
                   <p className="md:mb-4 mb-2 text-xs md:text-sm text-gray-600">{item.comment}</p>
                 </div>
-                <p className="md:text-base text-sm font-semibold">{item.name}</p>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-
         <div className="hidden md:block md:absolute -top-20 md:right-20 lg:right-40">
           <CarouselPrevious className="bg-mainGradient text-white w-10 h-10 border-white rounded-md border hover:bg-mainGradientHover hover:text-white" />
           <CarouselNext className="bg-mainGradient text-white w-10 h-10 border-white rounded-md border hover:bg-mainGradientHover hover:text-white" />
         </div>
       </Carousel>
+      <motion.div
+        className="mt-8 md:mt-12"
+        variants={buttonVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
+        <motion.a
+          href="https://www.google.com/search?q=daudtravel&sca_esv=d4edb64137185dc1&sxsrf=AHTn8zosC93jIM1PxJvPNvi95IuSfElHWw%3A1739182646947&ei=NtKpZ4a8ObeI7NYPwsXrgQs&ved=0ahUKEwiGr_ue8LiLAxU3BNsEHcLiOrAQ4dUDCBA&uact=5&oq=daudtravel&gs_lp=Egxnd3Mtd2l6LXNlcnAiCmRhdWR0cmF2ZWwyBBAjGCcyBRAAGO8FMgUQABjvBTIFEAAY7wVIuRNQpAhYqxJwBHgAkAEAmAHVAaAB8guqAQUwLjcuMrgBA8gBAPgBAZgCDaAClQzCAggQABiwAxjvBcICCxAAGIAEGLADGKIEwgIKECMYgAQYJxiKBcICCxAuGIAEGJECGIoFwgILEAAYgAQYkQIYigXCAgsQABiABBixAxiKBcICDhAAGIAEGLEDGIMBGIoFwgILEAAYgAQYsQMYgwHCAggQABiABBixA8ICERAuGIAEGJECGMcBGIoFGK8BwgIKEC4YgAQYQxiKBcICERAuGIAEGLEDGNEDGIMBGMcBwgILEC4YgAQYsQMY1ALCAhAQABiABBixAxhDGIMBGIoFwgIFEAAYgATCAggQLhiABBjUAsICBRAuGIAEwgIHEC4YgAQYCsICBxAAGIAEGArCAgcQABiABBgNwgIJEAAYgAQYChgNwgIGEAAYDRgewgIIEAAYgAQYogSYAwCIBgGQBgWSBwU0LjcuMqAHm2g&sclient=gws-wiz-serp#lrd=0x406787f6f7466e93:0x69bea43bb941487c,1,,,,"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover="hover"
+          whileTap="tap"
+          variants={buttonVariants}
+        >
+          <Button className="bg-mainGradient hover:bg-mainGradientHover text-white px-6 py-2 text-sm md:text-base rounded-md transition-all duration-300">
+            {t("viewAllReviews")}
+          </Button>
+        </motion.a>
+      </motion.div>
     </section>
   );
 };

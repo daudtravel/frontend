@@ -1,16 +1,41 @@
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Header from "@/src/components/header/Header";
 import Footer from "@/src/components/footer/Footer";
 import { Locale, routing } from "@/src/i18n/routing";
 import Script from "next/script";
 import "./globals.css";
-
 import SignInModal from "./(auth)/_signin/SigninModal";
 import QueryProvider from "@/src/reactQuery/queryProvider";
 import { AuthProvider } from "@/src/auth/authProvider";
 import SignupModalWrapper from "./(auth)/_signup/SignupModalWrapper";
+
+
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations("meta");
+  return {
+      title: {
+          default: t('default'),
+          template: `%s | ${t('daudTravel')}`,
+      },
+      description: t('descriptionMain'),
+      openGraph: {
+          title: t('default'),
+          description: t('descriptionMain'),
+          type: 'website',
+          locale: locale,
+          url: 'https://www.daudtravel.com',
+          siteName: 'Daud Travel',
+      },
+  }
+}
 
 export default async function LocaleLayout({
   children,

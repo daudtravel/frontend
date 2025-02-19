@@ -1,33 +1,41 @@
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const LocalizationsSchema = z.object({
-  locale: z.string(),
-  start_location: z.string().min(1, "საწყისი ლოკაცია სავალდებულოა"),
+const TranslationSchema = z.object({
+  locale: z.string().min(1, "Locale is required"),
+  start_location: z.string().min(1, "Start location is required"),
   next_location: z.array(z.string()).default([]),
-  description: z.string().min(1, "აღწერა სავალდებულოა"),
+  description: z.string().min(1, "Description is required"),
 });
 
-const PriceSchema = z.object({
-  total_price: z.number().positive("Total price must be positive").optional(),
-  reservation_price: z
-    .number()
-    .positive("Reservation price must be positive")
-    .optional(),
+const GroupPricesSchema = z.object({
+  total_price: z.number().optional(),
+  reservation_price: z.number().optional(),
+  discounted_price: z.number().optional(),
 });
 
-const MonthlyPricesSchema = z.record(PriceSchema).optional();
-
-const TourSchema = z.object({
+export const TourSchema = z.object({
   localizations: z
-    .array(LocalizationsSchema)
-    .length(1, "ლოკალიზაცია სავალდებულოა"),
-  duration: z.string().min(1),
-  prices: MonthlyPricesSchema,
-  public: z.boolean().default(true),
-  image: z.string().min(1, "მთავარი სურათი სავალდებულოა"),
-  gallery: z.array(z.string()).optional(),
+    .array(TranslationSchema)
+    .min(1, "At least one localization is required"),
+  day: z.string().optional(),
+  night: z.string().optional(),
+  group_prices: GroupPricesSchema.optional(),
+  type: z.boolean().default(false),
+  image: z
+    .string()
+    .regex(/^data:image\/[a-zA-Z]+;base64,/, "Invalid image format"),
+  gallery: z
+    .array(
+      z.string().regex(/^data:image\/[a-zA-Z]+;base64,/, "Invalid image format")
+    )
+    .default([]),
+  public: z.boolean().default(false).optional(),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format")
+    .optional(),
 });
 
 export type TourFormData = z.infer<typeof TourSchema>;
@@ -44,14 +52,21 @@ export const useCreateTourValidator = () => {
           description: "",
         },
       ],
-      duration: "",
-      prices: {},
-      public: true,
+      day: "",
+      night: "",
+      type: false,
+      group_prices: {
+        total_price: undefined,
+        reservation_price: undefined,
+        discounted_price: undefined,
+      },
+      public: false,
       image: "",
       gallery: [],
+      date: new Date().toISOString().split("T")[0],
     },
     mode: "onChange",
   });
 };
 
-export type { LocalizationsSchema, TourSchema };
+export type { TranslationSchema };

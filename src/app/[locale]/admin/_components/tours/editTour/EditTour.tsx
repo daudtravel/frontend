@@ -30,29 +30,8 @@ import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 import { handleMultipleFilesToBase64 } from "@/src/utlis/base64/galleryImageUpload";
 import { Switch } from "@/src/components/ui/switch";
 import RichTextEditor from "@/src/components/textEditor/TextEditor";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/src/components/ui/accordion";
 import { toursAPI } from "@/src/routes/tours";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-const MONTHS = [
-  "იანვარი",
-  "თებერვალი",
-  "მარტი",
-  "აპრილი",
-  "მაისი",
-  "ივნისი",
-  "ივლისი",
-  "აგვისტო",
-  "სექტემბერი",
-  "ოქტომბერი",
-  "ნოემბერი",
-  "დეკემბერი",
-];
 
 export function EditTour({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -64,78 +43,133 @@ export function EditTour({ params }: { params: { id: string } }) {
   const [hasNewMainImage, setHasNewMainImage] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [tourType, setTourType] = useState<boolean | null>(null);
   const router = useRouter();
   const form = useEditTourValidator();
   const queryClient = useQueryClient();
 
-  const { data} = useQuery({
+  const { data } = useQuery({
     queryKey: ["tour", params.id],
     queryFn: () => toursAPI.getByIdAllLocales(params.id),
-    refetchOnMount: true,       
-    staleTime: 0, 
-});
+    refetchOnMount: true,
+    staleTime: 0,
+  });
 
+  const updateTourMutation = useMutation({
+    mutationFn: (updatedData: TourFormData) =>
+      toursAPI.put(params.id, updatedData),
+    onSuccess: (response) => {
+      if (response.message === "Tour updated successfully") {
+        setSuccessMessage("Tour updated successfully");
+        queryClient.invalidateQueries({ queryKey: ["tours"] });
+        router.push("?tours=all");
+      } else {
+        setErrorMessage(response.message || "Failed to update tour");
+      }
+    },
+    onError: (error) => {
+      console.error("Error updating tour:", error);
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.message || "Failed to update tour"
+        );
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+    },
+  });
 
+  const onSubmit = async (data: TourFormData) => {
+    try {
+      setIsSubmitting(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
 
-const updateTourMutation = useMutation({
-  //eslint-disable-next-line
-  mutationFn: (updatedData: any) => toursAPI.put(params.id, updatedData),
-  onSuccess: (response) => {
-    if (response.message === "Tour updated successfully") {
-      setSuccessMessage("Tour updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["tours"] });
-      router.push("?tours=all");
-    } else {
-      setErrorMessage(response.message || "Failed to update tour");
+      const formattedData: TourFormData = {
+        ...data,
+        type: tourType ? true : false,
+      };
+
+      // Handle group prices
+      if (tourType) {
+        formattedData.group_prices = {};
+      } else {
+        if (data.group_prices) {
+          const validGroupPrices: Record<string, number> = {};
+
+          if (
+            data.group_prices.total_price !== undefined &&
+            data.group_prices.total_price !== null &&
+            data.group_prices.total_price.toString().trim() !== ""
+          ) {
+            validGroupPrices.total_price = Number(
+              data.group_prices.total_price
+            );
+          }
+
+          if (
+            data.group_prices.reservation_price !== undefined &&
+            data.group_prices.reservation_price !== null &&
+            data.group_prices.reservation_price.toString().trim() !== ""
+          ) {
+            validGroupPrices.reservation_price = Number(
+              data.group_prices.reservation_price
+            );
+          }
+
+          if (
+            data.group_prices.discounted_price !== undefined &&
+            data.group_prices.discounted_price !== null &&
+            data.group_prices.discounted_price.toString().trim() !== ""
+          ) {
+            validGroupPrices.discounted_price = Number(
+              data.group_prices.discounted_price
+            );
+          }
+
+          formattedData.group_prices =
+            Object.keys(validGroupPrices).length > 0 ? validGroupPrices : {};
+        } else {
+          formattedData.group_prices = {};
+        }
+      }
+
+      // Create base submit data
+      const submitData: TourFormData & {
+        image?: string | null;
+        gallery?: string[];
+        deleteImages?: string[];
+      } = {
+        day: data.day,
+        night: data.night,
+        type: formattedData.type,
+        public: data.public,
+        group_prices: formattedData.group_prices,
+        localizations: data.localizations,
+        date: data.date || new Date().toISOString().split("T")[0],
+        image: data.image || null,
+      };
+
+      if (hasNewMainImage) {
+        submitData.image = data.image;
+      }
+
+      if (newGalleryImages.length > 0) {
+        submitData.gallery = newGalleryImages;
+      }
+
+      if (deletedImages.length > 0) {
+        submitData.deleteImages = deletedImages;
+      }
+
+      updateTourMutation.mutate(submitData);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Failed to update tour");
+    } finally {
+      setIsSubmitting(false);
     }
-  },
-  onError: (error) => {
-    console.error("Error updating tour:", error);
-    if (axios.isAxiosError(error)) {
-      setErrorMessage(
-        error.response?.data?.message || "Failed to update tour"
-      );
-    } else {
-      setErrorMessage("An unexpected error occurred");
-    }
-  },
-});
-
-
-const onSubmit = async (data: TourFormData) => {
-  try {
-    setIsSubmitting(true);
-    setErrorMessage(null);
-
-    const formattedPrices = Object.fromEntries(
-      Array.from({ length: 12 }, (_, i) => {
-        const monthKey = (i + 1).toString();
-        const monthPrice = data.prices?.[monthKey];
-        return [
-          monthKey,
-          {
-            total_price: monthPrice?.total_price || 0,
-            reservation_price: monthPrice?.reservation_price || 0,
-          },
-        ];
-      })
-    );
-
-    const submitData = {
-      duration: data.duration,
-      prices: formattedPrices,
-      localizations: data.localizations,
-      public: data.public,
-      image: hasNewMainImage ? data.image : null,
-      ...(newGalleryImages.length > 0 && { gallery: newGalleryImages }),
-      ...(deletedImages.length > 0 && { deleteImages: deletedImages }),
-    };
-
-    updateTourMutation.mutate(submitData);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -175,41 +209,56 @@ const onSubmit = async (data: TourFormData) => {
     form.setValue("gallery", newGalleryPreviews);
   };
 
-
   useEffect(() => {
     const fetchTourDetails = async () => {
-        if (!data) return;
-        try {
-            setIsLoading(true);
-            const tour = data.data.tour; 
-            const formData: TourFormData = {
-                localizations: SUPPORTED_LOCALES.map((locale) => ({
-                    locale,
-                    start_location: tour.translations[locale]?.start_location || "",
-                    next_location: tour.translations[locale]?.next_location || [],
-                    description: tour.translations[locale]?.description || "",
-                })),
-                duration: tour.duration,
-                prices: tour.prices || {},
-                image: tour.image,
-                gallery: tour.gallery || [],
-                public: tour.public,
+      if (!data) return;
+
+      try {
+        setIsLoading(true);
+        const tour = data.data.tour;
+        const formattedDate = tour.date
+          ? tour.date.split("T")[0]
+          : new Date().toISOString().split("T")[0];
+        const formData: TourFormData = {
+          type: tour.type,
+          localizations: SUPPORTED_LOCALES.map((locale) => {
+            const localization =
+              tour.localizations.find((l: { locale: string }) => l.locale === locale) || {};
+            return {
+              locale,
+              start_location: localization.start_location || "",
+              next_location: localization.next_location || [],
+              description: localization.description || "",
             };
-            form.reset(formData);
-            setMainImagePreview(tour.image);
-            setGalleryPreviews(tour.gallery || []);
-        } catch (error) {
-            console.error(error);
-            setErrorMessage("Failed to load tour details");
-        } finally {
-            setIsLoading(false);
-        }
+          }),
+          day: tour.day,
+          night: tour.night,
+          group_prices: tour.group_prices || {
+            total_price: undefined,
+            reservation_price: undefined,
+            discounted_price: undefined,
+          },
+
+          image: tour.image,
+          gallery: tour.gallery || [],
+          public: tour.public,
+          date: formattedDate,
+        };
+
+        form.reset(formData);
+        setTourType(tour.type);
+        setMainImagePreview(tour.image);
+        setGalleryPreviews(tour.gallery || []);
+      } catch (error) {
+        console.error(error);
+        setErrorMessage("Failed to load tour details");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchTourDetails();
-}, [data, form, params.id]);
-
-  
+  }, [data, form, params.id]);
 
   if (isLoading) {
     return (
@@ -235,8 +284,13 @@ const onSubmit = async (data: TourFormData) => {
             {successMessage}
           </div>
         )}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <h1>
+              <span className="font-bold">ტურის ტიპი:</span>{" "}
+              {tourType ? "ინდივიდუალური" : "ჯგუფური"}{" "}
+            </h1>
             <FormField
               control={form.control}
               name="public"
@@ -334,7 +388,7 @@ const onSubmit = async (data: TourFormData) => {
                             className="w-full"
                           >
                             <Plus className="h-4 w-4 mr-2" />
-                          ლოკაციის დამატება
+                            ლოკაციის დამატება
                           </Button>
                         </div>
                         <FormMessage />
@@ -362,13 +416,46 @@ const onSubmit = async (data: TourFormData) => {
                 </div>
               ))}
             </div>
+            {!tourType && (
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>თარიღი</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} disabled={isSubmitting} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
-                name="duration"
+                name="day"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>ხანგრძლივობა (დღე/ღამე)</FormLabel>
+                    <FormLabel>დღე</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="string"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="night"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ღამე</FormLabel>
                     <FormControl>
                       <Input
                         type="string"
@@ -382,67 +469,70 @@ const onSubmit = async (data: TourFormData) => {
                 )}
               />
             </div>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="monthly-prices">
-                <AccordionTrigger>ფასები თვეების მიხედვით</AccordionTrigger>
-                <AccordionContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {MONTHS.map((month, index) => {
-                      const monthNumber = (index + 1).toString();
-                      return (
-                        <Card key={monthNumber} className="p-4">
-                          <h3 className="font-medium mb-2">{month}</h3>
-                          <div className="space-y-4">
-                            <FormField
-                              control={form.control}
-                              name={`prices.${monthNumber}.total_price`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>სრული ღირებულება</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="Total price"
-                                      {...field}
-                                      onChange={(e) =>
-                                        field.onChange(Number(e.target.value))
-                                      }
-                                      disabled={isSubmitting}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+            <div className="space-y-4">
+              {!tourType && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">ჯგუფური ფასები</h3>
+                  <div className="space-y-3">
+                    <FormField
+                      control={form.control}
+                      name={`group_prices.total_price`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>საერთო ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
                             />
-                            <FormField
-                              control={form.control}
-                              name={`prices.${monthNumber}.reservation_price`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>ჯავშნის ღირებულება</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="number"
-                                      placeholder="Reservation price"
-                                      {...field}
-                                      onChange={(e) =>
-                                        field.onChange(Number(e.target.value))
-                                      }
-                                      disabled={isSubmitting}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`group_prices.reservation_price`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>დაჯავშნის ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
                             />
-                          </div>
-                        </Card>
-                      );
-                    })}
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`group_prices.discounted_price`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ფასდაკლებული ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                </div>
+              )}
+            </div>
+
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -469,7 +559,7 @@ const onSubmit = async (data: TourFormData) => {
                           alt="Main image preview"
                           fill
                           className="w-full h-full object-cover rounded"
-                          quality={100}  
+                          quality={100}
                         />
                       </div>
                     )}

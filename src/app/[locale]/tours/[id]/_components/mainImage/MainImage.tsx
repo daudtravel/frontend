@@ -1,12 +1,13 @@
+import { Tour } from "@/src/types/tours";
 import Image from "next/image";
 import { useState } from "react";
 import { PhotoView } from "react-photo-view";
 
-export default function MainImage({ data }: any) {
+export default function MainImage({ data }: { data: Tour }) {
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
   return (
     <>
-      <div className="w-full h-[250px] md:h-[500px] rounded-lg overflow-hidden">
+      <div className="w-full h-[250px] md:h-[400px] rounded-lg overflow-hidden">
         <PhotoView src={`https://api.daudtravel.com${data.image}`}>
           <div className="relative w-full h-full">
             {!mainImageLoaded && (

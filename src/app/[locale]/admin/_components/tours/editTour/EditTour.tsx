@@ -84,11 +84,13 @@ export function EditTour({ params }: { params: { id: string } }) {
       setIsSubmitting(true);
       setErrorMessage(null);
       setSuccessMessage(null);
+
       const formattedData: TourFormData = {
         ...data,
         type: tourType ? true : false,
       };
 
+      // Handle group prices
       if (tourType) {
         formattedData.group_prices = {};
       } else {
@@ -132,17 +134,33 @@ export function EditTour({ params }: { params: { id: string } }) {
         }
       }
 
-      const submitData = {
-        ...formattedData,
-        date: data.date || new Date().toISOString().split("T")[0],
+      // Create base submit data
+      const submitData: TourFormData & {
+        image?: string | null;
+        gallery?: string[];
+        deleteImages?: string[];
+      } = {
         day: data.day,
         night: data.night,
-        localizations: data.localizations,
+        type: formattedData.type,
         public: data.public,
-        ...(hasNewMainImage && { image: data.image }),
-        ...(newGalleryImages.length > 0 && { gallery: newGalleryImages }),
-        ...(deletedImages.length > 0 && { deleteImages: deletedImages }),
+        group_prices: formattedData.group_prices,
+        localizations: data.localizations,
+        date: data.date || new Date().toISOString().split("T")[0],
+        image: data.image || null,
       };
+
+      if (hasNewMainImage) {
+        submitData.image = data.image;
+      }
+
+      if (newGalleryImages.length > 0) {
+        submitData.gallery = newGalleryImages;
+      }
+
+      if (deletedImages.length > 0) {
+        submitData.deleteImages = deletedImages;
+      }
 
       updateTourMutation.mutate(submitData);
     } catch (error) {
@@ -203,12 +221,16 @@ export function EditTour({ params }: { params: { id: string } }) {
           : new Date().toISOString().split("T")[0];
         const formData: TourFormData = {
           type: tour.type,
-          localizations: SUPPORTED_LOCALES.map((locale) => ({
-            locale,
-            start_location: tour.translations[locale]?.start_location || "",
-            next_location: tour.translations[locale]?.next_location || [],
-            description: tour.translations[locale]?.description || "",
-          })),
+          localizations: SUPPORTED_LOCALES.map((locale) => {
+            const localization =
+              tour.localizations.find((l: { locale: string }) => l.locale === locale) || {};
+            return {
+              locale,
+              start_location: localization.start_location || "",
+              next_location: localization.next_location || [],
+              description: localization.description || "",
+            };
+          }),
           day: tour.day,
           night: tour.night,
           group_prices: tour.group_prices || {

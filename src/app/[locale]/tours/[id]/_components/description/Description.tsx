@@ -6,24 +6,51 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import { ArrowDown, MoreHorizontal } from "lucide-react";
+import { Tour } from "@/src/types/tours";
+import { ArrowDown, Calendar1, MoreHorizontal, Timer } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-export default function Description({ data }: any) {
+export default function Description({ data }: { data: Tour }) {
+  const t = useTranslations("tours");
   const [isDestinationsOpen, setIsDestinationsOpen] = useState(false);
   const description =
     data.localizations?.[0]?.description || "No description available";
   const nextLocations = data.localizations[0]?.next_location || [];
   const startLocation = data.localizations[0]?.start_location;
   const endLocation = data.localizations.length - 1;
-
   const allDestinations = [startLocation, ...nextLocations];
+  const startDate = new Date(data.date).toLocaleDateString("en-CA");
+  const day = data.day;
+  const night = data.night;
 
   return (
     <>
       <Card className="w-full">
-        <CardContent className="p-4 md:p-6 flex flex-col h-full">
-          <h1>start date</h1>
+        <CardContent className="p-4 md:p-6 flex flex-col gap-2 md:gap-6 h-full">
+          <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
+            <div className="flex-row flex gap-2 items-center">
+              <Calendar1 className="text-main w-4 h-4" />
+              <span className="text-base font-semibold">{t("startDate")}:</span>
+              <span className="text-base">{startDate}</span>
+            </div>
+            <div className="flex items-center gap-[3px]">
+              <div className="flex items-center gap-2">
+                <Timer className="w-4 h-4 text-main" />
+                <span className="text-base font-semibold">
+                  {t("duration")}:
+                </span>
+                <span className="text-base">
+                  {day} {t("day")}
+                </span>
+              </div>
+              <div className="flex items-center">
+                <span className="text-base">
+                  / {night} {t("night")}
+                </span>
+              </div>
+            </div>
+          </div>
           <div className="flex flex-col flex-grow">
             {nextLocations.length > 0 && (
               <>

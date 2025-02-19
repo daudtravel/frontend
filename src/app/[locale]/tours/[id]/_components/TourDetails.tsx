@@ -2,7 +2,7 @@
 
 import { Card } from "@/src/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { PhotoProvider, PhotoView } from "react-photo-view";
+import { PhotoProvider } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import { Tour } from "@/src/types/tours";
 import { useParams } from "next/navigation";
@@ -11,7 +11,6 @@ import ToursSectionLoader from "@/src/components/shared/loader/ToursSectionLoade
 import { Prices } from "@/src/types/prices";
 import Description from "./description/Description";
 import Gallery from "./gallery/Gallery";
-import MainImage from "./mainImage/MainImage";
 import Payment from "./payment/Payment";
 
 const TourDetails = () => {
@@ -59,12 +58,11 @@ const TourDetails = () => {
   return (
     <PhotoProvider>
       <section className="w-full px-4 md:px-20 py-10">
-        <div className="flex flex-row gap-6 md:gap-10">
-          <div className="w-1/2 flex flex-col gap-6">
-            <MainImage data={data} />
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+          <div className="w-full md:w-1/2 flex flex-col gap-6">
             <Description data={data} />
           </div>
-          <div className="w-1/2 flex flex-col gap-6">
+          <div className="w-full md:w-1/2 flex flex-col gap-6">
             <Gallery data={data} />
             <Payment data={data} />
           </div>

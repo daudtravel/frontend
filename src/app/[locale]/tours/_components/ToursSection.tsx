@@ -45,7 +45,11 @@ export default function ToursSection() {
       queryParams.isGroup,
     ],
     queryFn: async () => {
-      const params: any = { locale };
+      const params: {
+        locale: string | string[] | undefined;
+        start_location?: string;
+        isGroup?: string;
+      } = { locale };
 
       if (queryParams.start_location) {
         params.start_location = queryParams.start_location;
@@ -93,7 +97,7 @@ export default function ToursSection() {
       isGroup: filters.isGroup,
     });
 
-    let basePath = `/${locale}/tours`;
+    const basePath = `/${locale}/tours`;
     const searchString = newParams.toString();
     const newUrl = searchString ? `${basePath}?${searchString}` : basePath;
 

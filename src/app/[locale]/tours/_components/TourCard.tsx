@@ -1,14 +1,5 @@
 import { useTranslations } from "next-intl";
-import {
-  User,
-  Users,
-  Moon,
-  Wallet,
-  Calendar1Icon,
-  Timer,
-  CalendarDays,
-  Calendar1,
-} from "lucide-react";
+import { User, Users, Wallet, CalendarDays, Calendar1 } from "lucide-react";
 import Link from "next/link";
 import { MapPin, ArrowRight, AlertCircle, MoreHorizontal } from "lucide-react";
 import { Tour } from "@/src/types/tours";

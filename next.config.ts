@@ -82,8 +82,13 @@ export default withNextIntl(nextConfig);
 //         port: "3001",
 //         pathname: "/uploads/**",
 //       },
+//       {
+//         protocol: "https",
+//         hostname: "api.daudtravel.com",
+//         pathname: "/uploads/**",
+//       },
 //     ],
-//     domains: ["localhost"],
+//     domains: ["localhost", "api.daudtravel.com"], // Add your domain here
 //   },
 
 //   async rewrites() {

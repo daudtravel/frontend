@@ -6,6 +6,7 @@ import axios from "axios";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -84,85 +85,108 @@ export function EditTour({ params }: { params: { id: string } }) {
       setIsSubmitting(true);
       setErrorMessage(null);
       setSuccessMessage(null);
-
-      const formattedData: TourFormData = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const formattedData: any = {
         ...data,
-        type: tourType ? true : false,
+        type: tourType,
       };
-
-      // Handle group prices
-      if (tourType) {
-        formattedData.group_prices = {};
-      } else {
-        if (data.group_prices) {
-          const validGroupPrices: Record<string, number> = {};
-
-          if (
-            data.group_prices.total_price !== undefined &&
-            data.group_prices.total_price !== null &&
-            data.group_prices.total_price.toString().trim() !== ""
-          ) {
-            validGroupPrices.total_price = Number(
-              data.group_prices.total_price
-            );
-          }
-
-          if (
-            data.group_prices.reservation_price !== undefined &&
-            data.group_prices.reservation_price !== null &&
-            data.group_prices.reservation_price.toString().trim() !== ""
-          ) {
-            validGroupPrices.reservation_price = Number(
-              data.group_prices.reservation_price
-            );
-          }
-
-          if (
-            data.group_prices.discounted_price !== undefined &&
-            data.group_prices.discounted_price !== null &&
-            data.group_prices.discounted_price.toString().trim() !== ""
-          ) {
-            validGroupPrices.discounted_price = Number(
-              data.group_prices.discounted_price
-            );
-          }
-
-          formattedData.group_prices =
-            Object.keys(validGroupPrices).length > 0 ? validGroupPrices : {};
-        } else {
-          formattedData.group_prices = {};
-        }
-      }
-
-      // Create base submit data
-      const submitData: TourFormData & {
-        image?: string | null;
-        gallery?: string[];
-        deleteImages?: string[];
-      } = {
-        day: data.day,
-        night: data.night,
-        type: formattedData.type,
-        public: data.public,
-        group_prices: formattedData.group_prices,
-        localizations: data.localizations,
-        date: data.date || new Date().toISOString().split("T")[0],
-        image: data.image || null,
-      };
-
-      if (hasNewMainImage) {
-        submitData.image = data.image;
+      if (deletedImages.length > 0) {
+        formattedData.deleteImages = deletedImages;
       }
 
       if (newGalleryImages.length > 0) {
-        submitData.gallery = newGalleryImages;
+        formattedData.gallery = newGalleryImages;
+      } else {
+        delete formattedData.gallery;
       }
 
-      if (deletedImages.length > 0) {
-        submitData.deleteImages = deletedImages;
+      if (!hasNewMainImage) {
+        delete formattedData.image;
       }
 
-      updateTourMutation.mutate(submitData);
+      if (!tourType) {
+        // Group tour logic
+        const groupPrices: {
+          total_price?: number;
+          reservation_price?: number;
+          discounted_price?: number;
+        } = {};
+
+        if (data.group_prices) {
+          if (data.group_prices.total_price != null) {
+            groupPrices.total_price = Number(data.group_prices.total_price);
+          }
+          if (data.group_prices.reservation_price != null) {
+            groupPrices.reservation_price = Number(
+              data.group_prices.reservation_price
+            );
+          }
+          if (data.group_prices.discounted_price != null) {
+            groupPrices.discounted_price = Number(
+              data.group_prices.discounted_price
+            );
+          }
+        }
+
+        formattedData.group_prices =
+          Object.keys(groupPrices).length > 0 ? groupPrices : {};
+        formattedData.individual_prices = null;
+        delete formattedData.amount_persons;
+
+        if (!formattedData.date) {
+          formattedData.date = new Date().toISOString().split("T")[0];
+        }
+      } else {
+        // Individual tour logic
+        const individualPrices = {
+          season: {
+            total_price: 0,
+            discounted_price: 0,
+            reservation_price: 0,
+          },
+          off_season: {
+            total_price: 0,
+            discounted_price: 0,
+            reservation_price: 0,
+          },
+        };
+
+        if (data.individual_prices) {
+          if (data.individual_prices.season) {
+            const { total_price, discounted_price, reservation_price } =
+              data.individual_prices.season;
+            if (total_price != null)
+              individualPrices.season.total_price = Number(total_price);
+            if (discounted_price != null)
+              individualPrices.season.discounted_price =
+                Number(discounted_price);
+            if (reservation_price != null)
+              individualPrices.season.reservation_price =
+                Number(reservation_price);
+          }
+          if (data.individual_prices.off_season) {
+            const { total_price, discounted_price, reservation_price } =
+              data.individual_prices.off_season;
+            if (total_price != null)
+              individualPrices.off_season.total_price = Number(total_price);
+            if (discounted_price != null)
+              individualPrices.off_season.discounted_price =
+                Number(discounted_price);
+            if (reservation_price != null)
+              individualPrices.off_season.reservation_price =
+                Number(reservation_price);
+          }
+        }
+
+        formattedData.individual_prices = individualPrices;
+        if (data.amount_persons != null) {
+          formattedData.amount_persons = Number(data.amount_persons);
+        }
+        formattedData.group_prices = null;
+        delete formattedData.date;
+      }
+
+      updateTourMutation.mutate(formattedData);
     } catch (error) {
       console.error(error);
       setErrorMessage("Failed to update tour");
@@ -170,7 +194,6 @@ export function EditTour({ params }: { params: { id: string } }) {
       setIsSubmitting(false);
     }
   };
-
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -223,7 +246,9 @@ export function EditTour({ params }: { params: { id: string } }) {
           type: tour.type,
           localizations: SUPPORTED_LOCALES.map((locale) => {
             const localization =
-              tour.localizations.find((l: { locale: string }) => l.locale === locale) || {};
+              tour.localizations.find(
+                (l: { locale: string }) => l.locale === locale
+              ) || {};
             return {
               locale,
               start_location: localization.start_location || "",
@@ -238,7 +263,19 @@ export function EditTour({ params }: { params: { id: string } }) {
             reservation_price: undefined,
             discounted_price: undefined,
           },
-
+          individual_prices: tour.individual_prices || {
+            season: {
+              total_price: 0,
+              discounted_price: 0,
+              reservation_price: 0,
+            },
+            off_season: {
+              total_price: 0,
+              discounted_price: 0,
+              reservation_price: 0,
+            },
+          },
+          amount_persons: tour.amount_persons || 1,
           image: tour.image,
           gallery: tour.gallery || [],
           public: tour.public,
@@ -287,10 +324,31 @@ export function EditTour({ params }: { params: { id: string } }) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <h1>
-              <span className="font-bold">ტურის ტიპი:</span>{" "}
-              {tourType ? "ინდივიდუალური" : "ჯგუფური"}{" "}
-            </h1>
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">ტურის ტიპი</FormLabel>
+                    <FormDescription>
+                      {tourType ? "ინდივიდუალური" : "ჯგუფური"} ტური
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={!!tourType}
+                      onCheckedChange={(checked) => {
+                        setTourType(checked);
+                        field.onChange(checked);
+                      }}
+                      aria-label="Toggle tour type"
+                      disabled={true}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="public"
@@ -308,9 +366,9 @@ export function EditTour({ params }: { params: { id: string } }) {
                 </FormItem>
               )}
             />
-            <div className="w-full grid grid-cols-2 gap-2">
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
               {SUPPORTED_LOCALES.map((locale, index) => (
-                <div key={locale} className="space-y-2 p-4 border rounded-lg">
+                <div key={locale} className="space-y-4 p-4 border rounded-lg">
                   <h3 className="text-lg font-semibold capitalize">
                     {locale} თარგმანი
                   </h3>
@@ -322,7 +380,11 @@ export function EditTour({ params }: { params: { id: string } }) {
                       <FormItem>
                         <FormLabel>საწყისი ლოკაცია</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={isSubmitting} />
+                          <Input
+                            {...field}
+                            placeholder="შეიყვანეთ საწყისი ლოკაცია"
+                            disabled={isSubmitting}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -351,7 +413,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                                     field.onChange(newLocations);
                                   }}
                                   disabled={isSubmitting}
-                                  placeholder={`Location ${locationIndex + 1}`}
+                                  placeholder={`ლოკაცია ${locationIndex + 1}`}
                                 />
                                 <Button
                                   type="button"
@@ -395,6 +457,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name={`localizations.${index}.description`}
@@ -406,7 +469,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                             value={field.value}
                             onChange={field.onChange}
                             disabled={isSubmitting}
-                            placeholder="დაამატე აღწერა"
+                            placeholder="შეიყვანეთ ტურის აღწერა"
                           />
                         </FormControl>
                         <FormMessage />
@@ -416,22 +479,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                 </div>
               ))}
             </div>
-            {!tourType && (
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>თარიღი</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} disabled={isSubmitting} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="day"
@@ -440,7 +488,8 @@ export function EditTour({ params }: { params: { id: string } }) {
                     <FormLabel>დღე</FormLabel>
                     <FormControl>
                       <Input
-                        type="string"
+                        type="text"
+                        placeholder="მაგ: 3 დღე"
                         {...field}
                         onChange={(e) => field.onChange(e.target.value)}
                         disabled={isSubmitting}
@@ -458,7 +507,8 @@ export function EditTour({ params }: { params: { id: string } }) {
                     <FormLabel>ღამე</FormLabel>
                     <FormControl>
                       <Input
-                        type="string"
+                        type="text"
+                        placeholder="მაგ: 2 ღამე"
                         {...field}
                         onChange={(e) => field.onChange(e.target.value)}
                         disabled={isSubmitting}
@@ -468,15 +518,62 @@ export function EditTour({ params }: { params: { id: string } }) {
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="space-y-4">
               {!tourType && (
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>თარიღი</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+            {tourType ? (
+              <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+                <h3 className="text-lg font-medium">
+                  ინდივიდუალური ტურის დეტალები
+                </h3>
+                <FormField
+                  control={form.control}
+                  name="amount_persons"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ადამიანების რაოდენობა</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="მაქსიმალური ადამიანების რაოდენობა"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? Number(e.target.value)
+                                : undefined
+                            )
+                          }
+                          value={field.value ?? ""}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        შეიყვანეთ მაქსიმალური ადამიანების რაოდენობა ტურისთვის
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">ჯგუფური ფასები</h3>
-                  <div className="space-y-3">
+                  <h4 className="font-medium">სეზონური ფასები</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <FormField
                       control={form.control}
-                      name={`group_prices.total_price`}
+                      name="individual_prices.season.total_price"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>საერთო ფასი</FormLabel>
@@ -485,34 +582,23 @@ export function EditTour({ params }: { params: { id: string } }) {
                               type="number"
                               {...field}
                               onChange={(e) =>
-                                field.onChange(Number(e.target.value))
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
                               }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
                             />
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField
                       control={form.control}
-                      name={`group_prices.reservation_price`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>დაჯავშნის ფასი</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`group_prices.discounted_price`}
+                      name="individual_prices.season.discounted_price"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>ფასდაკლებული ფასი</FormLabel>
@@ -521,18 +607,208 @@ export function EditTour({ params }: { params: { id: string } }) {
                               type="number"
                               {...field}
                               onChange={(e) =>
-                                field.onChange(Number(e.target.value))
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
                               }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
                             />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.season.reservation_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>დაჯავშნის ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                 </div>
-              )}
-            </div>
-
+                <div className="space-y-4">
+                  <h4 className="font-medium">არასეზონური ფასები</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.off_season.total_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>საერთო ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.off_season.discounted_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ფასდაკლებული ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.off_season.reservation_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>დაჯავშნის ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Group Prices */
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">ჯგუფური ფასები</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="group_prices.total_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>საერთო ფასი</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            value={field.value === null ? "" : field.value}
+                            onChange={(e) => {
+                              const value =
+                                e.target.value === ""
+                                  ? null
+                                  : Number(e.target.value);
+                              field.onChange(value);
+                            }}
+                            disabled={isSubmitting}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="group_prices.reservation_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>დაჯავშნის ფასი</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            value={field.value === null ? "" : field.value}
+                            onChange={(e) => {
+                              const value =
+                                e.target.value === ""
+                                  ? null
+                                  : Number(e.target.value);
+                              field.onChange(value);
+                            }}
+                            disabled={isSubmitting}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="group_prices.discounted_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ფასდაკლებული ფასი</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            value={field.value === null ? "" : field.value}
+                            onChange={(e) => {
+                              const value =
+                                e.target.value === ""
+                                  ? null
+                                  : Number(e.target.value);
+                              field.onChange(value);
+                            }}
+                            disabled={isSubmitting}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -549,24 +825,28 @@ export function EditTour({ params }: { params: { id: string } }) {
                       />
                     </FormControl>
                     {mainImagePreview && (
-                      <div className="mt-2 w-64 h-40 relative">
+                      <div className="mt-2">
                         <Image
                           src={
                             mainImagePreview.startsWith("data:")
                               ? mainImagePreview
                               : `https://api.daudtravel.com${mainImagePreview}`
                           }
-                          alt="Main image preview"
-                          fill
-                          className="w-full h-full object-cover rounded"
-                          quality={100}
+                          alt="მთავარი სურათის გადახედვა"
+                          width={400}
+                          height={225}
+                          className="object-cover rounded max-h-48"
                         />
                       </div>
                     )}
+                    <FormDescription>
+                      განაახლეთ ტურის მთავარი სურათი (PNG, JPEG, GIF, WebP)
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="gallery"
@@ -583,7 +863,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                       />
                     </FormControl>
                     {galleryPreviews.length > 0 && (
-                      <div className="mt-2 grid grid-cols-5 gap-2 h-32">
+                      <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
                         {galleryPreviews.map((preview, index) => (
                           <div key={index} className="relative">
                             <Image
@@ -592,11 +872,10 @@ export function EditTour({ params }: { params: { id: string } }) {
                                   ? preview
                                   : `https://api.daudtravel.com${preview}`
                               }
-                              alt={`Gallery image ${index + 1}`}
-                              layout="fill"
-                              objectFit="cover"
-                              className="rounded"
-                              quality={100}
+                              alt={`გალერეის სურათი ${index + 1}`}
+                              width={200}
+                              height={150}
+                              className="w-full h-32 object-cover rounded"
                             />
                             <button
                               type="button"
@@ -609,20 +888,16 @@ export function EditTour({ params }: { params: { id: string } }) {
                         ))}
                       </div>
                     )}
+                    <FormDescription>
+                      განაახლეთ გალერიის სურათები
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  განახლება...
-                </>
-              ) : (
-                "განახლება"
-              )}
+              ტურის განახლება
             </Button>
           </form>
         </Form>

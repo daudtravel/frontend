@@ -1,5 +1,12 @@
 import { useTranslations } from "next-intl";
-import { User, Users, Wallet, CalendarDays, Calendar1 } from "lucide-react";
+import {
+  User,
+  Users,
+  Wallet,
+  CalendarDays,
+  Calendar1,
+  PersonStanding,
+} from "lucide-react";
 import Link from "next/link";
 import { MapPin, ArrowRight, AlertCircle, MoreHorizontal } from "lucide-react";
 import { Tour } from "@/src/types/tours";
@@ -14,6 +21,11 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
   const nextLocations = tour.localizations[0]?.next_location || [];
   const startLocation = tour.localizations[0]?.start_location;
   const endLocation = nextLocations[nextLocations.length - 1];
+
+  const isCurrentSeasonSummer = () => {
+    const currentMonth = new Date().getMonth();
+    return currentMonth >= 5 && currentMonth <= 8;
+  };
 
   return (
     <div className="flex flex-col md:flex-col w-full bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-xs overflow-hidden transition-all duration-300 hover:shadow-lg">
@@ -49,7 +61,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
         )}
       </div>
       <div className="w-full py-4 px-4 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+        <div className="flex md:items-center gap-3 md:gap-0 flex-col md:flex-row md:justify-between">
           <div className="flex items-center flex-row gap-2">
             <MapPin className="w-4 h-4 text-main" />
             <span className="text-sm font-bold">{t("startLocation")}:</span>
@@ -71,15 +83,62 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
             </div>
           </div>
         </div>
+        <div className="md:flex-row flex-col flex gap-3 md:gap-0 md:items-center justify-between w-full">
+          {tour.type && (
+            <div>
+              <div className="flex items-center gap-2">
+                <PersonStanding className="w-4 h-4 text-main" />
+                <span className="text-sm font-bold">{t("numOfPersons")}:</span>
+                <span className="text-sm">{tour.amount_persons}</span>
+              </div>
+            </div>
+          )}
+          <div className="flex flex-row items-center gap-2">
+            <Wallet className="w-4 h-4 text-main" />
+            <span className="text-sm font-bold">{t("price")}: </span>
+            {tour.type ? (
+              <>
+                <span
+                  className={`text-sm ${
+                    isCurrentSeasonSummer()
+                      ? tour.individual_prices.season.discounted_price
+                      : tour.individual_prices.off_season.discounted_price
+                        ? "line-through text-gray-500"
+                        : ""
+                  }`}
+                >
+                  {isCurrentSeasonSummer()
+                    ? `${tour.individual_prices.season.total_price || 0} $`
+                    : `${tour.individual_prices.off_season.total_price || 0} $`}
+                </span>
+                {isCurrentSeasonSummer()
+                  ? tour.individual_prices.season.discounted_price && (
+                      <span className="text-sm font-medium text-red-600">
+                        {`${tour.individual_prices.season.discounted_price} $`}
+                      </span>
+                    )
+                  : tour.individual_prices.off_season.discounted_price && (
+                      <span className="text-sm font-medium text-red-600">
+                        {`${tour.individual_prices.off_season.discounted_price} $`}
+                      </span>
+                    )}
+              </>
+            ) : (
+              <>
+                <span
+                  className={`text-sm ${tour.group_prices?.discounted_price ? "line-through text-gray-500" : ""}`}
+                >
+                  {`${tour.group_prices?.total_price || 0} $`}
+                </span>
 
-        <div className="flex items-center gap-2">
-          <Wallet className="w-4 h-4 text-main" />
-          <span className="text-sm font-bold">{t("price")}:</span>
-          <span className="text-sm">
-            {tour.type
-              ? t("agreement")
-              : `${tour.group_prices?.total_price || 0} $`}
-          </span>
+                {tour.group_prices?.discounted_price && (
+                  <span className="text-sm font-medium text-red-600">
+                    {`${tour.group_prices?.discounted_price} $`}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <CalendarDays className="w-4 h-4 text-main" />
@@ -90,7 +149,6 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
               : new Date(tour.date).toLocaleDateString("en-CA")}
           </span>
         </div>
-
         <div className="flex items-center gap-2">
           {tour.type ? (
             <User className="w-4 h-4 text-main" />
@@ -108,7 +166,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
               <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
               <div className="flex justify-between items-center relative">
                 <div className="flex flex-col items-center relative">
-                  <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                  <MapPin className="w-5 h-5 text-main" />
                   <span className="text-xs font-medium text-center w-20 mt-2">
                     {startLocation}
                   </span>
@@ -122,7 +180,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
                   </div>
                 )}
                 <div className="flex flex-col items-center relative">
-                  <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                  <MapPin className="w-5 h-5 text-main" />
                   <span className="text-xs font-medium text-center w-20 mt-2">
                     {endLocation}
                   </span>
@@ -130,14 +188,14 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
               </div>
             </div>
             <div className="hidden xl:block relative py-4">
-              <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
+              <div className="absolute left-0 right-0 top-1/3 md:top-[40%] h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
               <div className="relative flex justify-between items-center">
                 {[startLocation, ...nextLocations].map((location, index) => (
                   <div
                     key={index}
                     className="flex flex-col items-center relative"
                   >
-                    <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                    <MapPin className="w-4 h-4 text-main" />
                     <span className="text-xs font-medium text-center w-20 mt-2 line-clamp-2">
                       {location}
                     </span>

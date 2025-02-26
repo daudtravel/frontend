@@ -57,7 +57,7 @@ const TourDetails = () => {
 
   return (
     <PhotoProvider>
-      <section className="w-full px-4 md:px-20 py-10">
+      <section className="w-full px-4 md:px-20 py-10  min-h-screen">
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           <div className="w-full md:w-1/2 flex flex-col gap-6">
             <Description data={data} />

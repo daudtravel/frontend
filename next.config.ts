@@ -88,7 +88,7 @@ export default withNextIntl(nextConfig);
 //         pathname: "/uploads/**",
 //       },
 //     ],
-//     domains: ["localhost", "api.daudtravel.com"], // Add your domain here
+//     domains: ["localhost", "api.daudtravel.com"], 
 //   },
 
 //   async rewrites() {

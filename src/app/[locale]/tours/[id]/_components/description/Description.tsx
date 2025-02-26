@@ -7,7 +7,15 @@ import {
   DialogTitle,
 } from "@/src/components/ui/dialog";
 import { Tour } from "@/src/types/tours";
-import { ArrowDown, Calendar1, MoreHorizontal, Timer } from "lucide-react";
+import {
+  ArrowDown,
+  CalendarDays,
+  GroupIcon,
+  MapPin,
+  MoreHorizontal,
+  PersonStanding,
+  Timer,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -20,32 +28,51 @@ export default function Description({ data }: { data: Tour }) {
   const startLocation = data.localizations[0]?.start_location;
   const endLocation = data.localizations.length - 1;
   const allDestinations = [startLocation, ...nextLocations];
-  const startDate = new Date(data.date).toLocaleDateString("en-CA");
   const day = data.day;
   const night = data.night;
+  const numOfPersons = data.amount_persons;
 
   return (
     <>
       <Card className="w-full">
         <CardContent className="p-4 md:p-6 flex flex-col gap-2 md:gap-6 h-full">
-          <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
+          <div className="flex flex-col gap-2  md:justify-between">
             <div className="flex-row flex gap-2 items-center">
-              <Calendar1 className="text-main w-4 h-4" />
-              <span className="text-base font-semibold">{t("startDate")}:</span>
-              <span className="text-base">{startDate}</span>
+              <GroupIcon className="text-main w-4 h-4" />
+              <span className="text-sm font-semibold">{t("tourType")}:</span>
+              <span className="text-sm">
+                {data.type ? t("individualTourType") : t("groupTourType")}
+              </span>
             </div>
+
+            <div className="flex items-center gap-2">
+              <CalendarDays className="w-4 h-4 text-main" />
+              <span className="text-sm font-bold">{t("startDate")}:</span>
+              <span className="text-sm">
+                {data.type
+                  ? t("agreement")
+                  : new Date(data.date).toLocaleDateString("en-CA")}
+              </span>
+            </div>
+            {data.amount_persons && (
+              <div className="flex-row flex gap-2 items-center">
+                <PersonStanding className="text-main w-4 h-4" />
+                <span className="text-sm font-semibold">
+                  {t("numOfPersons")}:
+                </span>
+                <span className="text-sm">{numOfPersons}</span>
+              </div>
+            )}
             <div className="flex items-center gap-[3px]">
               <div className="flex items-center gap-2">
                 <Timer className="w-4 h-4 text-main" />
-                <span className="text-base font-semibold">
-                  {t("duration")}:
-                </span>
-                <span className="text-base">
+                <span className="text-sm font-semibold">{t("duration")}:</span>
+                <span className="text-sm">
                   {day} {t("day")}
                 </span>
               </div>
               <div className="flex items-center">
-                <span className="text-base">
+                <span className="text-sm">
                   / {night} {t("night")}
                 </span>
               </div>
@@ -58,7 +85,7 @@ export default function Description({ data }: { data: Tour }) {
                   <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
                   <div className="flex justify-between items-center relative">
                     <div className="flex flex-col items-center relative">
-                      <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                      <MapPin className="w-5 h-5 text-main" />
                       <span className="text-xs font-medium text-center w-20 mt-2">
                         {startLocation}
                       </span>
@@ -75,7 +102,7 @@ export default function Description({ data }: { data: Tour }) {
                       </div>
                     )}
                     <div className="flex flex-col items-center relative">
-                      <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                      <MapPin className="w-5 h-5 text-main" />
                       <span className="text-xs font-medium text-center w-20 mt-2">
                         {endLocation}
                       </span>
@@ -91,7 +118,7 @@ export default function Description({ data }: { data: Tour }) {
                           key={index}
                           className="flex flex-col items-center relative"
                         >
-                          <div className="w-4 h-4 bg-orange-500 rounded-full z-10" />
+                          <MapPin className="w-5 h-5 text-main" />
                           <span className="text-xs font-medium text-center w-20 mt-2 line-clamp-2">
                             {location}
                           </span>
@@ -125,7 +152,7 @@ export default function Description({ data }: { data: Tour }) {
                   <ArrowDown className="absolute left-6 -ml-[5px] top-6 w-3 h-3 text-blue-500" />
                 )}
                 <div className="ml-12">
-                  <p className="text-base font-medium">{location}</p>
+                  <p className="text-sm font-medium">{location}</p>
                   {index === 0 && (
                     <span className="text-sm text-blue-500">
                       Starting point

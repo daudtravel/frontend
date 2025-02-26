@@ -30,8 +30,6 @@ import { TourFormData, useCreateTourValidator } from "./CreateTourValidator";
 import { toursAPI } from "@/src/routes/tours";
 import { Switch } from "@/src/components/ui/switch";
 
-
-
 const CreateTour = () => {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
@@ -71,19 +69,19 @@ const CreateTour = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const formattedData = {
+    const formattedData= {
       ...data,
       type: tourType,
     };
 
     if (!tourType) {
+
       const groupPrices: {
         total_price?: number;
         reservation_price?: number;
         discounted_price?: number;
       } = {};
 
-      // Validate and add valid group prices to the object
       if (data.group_prices) {
         if (
           data.group_prices.total_price !== undefined &&
@@ -109,22 +107,74 @@ const CreateTour = () => {
         }
       }
 
-      // Only include group_prices if it has valid values
-      if (Object.keys(groupPrices).length > 0) {
-        formattedData.group_prices = groupPrices;
-      }
-    } else {
-      // If tourType is true, remove group_prices
-      delete formattedData.group_prices;
-    }
 
-    // Handle date assignment based on tourType
-    if (!tourType) {
+      formattedData.group_prices =
+        Object.keys(groupPrices).length > 0 ? groupPrices : {};
+
+   
+      formattedData.individual_prices = null;
+
+ 
+      delete formattedData.amount_persons;
+
+
       if (!formattedData.date) {
         formattedData.date = new Date().toISOString().split("T")[0];
       }
     } else {
-      formattedData.date = new Date().toISOString().split("T")[0];
+      const individualPrices = {
+        season: {
+          total_price: 0,
+          discounted_price: 0,
+          reservation_price: 0,
+        },
+        off_season: {
+          total_price: 0,
+          discounted_price: 0,
+          reservation_price: 0,
+        },
+      };
+
+      if (data.individual_prices) {
+        if (data.individual_prices.season) {
+          const { total_price, discounted_price, reservation_price } =
+            data.individual_prices.season;
+
+          if (total_price !== undefined && total_price !== null) {
+            individualPrices.season.total_price = Number(total_price);
+          }
+          if (discounted_price !== undefined && discounted_price !== null) {
+            individualPrices.season.discounted_price = Number(discounted_price);
+          }
+          if (reservation_price !== undefined && reservation_price !== null) {
+            individualPrices.season.reservation_price =
+              Number(reservation_price);
+          }
+        }
+        if (data.individual_prices.off_season) {
+          const { total_price, discounted_price, reservation_price } =
+            data.individual_prices.off_season;
+
+          if (total_price !== undefined && total_price !== null) {
+            individualPrices.off_season.total_price = Number(total_price);
+          }
+          if (discounted_price !== undefined && discounted_price !== null) {
+            individualPrices.off_season.discounted_price =
+              Number(discounted_price);
+          }
+          if (reservation_price !== undefined && reservation_price !== null) {
+            individualPrices.off_season.reservation_price =
+              Number(reservation_price);
+          }
+        }
+      }
+
+      formattedData.individual_prices = individualPrices;
+      if (data.amount_persons !== undefined && data.amount_persons !== null) {
+        formattedData.amount_persons = Number(data.amount_persons);
+      }
+      formattedData.group_prices = null;
+      delete formattedData.date;
     }
 
     mutation.mutate(formattedData);
@@ -340,19 +390,212 @@ const CreateTour = () => {
                 />
               )}
             </div>
+            {tourType && (
+              <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+                <h3 className="text-lg font-medium">
+                  ინდივიდუალური ტურის დეტალები
+                </h3>
+
+                <FormField
+                  control={form.control}
+                  name="amount_persons"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ადამიანების რაოდენობა</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="მაქსიმალური ადამიანების რაოდენობა"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? Number(e.target.value)
+                                : undefined
+                            )
+                          }
+                          value={field.value ?? ""}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        შეიყვანეთ მაქსიმალური ადამიანების რაოდენობა ტურისთვის
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="space-y-4">
+                  <h4 className="font-medium">სეზონური ფასები</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.season.total_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>საერთო ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.season.discounted_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ფასდაკლებული ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.season.reservation_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>დაჯავშნის ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-medium">არასეზონური ფასები</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.off_season.total_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>საერთო ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.off_season.discounted_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ფასდაკლებული ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="individual_prices.off_season.reservation_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>დაჯავშნის ფასი</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined
+                                )
+                              }
+                              value={field.value ?? ""}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-4">
               <h3 className="text-lg font-medium">
-                {tourType ? "ინდივიდუალური ფასები" : "ჯგუფური ფასები"}
+                {!tourType ? "ჯგუფური ფასები" : ""}
               </h3>
 
-              {tourType ? (
-                <div className="p-4 border rounded-lg bg-gray-50">
-                  <span className="text-gray-600">
-                    ინდივიდუალური ფასები არ არის ხელმისაწვდომი
-                  </span>
-                </div>
-              ) : (
+              {!tourType && (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
@@ -509,8 +752,6 @@ const CreateTour = () => {
                 </FormItem>
               )}
             />
-
-            {/* Submit button */}
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>

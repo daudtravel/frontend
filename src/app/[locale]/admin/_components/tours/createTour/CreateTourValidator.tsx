@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const TranslationSchema = z.object({
   locale: z.string().min(1, "Locale is required"),
@@ -9,11 +9,26 @@ const TranslationSchema = z.object({
   description: z.string().min(1, "Description is required"),
 });
 
-const GroupPricesSchema = z.object({
-  total_price: z.number().optional(),
-  reservation_price: z.number().optional(),
-  discounted_price: z.number().optional(),
+const GroupPricesSchema = z
+  .object({
+    total_price: z.number().optional(),
+    reservation_price: z.number().optional(),
+    discounted_price: z.number().optional(),
+  })
+  .nullable();
+
+const IndividualPriceCategorySchema = z.object({
+  total_price: z.number(),
+  discounted_price: z.number(),
+  reservation_price: z.number(),
 });
+
+const IndividualPricesSchema = z
+  .object({
+    season: IndividualPriceCategorySchema,
+    off_season: IndividualPriceCategorySchema,
+  })
+  .nullable();
 
 export const TourSchema = z.object({
   localizations: z
@@ -21,7 +36,9 @@ export const TourSchema = z.object({
     .min(1, "At least one localization is required"),
   day: z.string().optional(),
   night: z.string().optional(),
-  group_prices: GroupPricesSchema.optional(),
+  amount_persons: z.number().optional(),
+  group_prices: GroupPricesSchema.default(null),
+  individual_prices: IndividualPricesSchema.default(null),
   type: z.boolean().default(false),
   image: z
     .string()
@@ -55,10 +72,19 @@ export const useCreateTourValidator = () => {
       day: "",
       night: "",
       type: false,
-      group_prices: {
-        total_price: undefined,
-        reservation_price: undefined,
-        discounted_price: undefined,
+      group_prices: {},
+      amount_persons: 0,
+      individual_prices: {
+        season: {
+          total_price: 0,
+          discounted_price: 0,
+          reservation_price: 0,
+        },
+        off_season: {
+          total_price: 0,
+          discounted_price: 0,
+          reservation_price: 0,
+        },
       },
       public: false,
       image: "",
@@ -68,5 +94,3 @@ export const useCreateTourValidator = () => {
     mode: "onChange",
   });
 };
-
-export type { TranslationSchema };

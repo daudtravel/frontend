@@ -46,21 +46,42 @@ export interface Tour {
   gallery?: string[];
   created_at: Date;
   updated_at: Date;
+  amount_persons?: number;
 }
 
-export type TourFormData = {
-  localizations: { locale: string; start_location: string; next_location: string[]; description: string }[];
-  day: string;
-  night: string;
-  type: boolean;
-  group_prices: {
-    [key: string]: {
+
+
+
+
+export interface TourFormData {
+  localizations: {
+    locale: string;
+    start_location?: string;
+    next_location?: string[];
+    description?: string;
+  }[];
+  day?: string;
+  night?: string;
+  group_prices?: {
+    total_price?: number;
+    reservation_price?: number;
+    discounted_price?: number;
+  };
+  individual_prices?: {
+    season: {
       total_price?: number;
-      reservation_price?: number;
       discounted_price?: number;
+      individual_price?: number;
+    };
+    off_season: {
+      total_price?: number;
+      discounted_price?: number;
+      individual_price?: number;
     };
   };
+  type?: boolean;
+  date?: string;
   image: string;
-  gallery: string[];
-  public?: boolean;
-};
+  gallery?: string[];
+  amount_persons?: number;
+}

@@ -11,11 +11,26 @@ const LocalizationsSchema = z.object({
   description: z.string().optional(),
 });
 
-const GroupPricesSchema = z.object({
-  total_price: z.number().optional(),
-  reservation_price: z.number().optional(),
-  discounted_price: z.number().optional(),
+const GroupPricesSchema = z
+  .object({
+    total_price: z.number().optional().nullable(),
+    reservation_price: z.number().optional().nullable(),
+    discounted_price: z.number().optional().nullable(),
+  })
+  .default({});
+
+const IndividualPriceCategorySchema = z.object({
+  total_price: z.number().nullable(),
+  discounted_price: z.number().nullable(),
+  reservation_price: z.number().nullable(),
 });
+
+const IndividualPricesSchema = z
+  .object({
+    season: IndividualPriceCategorySchema.optional(),
+    off_season: IndividualPriceCategorySchema.optional(),
+  })
+  .default({});
 
 const TourSchema = z.object({
   localizations: z
@@ -23,7 +38,9 @@ const TourSchema = z.object({
     .min(1, "At least one localization is required"),
   day: z.string().optional(),
   night: z.string().optional(),
-  group_prices: GroupPricesSchema.optional(),
+  group_prices: GroupPricesSchema.default({}),
+  individual_prices: IndividualPricesSchema.default({}),
+  amount_persons: z.number().positive().optional(),
   image: z.string().nullable(),
   gallery: z.array(z.string()).optional().nullable(),
   deleteImages: z.array(z.string()).optional().nullable(),
@@ -38,7 +55,7 @@ const TourSchema = z.object({
 export type TourFormData = z.infer<typeof TourSchema>;
 
 export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
-  return useForm<TourFormData>({
+  return useForm({
     resolver: zodResolver(TourSchema),
     defaultValues: {
       localizations: SUPPORTED_LOCALES.map((locale) => ({
@@ -52,10 +69,23 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
       public: false,
       type: false,
       group_prices: {
-        total_price: undefined,
-        reservation_price: undefined,
-        discounted_price: undefined,
+        total_price: null,
+        reservation_price: null,
+        discounted_price: null,
       },
+      individual_prices: {
+        season: {
+          total_price: 0,
+          discounted_price: 0,
+          reservation_price: 0,
+        },
+        off_season: {
+          total_price: 0,
+          discounted_price: 0,
+          reservation_price: 0,
+        },
+      },
+      amount_persons: 1,
       image: null,
       date: new Date().toISOString().split("T")[0],
       gallery: [],
@@ -66,5 +96,9 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
   });
 };
 
-export type { LocalizationsSchema };
+export type {
+  LocalizationsSchema,
+  IndividualPricesSchema,
+  IndividualPriceCategorySchema,
+};
 export { TourSchema };

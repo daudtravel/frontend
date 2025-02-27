@@ -10,31 +10,35 @@ import SignInModal from "./(auth)/_signin/SigninModal";
 import QueryProvider from "@/src/reactQuery/queryProvider";
 import { AuthProvider } from "@/src/auth/authProvider";
 import SignupModalWrapper from "./(auth)/_signup/SignupModalWrapper";
-
-
+import {
+  CHAT_CONFIG,
+  initTawkWidget,
+  initWhatsAppWidget,
+} from "@/src/utlis/chats/OnlineChats";
+// Import the widget initializers and config
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: Locale }>;
+  params: { locale: Locale };
 }) {
   const { locale } = await params;
   const t = await getTranslations("meta");
   return {
-      title: {
-          default: t('default'),
-          template: `%s | ${t('daudTravel')}`,
-      },
-      description: t('descriptionMain'),
-      openGraph: {
-          title: t('default'),
-          description: t('descriptionMain'),
-          type: 'website',
-          locale: locale,
-          url: 'https://www.daudtravel.com',
-          siteName: 'Daud Travel',
-      },
-  }
+    title: {
+      default: t("default"),
+      template: `%s | ${t("daudTravel")}`,
+    },
+    description: t("descriptionMain"),
+    openGraph: {
+      title: t("default"),
+      description: t("descriptionMain"),
+      type: "website",
+      locale: locale,
+      url: "https://www.daudtravel.com",
+      siteName: "Daud Travel",
+    },
+  };
 }
 
 export default async function LocaleLayout({
@@ -54,19 +58,13 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body>
-        <Script id="tawk-widget" strategy="afterInteractive">
-          {`
-            var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-            (function(){
-              var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-              s1.async=true;
-              s1.src='https://embed.tawk.to/6780f63c49e2fd8dfe058a1a/1ih7s3n3p';
-              s1.charset='UTF-8';
-              s1.setAttribute('crossorigin','*');
-              s0.parentNode.insertBefore(s1,s0);
-            })();
-          `}
+        <Script id="whatsapp-widget" strategy="afterInteractive">
+          {initWhatsAppWidget(CHAT_CONFIG.WHATSAPP_NUMBER)}
         </Script>
+        <Script id="tawk-widget" strategy="afterInteractive">
+          {initTawkWidget()}
+        </Script>
+
         <AuthProvider>
           <QueryProvider>
             <NextIntlClientProvider messages={messages}>

@@ -40,11 +40,18 @@ export default function LocaleSwitcher() {
   const currentLocale = useLocale() as Locale;
 
   const handleLocaleChange = (newLocale: Locale) => {
-    const pathWithoutLocale = pathname.replace(`/${currentLocale}`, "");
+    if (newLocale === currentLocale) return;
+
+    const pathWithoutLocale = pathname.replace(
+      new RegExp(`^/${currentLocale}`),
+      ""
+    );
     const searchParams = new URLSearchParams(window.location.search).toString();
     const queryString = searchParams ? `?${searchParams}` : "";
-    const newPath = `/${newLocale}${pathWithoutLocale || ""}${queryString}`;
-    router.replace(newPath);
+    const newPath = `/${newLocale}${pathWithoutLocale}${queryString}`;
+
+    router.push(newPath);
+    router.refresh();
   };
 
   const CurrentFlag = LanguageFlags[currentLocale];

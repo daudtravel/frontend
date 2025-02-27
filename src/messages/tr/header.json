@@ -7,5 +7,7 @@
   "signin": "Giriş Yap",
   "signup": "Kayıt Ol",
   "logout": "Çıkış Yap",
-  "daudTravel": "Daud seyahati"
+  "daudTravel": "Daud seyahati",
+  "groupTourType": "Grup turu",
+  "individualTourType": "Bireysel tur"
 }

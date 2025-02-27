@@ -15,6 +15,7 @@ import {
   MoreHorizontal,
   PersonStanding,
   Timer,
+  Wallet,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -26,12 +27,19 @@ export default function Description({ data }: { data: Tour }) {
     data.localizations?.[0]?.description || "No description available";
   const nextLocations = data.localizations[0]?.next_location || [];
   const startLocation = data.localizations[0]?.start_location;
-  const endLocation = data.localizations.length - 1;
+  const endLocation =
+    nextLocations.length > 0
+      ? nextLocations[nextLocations.length - 1]
+      : startLocation;
   const allDestinations = [startLocation, ...nextLocations];
   const day = data.day;
   const night = data.night;
   const numOfPersons = data.amount_persons;
 
+  const isCurrentSeasonSummer = () => {
+    const currentMonth = new Date().getMonth();
+    return currentMonth >= 5 && currentMonth <= 8;
+  };
   return (
     <>
       <Card className="w-full">
@@ -45,6 +53,14 @@ export default function Description({ data }: { data: Tour }) {
               </span>
             </div>
 
+            <div className="flex items-center flex-row gap-2">
+              <MapPin className="w-4 h-4 text-main" />
+              <span className="text-sm font-bold">{t("startLocation")}:</span>
+              <span className="text-sm line-clamp-1">
+                {startLocation || "Unknown Location"}
+              </span>
+            </div>
+
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4 text-main" />
               <span className="text-sm font-bold">{t("startDate")}:</span>
@@ -53,6 +69,54 @@ export default function Description({ data }: { data: Tour }) {
                   ? t("agreement")
                   : new Date(data.date).toLocaleDateString("en-CA")}
               </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex flex-row items-center gap-2">
+                <Wallet className="w-4 h-4 text-main" />
+                <span className="text-sm font-bold">{t("price")}: </span>
+                {data.type ? (
+                  <>
+                    <span
+                      className={`text-sm ${
+                        isCurrentSeasonSummer()
+                          ? data.individual_prices.season.discounted_price
+                          : data.individual_prices.off_season.discounted_price
+                            ? "line-through text-gray-500"
+                            : ""
+                      }`}
+                    >
+                      {isCurrentSeasonSummer()
+                        ? `${data.individual_prices.season.total_price || 0} $`
+                        : `${data.individual_prices.off_season.total_price || 0} $`}
+                    </span>
+                    {isCurrentSeasonSummer()
+                      ? data.individual_prices.season.discounted_price && (
+                          <span className="text-sm font-medium text-red-600">
+                            {`${data.individual_prices.season.discounted_price} $`}
+                          </span>
+                        )
+                      : data.individual_prices.off_season.discounted_price && (
+                          <span className="text-sm font-medium text-red-600">
+                            {`${data.individual_prices.off_season.discounted_price} $`}
+                          </span>
+                        )}
+                  </>
+                ) : (
+                  <>
+                    <span
+                      className={`text-sm ${data.group_prices?.discounted_price ? "line-through text-gray-500" : ""}`}
+                    >
+                      {`${data.group_prices?.total_price || 0} $`}
+                    </span>
+
+                    {data.group_prices?.discounted_price && (
+                      <span className="text-sm font-medium text-red-600">
+                        {`${data.group_prices?.discounted_price} $`}
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
             {data.amount_persons && (
               <div className="flex-row flex gap-2 items-center">
@@ -147,20 +211,13 @@ export default function Description({ data }: { data: Tour }) {
                 key={index}
                 className="relative flex items-center mb-6 last:mb-0"
               >
-                <div className="absolute left-6 -ml-[9px] w-4 h-4 bg-blue-500 rounded-full" />
-                {index !== allDestinations.length - 1 && (
-                  <ArrowDown className="absolute left-6 -ml-[5px] top-6 w-3 h-3 text-blue-500" />
-                )}
+                <div className="absolute left-6 -ml-[9px] w-4 h-4 bg-main rounded-full" />
+
                 <div className="ml-12">
                   <p className="text-sm font-medium">{location}</p>
                   {index === 0 && (
-                    <span className="text-sm text-blue-500">
-                      Starting point
-                    </span>
-                  )}
-                  {index === allDestinations.length - 1 && (
-                    <span className="text-sm text-blue-500">
-                      Final destination
+                    <span className="text-sm main font-bold">
+                      {t("startLocation")}
                     </span>
                   )}
                 </div>

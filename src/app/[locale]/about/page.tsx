@@ -65,34 +65,35 @@ function Page() {
           <div className="space-y-4 w-full text-gray-700 mt-8 lg:mt-10">
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="text-sm sm:text-base">
-                To inspire travelers to explore the world, connect with diverse
-                cultures, and create lasting memories. To inspire travelers to
-                explore the world, connect with diverse cultures, and create
-                lasting memories. To inspire travelers to explore the world,
-                connect with diverse cultures, and create lasting memories. To
+                „Daud Travel“ არის ტურისტული სააგენტო, რომელიც მდებარეობს
+                ბათუმში, საქართველოში. კომპანია გთავაზობთ ტურების ფართო არჩევანს
+                ყველა ასაკისა და ინტერესის მქონე მოგზაურებისთვის. მათი გამოცდილი
+                პერსონალი დაგეხმარებათ იპოვოთ იდეალური დასასვენებელი ვარიანტი,
+                რომელიც შეესაბამება თქვენს სურვილებსა და ბიუჯეტს. „Daud Travel“
+                ასევე უზრუნველყოფს ინდივიდუალური და ჯგუფური ტურების ორგანიზებას,
+                სასტუმროების დაჯავშნას, ავიაბილეთების შეძენას, მანქანის
+                დაქირავებას და სხვა მომსახურებებს. მათი მიზანია თქვენი
+                მოგზაურობა იყოს კომფორტული და დაუვიწყარი.
               </p>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="text-sm sm:text-base">
-                To inspire travelers to explore the world, connect with diverse
-                cultures, and create lasting memories. To inspire travelers to
-                explore the world, connect with diverse cultures, and create
-                lasting memories. To inspire travelers to explore the world,
-                connect with diverse cultures, and create lasting memories.
-              </p>
-            </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm sm:text-base">
-                To inspire travelers to explore the world, connect with diverse
-                cultures, and create lasting memories. To inspire travelers to
-                explore the world, connect with diverse cultures, and create
-                lasting memories. To inspire travelers to explore the world,
+                • ტურები: კომპანია გთავაზობთ სხვადასხვა ტიპის ტურებს, მათ შორის
+                კულტურულ, სათავგადასავლო და ინდივიდუალურ ტურებს, რომლებიც
+                მორგებულია მომხმარებლის ინტერესებსა და ბიუჯეტზე. <br />
+                • ტრანსფერები: „Daud Travel“ უზრუნველყოფს 24/7 ტრანსფერის
+                მომსახურებას თანამედროვე ავტომობილებითა და ლიცენზირებული
+                მძღოლებით, რომლებიც მოგემსახურებიან სასურველ ლოკაციაზე. <br />
+                • სასტუმროების დაჯავშნა: კომპანია გთავაზობთ სასტუმროების
+                დაჯავშნის სერვისს, რათა თქვენი დასვენება იყოს კომფორტული და
+                დაუვიწყარი. <br />• ავიაბილეთები: „Daud Travel“ ასევე გეხმარებათ
+                ავიაბილეთების შეძენაში, რათა თქვენი მოგზაურობა იყოს სრულყოფილი.
               </p>
             </div>
           </div>
         </div>
       </div>
-      <OwnerSection/>
+      <OwnerSection />
     </div>
   );
 }

@@ -7,5 +7,7 @@
   "signin": "Войти",
   "signup": "Регистрация",
   "logout": "Выйти",
-  "daudTravel": "Дауд Тревел"
+  "daudTravel": "Дауд Тревел",
+  "groupTourType": "Групповой тур",
+  "individualTourType": "Индивидуальный тур"
 }

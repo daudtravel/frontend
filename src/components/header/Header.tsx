@@ -2,22 +2,31 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+
 import LocaleSwitcher from "@/src/i18n/LocaleSwitcher";
 import BurgerMenu from "./BurgerMenu";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 export default function Header() {
   const t = useTranslations("header");
+  const pathname = usePathname();
+  const { locale } = useParams();
 
-  // const { user, isAuthenticated, isLoading: isUserLoading, logout } = useAuth();
+  console.log("Current pathname:", pathname);
+  console.log("Current locale:", locale);
 
-  // const authClickHandler = (name: string) => {
-  //   router.push(`${pathname}?${name}`);
-  // };
+  const isActive = (href: string) => {
 
-  // const buttonStyles =
-  //   "flex items-center gap-2 bg-white cursor-pointer rounded-full px-3 py-2 shadow-sm hover:bg-gray-50 transition-colors";
-  // const iconStyles = "h-5 w-5 text-blue-600";
-  // const textStyles = "text-sm font-medium text-gray-700";
+    if (
+      href === "/" &&
+      (pathname === `/${locale}` || pathname === `/${locale}/`)
+    ) {
+      return true;
+    }
+    return (
+      pathname === `/${locale}${href}` || pathname === `/${locale}${href}/`
+    );
+  };
 
   return (
     <header className="top-0 w-full bg-[#f2f5ff] shadow-md z-50">
@@ -70,7 +79,7 @@ export default function Header() {
             />
           </svg>
         </Link>
-        <nav className="lg:flex items-center gap-3 md:gap-4 items-center  hidden">
+        <nav className="lg:flex items-center gap-3 md:gap-4 items-center hidden">
           {[
             { href: "/", label: t("main") },
             { href: "/tours", label: t("tours") },
@@ -79,57 +88,22 @@ export default function Header() {
             { href: "/contact", label: t("contact") },
           ].map((item) => (
             <Link key={item.href} href={item.href}>
-              <span className="relative tracking-widest text-base font-bold bg-main bg-clip-text text-transparent drop-shadow-md leading-none group cursor-pointer px-4 py-2">
+              <span
+                className={`relative tracking-widest text-base font-bold bg-main bg-clip-text text-transparent drop-shadow-md leading-none group cursor-pointer px-4 py-2`}
+              >
                 {item.label}
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#FF6B6B] via-[#FF8E53] to-[#FFA41B] transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
-                <span className="absolute top-0 left-0 w-full h-full bg-white/10 rounded-lg transform scale-y-0 transition-transform duration-300 ease-in-out group-hover:scale-y-100"></span>
+                <span
+                  className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#FF6B6B] via-[#FF8E53] to-[#FFA41B] transition-transform duration-300 ease-in-out ${
+                    isActive(item.href)
+                      ? "scale-x-100"
+                      : "scale-x-0 group-hover:scale-x-100"
+                  } before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-0.5 before:bg-gradient-to-r before:from-[#FF6B6B] before:via-[#FF8E53] before:to-[#FFA41B] before:transition-transform before:duration-300 before:ease-in-out`}
+                />
+                <span className="absolute top-0 left-0 w-full h-full bg-white/10 rounded-lg transform scale-y-0 transition-transform duration-300 ease-in-out group-hover:scale-y-100 after:content-[''] after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-white/10 after:rounded-lg after:transition-transform after:duration-300 after:ease-in-out" />
               </span>
             </Link>
           ))}
 
-          {/* Auth buttons section preserved */}
-          {/* <div className="flex items-center gap-3">
-            {!isAuthenticated ? (
-              <>
-                <button
-                  disabled={isUserLoading}
-                  onClick={() => authClickHandler("signin")}
-                  className={buttonStyles}
-                >
-                  <LogIn className={`${iconStyles} text-main`} />
-                  <span className={textStyles}>
-                    {isUserLoading ? <AuthLoader /> : t("signin")}
-                  </span>
-                </button>
-                <button
-                  disabled={isUserLoading}
-                  onClick={() => authClickHandler("signup")}
-                  className={buttonStyles}
-                >
-                  <UserPlus className={`${iconStyles} text-main`} />
-                  <span className={textStyles}>
-                    {isUserLoading ? <AuthLoader /> : t("signup")}
-                  </span>
-                </button>
-              </>
-            ) : (
-              <div className="flex items-center gap-3">
-                <div className={buttonStyles}>
-                  <User className={`${iconStyles} text-main`} />
-                  <span className={textStyles}>
-                    {user?.firstname || "User"}
-                  </span>
-                </div>
-                <button
-                  onClick={logout}
-                  className={`${buttonStyles} hover:bg-red-50`}
-                >
-                  <LogOut className="h-5 w-5 text-red-600" />
-                  <span className={textStyles}>{t("logout")}</span>
-                </button>
-              </div>
-            )}
-          </div> */}
           <LocaleSwitcher />
         </nav>
         <BurgerMenu />

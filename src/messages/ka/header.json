@@ -7,5 +7,7 @@
   "signin": "ავტორიზაცია",
   "signup": "რეგისტრაცია",
   "logout": "გამოსვლა",
-  "daudTravel": "დაუდ თრეველ"
+  "daudTravel": "დაუდ თრეველ",
+  "groupTourType": "ჯგუფური ტური",
+  "individualTourType": "ინდივიდუალური ტური"
 }

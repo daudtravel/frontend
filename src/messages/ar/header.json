@@ -7,5 +7,7 @@
   "signin": "تسجيل الدخول",
   "signup": "إنشاء حساب",
   "logout": "تسجيل الخروج",
-   "daudTravel": "سفر داود"
+   "daudTravel": "سفر داود",
+   "groupTourType": "جولة جماعية",
+   "individualTourType": "جولة فردية"
 }

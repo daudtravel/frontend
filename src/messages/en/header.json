@@ -7,5 +7,7 @@
   "signin": "Sign in",
   "signup": "Sign up",
   "logout": "Log out",
-  "daudTravel": "Daud Travel"
+  "daudTravel": "Daud Travel",
+  "groupTourType": "Group tour",
+  "individualTourType": "Individual tour"
 }

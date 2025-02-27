@@ -1,10 +1,11 @@
 {
-  "main": "Main",
-  "tours": "Tours",
-  "transfers": "Transfers",
-  "about": "About us",
-  "contact": "Contact",
-  "signin": "Sign in",
-  "signup": "Sign up",
-  "logout": "Log out"
+  "main": "الرئيسية",
+  "tours": "الجولات",
+  "transfers": "النقل",
+  "about": "معلومات عنا",
+  "contact": "اتصل بنا",
+  "signin": "تسجيل الدخول",
+  "signup": "إنشاء حساب",
+  "logout": "تسجيل الخروج",
+   "daudTravel": "سفر داود"
 }

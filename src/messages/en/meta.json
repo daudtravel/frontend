@@ -1,12 +1,19 @@
 {
+  "default": "Daud Travel",
+  "daudTravel": "Daud Travel",
   
-  
-  "main": "Main",
-  "descriptionMain": "DaudTravel is a leading tourism company in Georgia, offering tailored travel experiences, cultural tours, adventure trips, and premium services for exploring the beauty of the Caucasus. Discover Georgia with expert guides and personalized itineraries. Book your journey today!",
+  "main": "Home",
+  "descriptionMain": "Daud Travel is a leading tourism company in Georgia, offering tours to various destinations, including cultural tours, adventure trips, and premium services. Book your trip online today!",
+
+  "tours": "Tours",
+  "descriptionTours": "Tours in Georgia. Daud Travel offers both group and individual tours tailored to your needs, covering all destinations across Georgia. Travel in Georgia with Daud Travel.",
+
+  "transfers": "Transfers",
+  "descriptionTransfers": "Transfers in Georgia. Book your transfer in advance. Daud Travel ensures a comfortable vehicle for you to any destination in Georgia.",
 
   "about": "About Us",
-  "descriptionAbout": "DaudTravel with many years of experience, pleasant customer service and hundreds of completed tours, special guides and drivers.",
+  "descriptionAbout": "Daud Travel presents years of experience, numerous satisfied customers, and hundreds of completed tours with experienced guides and drivers.",
 
   "contact": "Contact",
-  "descriptionContact": "Contact us, ask questions, send feedbacks"
+  "descriptionContact": "Get in touch with us, book tours in Georgia online, ask questions, and leave your feedback."
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -8,7 +8,7 @@ import BurgerMenu from "./BurgerMenu";
 export default function Header() {
   const t = useTranslations("header");
 
-   // const { user, isAuthenticated, isLoading: isUserLoading, logout } = useAuth();
+  // const { user, isAuthenticated, isLoading: isUserLoading, logout } = useAuth();
 
   // const authClickHandler = (name: string) => {
   //   router.push(`${pathname}?${name}`);
@@ -22,21 +22,38 @@ export default function Header() {
   return (
     <header className="top-0 w-full bg-[#f2f5ff] shadow-md z-50">
       <div className="flex w-full items-center justify-between px-4 md:px-20 h-20">
-        <Link href="/" className="w-[300px]">
+        <Link href="/" className="w-[400px] md:w-[300px]">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300">
             <defs>
               <linearGradient id="titleGradient" x1="0%" y1="0%">
-                <stop offset="0%" stopColor="#FF6B6B"/>
-                <stop offset="50%" stopColor="#FF8E53"/>
-                <stop offset="100%" style={{ stopColor: "#FFA41B" }}/>
+                <stop offset="0%" stopColor="#FF6B6B" />
+                <stop offset="50%" stopColor="#FF8E53" />
+                <stop offset="100%" style={{ stopColor: "#FFA41B" }} />
               </linearGradient>
             </defs>
 
-            <text x="600" y="180" textAnchor="middle" fontFamily="Arial" fontWeight="900" fontSize="120" fill="url(#titleGradient)" letterSpacing="35">
+            <text
+              x="600"
+              y="180"
+              textAnchor="middle"
+              fontFamily="Arial"
+              fontWeight="900"
+              fontSize="120"
+              fill="url(#titleGradient)"
+              letterSpacing="35"
+            >
               DAUD
             </text>
 
-            <text x="600" y="235" textAnchor="middle" fontFamily="Arial" fontWeight="bold" fontSize="42" letterSpacing="25">
+            <text
+              x="600"
+              y="235"
+              textAnchor="middle"
+              fontFamily="Arial"
+              fontWeight="bold"
+              fontSize="42"
+              letterSpacing="25"
+            >
               <tspan fill="#FF6B6B">T</tspan>
               <tspan fill="#FF8E53">R</tspan>
               <tspan fill="#FF8E53">A</tspan>
@@ -45,7 +62,12 @@ export default function Header() {
               <tspan fill="#FFA41B">L</tspan>
             </text>
 
-            <path d="M350 250 C525 235, 675 235, 850 250" stroke="url(#titleGradient)" strokeWidth="4" fill="none"/>
+            <path
+              d="M350 250 C525 235, 675 235, 850 250"
+              stroke="url(#titleGradient)"
+              strokeWidth="4"
+              fill="none"
+            />
           </svg>
         </Link>
         <nav className="lg:flex items-center gap-3 md:gap-4 items-center  hidden">
@@ -54,7 +76,7 @@ export default function Header() {
             { href: "/tours", label: t("tours") },
             { href: "/transfers", label: t("transfers") },
             { href: "/about", label: t("about") },
-            { href: "/contact", label: t("contact") }
+            { href: "/contact", label: t("contact") },
           ].map((item) => (
             <Link key={item.href} href={item.href}>
               <span className="relative tracking-widest text-base font-bold bg-main bg-clip-text text-transparent drop-shadow-md leading-none group cursor-pointer px-4 py-2">

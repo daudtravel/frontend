@@ -10,14 +10,14 @@ export const withAuth = (Component: React.ComponentType) => {
 
     useEffect(() => {
       if (!isLoading && !isAuthenticated) {
-        router.push("/?signin");
+        router.push("/admin?signin");
       }
     }, [isLoading, isAuthenticated, router]);
 
     if (isLoading || !isAuthenticated) {
       return (
         <div className="flex items-center justify-center min-h-screen">
-          <ToursSectionLoader/>
+          <ToursSectionLoader />
         </div>
       );
     }

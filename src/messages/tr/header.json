@@ -1,10 +1,11 @@
 {
-  "main": "Main",
-  "tours": "Tours",
-  "transfers": "Transfers",
-  "about": "About us",
-  "contact": "Contact",
-  "signin": "Sign in",
-  "signup": "Sign up",
-  "logout": "Log out"
+  "main": "Ana Sayfa",
+  "tours": "Turlar",
+  "transfers": "Transferler",
+  "about": "Hakkımızda",
+  "contact": "İletişim",
+  "signin": "Giriş Yap",
+  "signup": "Kayıt Ol",
+  "logout": "Çıkış Yap",
+  "daudTravel": "Daud seyahati"
 }

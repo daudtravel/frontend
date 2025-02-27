@@ -1,10 +1,19 @@
 {
-  "main": " 123123",
-  "descriptionMain": "123123",
+  "default": "Daud Travel",
+  "daudTravel": "Daud Travel",
+  
+  "main": "Ana Sayfa",
+  "descriptionMain": "Daud Travel, kültürel turlar, macera gezileri ve premium hizmetler sunan, Gürcistan’ın önde gelen turizm şirketlerinden biridir. Seyahatinizi bugün online olarak rezerve edin!",
 
-  "about": "About Us",
-  "descriptionAbout": "123123123",
+  "tours": "Turlar",
+  "descriptionTours": "Gürcistan turları. Daud Travel, ihtiyacınıza uygun grup ve bireysel turlar sunmaktadır ve Gürcistan’ın tüm bölgelerini kapsamaktadır. Daud Travel ile Gürcistan’ı keşfedin.",
 
-  "contact": "Contact",
-  "descriptionContact": "Contact us, ask questions, send feedbacks"
+  "transfers": "Transferler",
+  "descriptionTransfers": "Gürcistan'da transfer hizmetleri. Transferinizi önceden rezerve edin. Daud Travel, Gürcistan'daki herhangi bir noktaya konforlu araç sağlamaktadır.",
+
+  "about": "Hakkımızda",
+  "descriptionAbout": "Daud Travel, yılların deneyimi, birçok mutlu müşteri ve yüzlerce başarılı tur ile deneyimli rehberler ve şoförler sunmaktadır.",
+
+  "contact": "İletişim",
+  "descriptionContact": "Bizimle iletişime geçin, Gürcistan'daki turları online olarak rezerve edin, sorularınızı sorun ve geri bildirimlerinizi bırakın."
 }

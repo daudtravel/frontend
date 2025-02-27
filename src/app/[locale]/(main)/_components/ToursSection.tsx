@@ -73,6 +73,7 @@ export default function ToursSection() {
           >
             {t("popularDestinations")}
           </motion.h1>
+
           <motion.div
             variants={underlineVariants}
             className="h-[2px] w-80 md:w-[600px] bg-mainGradient"

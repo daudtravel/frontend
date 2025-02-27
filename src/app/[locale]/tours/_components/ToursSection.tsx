@@ -156,15 +156,13 @@ export default function ToursSection() {
               ))
             ) : (
               <div className="text-center col-span-2 py-10">
-                <p className="text-gray-600">
-                  No tours found matching your criteria
-                </p>
+                <p className="text-gray-600">{t("noToursFound")}</p>
                 <Button
                   variant="outline"
                   onClick={handleReset}
                   className="mt-4"
                 >
-                  Reset Filters
+                  {t("resetFilters")}
                 </Button>
               </div>
             )}

@@ -55,14 +55,51 @@ const ContactCard: React.FC = () => {
   const t = useTranslations("contact");
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_STATE);
   const [loading, setLoading] = useState<boolean>(false);
+  const [result, setResult] = useState<string>("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
- 
-    setLoading(false);
-    setFormData(INITIAL_FORM_STATE);
+    setResult("Sending....");
+    const formDataToSend = new FormData();
+    formDataToSend.append("firstName", formData.firstName);
+    formDataToSend.append("lastName", formData.lastName);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("message", formData.message);
+
+    if (process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY) {
+      formDataToSend.append(
+        "access_key",
+        process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY
+      );
+    } else {
+      setResult(
+        "Access key is not defined. Please check your environment variables."
+      );
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setResult("Form Submitted Successfully");
+        setFormData(INITIAL_FORM_STATE);
+      } else {
+        setResult(data.message || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      setResult("An error occurred. Please try again later.");
+      console.error("Form submission error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (
@@ -77,11 +114,11 @@ const ContactCard: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen py-10 relative md:px-10">
-      <div className="w-full max-w-5xl  flex flex-col h-full md:flex-row gap-6 px-4">
-        <Card className="w-full md:w-1/3  border border-gray-300 shadow-lg bg-[#f2f5ff]">
+      <div className="w-full max-w-5xl flex flex-col h-full md:flex-row gap-6 px-4">
+        <Card className="w-full md:w-1/3 border border-gray-300 shadow-lg bg-[#f2f5ff]">
           <CardHeader>
             <CardTitle className="text-base md:text-xl font-bold text-center md:text-start">
-             {(t("contactInfo"))}
+              {t("contactInfo")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -108,7 +145,9 @@ const ContactCard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5" />
                 <div>
-                  <h3 className="font-semibold text-sm md:text-bas">{t("phone")}</h3>
+                  <h3 className="font-semibold text-sm md:text-bas">
+                    {t("phone")}
+                  </h3>
                   <p className="text-sm text-gray-600">
                     <a
                       href={`tel:${CONTACT_INFO.phone.replace(/[^0-9+]/g, "")}`}
@@ -123,7 +162,9 @@ const ContactCard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5" />
                 <div>
-                  <h3 className="font-semibold text-sm md:text-bas">{t("email")}</h3>
+                  <h3 className="font-semibold text-sm md:text-bas">
+                    {t("email")}
+                  </h3>
                   <p className="text-sm text-gray-600">
                     <a
                       href={`mailto:${CONTACT_INFO.email}`}
@@ -205,27 +246,25 @@ const ContactCard: React.FC = () => {
                   <X className="w-7 h-7" />
                 </a>
                 <a
-                   href="https://www.google.com/maps/place/Daud+Travel/@41.6443898,41.6346718,696m/data=!3m2!1e3!4b1!4m6!3m5!1s0x406787f6f7466e93:0x69bea43bb941487c!8m2!3d41.6443898!4d41.6346718!16s%2Fg%2F11s2jbmn0l?entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw%3D%3D"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   arial-label="Address"
+                  href="https://www.google.com/maps/place/Daud+Travel/@41.6443898,41.6346718,696m/data=!3m2!1e3!4b1!4m6!3m5!1s0x406787f6f7466e93:0x69bea43bb941487c!8m2!3d41.6443898!4d41.6346718!16s%2Fg%2F11s2jbmn0l?entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Address"
                   className="hover:fill-main"
                 >
-                 <MapPin className="w-7 h-7"  />
+                  <MapPin className="w-7 h-7" />
                 </a>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="w-full  md:w-2/3 border-gray-300  shadow-lg min-h-[32rem] bg-[#f2f5ff]">
+        <Card className="w-full md:w-2/3 border-gray-300 shadow-lg min-h-[32rem] bg-[#f2f5ff]">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base md:text-2xl font-bold text-center md:text-start">
-             {t("sendUsMessage")}
+              {t("sendUsMessage")}
             </CardTitle>
-            <CardDescription>
-            {t("sendUsDescribe")}
-            </CardDescription>
+            <CardDescription>{t("sendUsDescribe")}</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit} className="flex flex-col h-full">
             <CardContent className="space-y-4">
@@ -276,10 +315,19 @@ const ContactCard: React.FC = () => {
                   className="h-32 resize-none"
                 />
               </div>
+              {result && (
+                <div
+                  className={`text-sm ${result.includes("Success") ? "text-green-600" : "text-red-600"}`}
+                >
+                  {result}
+                </div>
+              )}
               <CardFooter className="mt-auto">
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? (
-                    <span className="flex items-center gap-2">{t("sending")}</span>
+                    <span className="flex items-center gap-2">
+                      {t("sending")}
+                    </span>
                   ) : (
                     <span className="flex items-center gap-2">
                       {t("sendMessage")}

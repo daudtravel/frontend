@@ -5,14 +5,15 @@ import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 const CoverSection = () => {
   const t = useTranslations("main");
   const [currentImage, setCurrentImage] = useState(0);
   const images = [
-    { src: "/images/Svaneti.jpg", alt: "Svaneti" },
-    { src: "/images/Batumi.jpg", alt: "Batumi" },
-    { src: "/images/River.jpg", alt: "River" },
+    { src: "/images/Svaneti.jpg", alt: "Tours in Georgia" },
+    { src: "/images/Batumi.jpg", alt: "Tours in Georgia" },
+    { src: "/images/River.jpg", alt: "Tours in Georgia" },
   ];
 
   useEffect(() => {
@@ -77,9 +78,11 @@ const CoverSection = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              <Button className="w-full md:w-auto px-8 py-4 text-sm md:text-lg rounded-base transition-all duration-200 hover:scale-105">
-                {t("exploreTours")}
-              </Button>
+              <Link href="/tours">
+                <Button className="w-full md:w-auto px-8 py-4 text-sm md:text-lg rounded-base transition-all duration-200 hover:scale-105">
+                  {t("exploreTours")}
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>

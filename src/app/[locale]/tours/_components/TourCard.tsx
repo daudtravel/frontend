@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   User,
   Users,
@@ -8,7 +8,13 @@ import {
   PersonStanding,
 } from "lucide-react";
 import Link from "next/link";
-import { MapPin, ArrowRight, AlertCircle, MoreHorizontal } from "lucide-react";
+import {
+  MapPin,
+  ArrowRight,
+  ArrowLeft,
+  AlertCircle,
+  MoreHorizontal,
+} from "lucide-react";
 import { Tour } from "@/src/types/tours";
 import { useState } from "react";
 import Image from "next/image";
@@ -16,6 +22,8 @@ import { Button } from "@/src/components/ui/button";
 
 export const TourCard = ({ tour }: { tour: Tour }) => {
   const t = useTranslations("tours");
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const nextLocations = tour.localizations[0]?.next_location || [];
@@ -27,22 +35,30 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
     return currentMonth >= 5 && currentMonth <= 8;
   };
 
+  // Reverse locations for RTL display
+  const displayLocations = isRTL
+    ? [
+        endLocation,
+        ...nextLocations.slice(0, -1).reverse(),
+        startLocation,
+      ].filter(Boolean)
+    : [startLocation, ...nextLocations].filter(Boolean);
+
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+
   return (
     <div className="flex flex-col md:flex-col w-full bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-xs overflow-hidden transition-all duration-300 hover:shadow-lg">
       <div className="relative w-full h-[200px] md:h-[230px]">
         {!imageLoaded && !imageError && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
-        <div className="absolute top-4 right-4 z-10">
+        <div className={`absolute top-4 ${isRTL ? "left-4" : "right-4"} z-10`}>
           {tour.type ? (
             <User className="w-6 h-6 text-white bg-main rounded-full p-1" />
           ) : (
             <Users className="w-6 h-6 text-white bg-main rounded-full p-1" />
           )}
         </div>
-        {!imageLoaded && !imageError && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-        )}
         <Image
           src={`https://api.daudtravel.com${tour?.image}`}
           fill
@@ -60,7 +76,10 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
           </div>
         )}
       </div>
-      <div className="w-full py-4 px-4 flex flex-col gap-4">
+      <div
+        className="w-full py-4 px-4 flex flex-col gap-4"
+        dir={isRTL ? "rtl" : "ltr"}
+      >
         <div className="flex md:items-center gap-3 md:gap-0 flex-col md:flex-row md:justify-between">
           <div className="flex items-center flex-row gap-2">
             <MapPin className="w-4 h-4 text-main" />
@@ -146,7 +165,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
           <span className="text-sm">
             {tour.type
               ? t("agreement")
-              : new Date(tour.date).toLocaleDateString("en-CA")}
+              : new Date(tour.date).toLocaleDateString(isRTL ? "ar" : "en-CA")}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -168,7 +187,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
                 <div className="flex flex-col items-center relative">
                   <MapPin className="w-5 h-5 text-main" />
                   <span className="text-xs font-medium text-center w-20 mt-2">
-                    {startLocation}
+                    {isRTL ? endLocation : startLocation}
                   </span>
                 </div>
                 {nextLocations.length > 1 && (
@@ -182,7 +201,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
                 <div className="flex flex-col items-center relative">
                   <MapPin className="w-5 h-5 text-main" />
                   <span className="text-xs font-medium text-center w-20 mt-2">
-                    {endLocation}
+                    {isRTL ? startLocation : endLocation}
                   </span>
                 </div>
               </div>
@@ -190,7 +209,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
             <div className="hidden xl:block relative py-4">
               <div className="absolute left-0 right-0 top-1/3 md:top-[40%] h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
               <div className="relative flex justify-between items-center">
-                {[startLocation, ...nextLocations].map((location, index) => (
+                {displayLocations.map((location, index) => (
                   <div
                     key={index}
                     className="flex flex-col items-center relative"
@@ -207,8 +226,13 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
         )}
         <Link className="block w-full mt-2" href={`/tours/${tour.id}`}>
           <Button className="w-full h-8 group">
+            {isRTL && (
+              <ArrowIcon className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            )}
             {t("viewDetails")}
-            <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            {!isRTL && (
+              <ArrowIcon className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            )}
           </Button>
         </Link>
       </div>

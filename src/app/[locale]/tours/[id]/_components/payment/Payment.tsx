@@ -10,14 +10,29 @@ import {
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import { format } from "date-fns";
-import { ka } from "date-fns/locale"; // Import Georgian locale
+import { ka } from "date-fns/locale/ka";
+import { enUS } from "date-fns/locale/en-US";
+import { ar } from "date-fns/locale/ar";
+import { tr } from "date-fns/locale/tr";
+import { ru } from "date-fns/locale/ru";
 import { CalendarIcon, Plus, Minus } from "lucide-react";
 import { Tour } from "@/src/types/tours";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { cn } from "@/src/utlis/cn";
+
+const localeMap = {
+  ka: ka,
+  en: enUS,
+  ar: ar,
+  tr: tr,
+  ru: ru,
+};
 
 const Payment = ({ data }: { data: Tour }) => {
   const t = useTranslations("tours");
+  const currentLocale = useLocale() as keyof typeof localeMap;
+  const dateLocale = localeMap[currentLocale] || enUS;
+
   const [personCount, setPersonCount] = useState(1);
   const [paymentType, setPaymentType] = useState("total");
   const [date, setDate] = useState<Date>(new Date());
@@ -81,8 +96,10 @@ const Payment = ({ data }: { data: Tour }) => {
 
   const whatsappUrl = `https://wa.me/+995557442212?text=}`;
 
+  const isRTL = currentLocale === "ar";
+
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto" dir={isRTL ? "rtl" : "ltr"}>
       <CardContent className="p-4">
         {data.type ? (
           <div className="space-y-4">
@@ -96,8 +113,10 @@ const Payment = ({ data }: { data: Tour }) => {
                     variant="outline"
                     className={cn("w-full justify-start text-left font-normal")}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(date, "d MMMM yyyy", { locale: ka })}
+                    <CalendarIcon
+                      className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")}
+                    />
+                    {format(date, "d MMMM yyyy", { locale: dateLocale })}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -106,10 +125,20 @@ const Payment = ({ data }: { data: Tour }) => {
                     selected={date}
                     onSelect={(newDate) => setDate(newDate || new Date())}
                     initialFocus
-                    locale={ka}
+                    locale={dateLocale}
                     classNames={{
                       day_selected: "bg-orange-500 text-white",
                       day_today: "bg-gray-100 text-orange-500 font-bold",
+                      caption: "flex justify-center pt-1 relative items-center",
+                      caption_label: "text-sm font-medium",
+                      nav: "space-x-1 flex items-center",
+                      table: "w-full border-collapse space-y-1",
+                      head_row: "flex",
+                      head_cell:
+                        "text-gray-500 rounded-md w-8 font-normal text-[0.8rem]",
+                      row: "flex w-full mt-2",
+                      cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-gray-100",
+                      day: "h-8 w-8 p-0 font-normal aria-selected:opacity-100",
                     }}
                   />
                 </PopoverContent>

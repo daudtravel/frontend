@@ -4,11 +4,14 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 
 const CoverSection = () => {
   const t = useTranslations("main");
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
+
   const [currentImage, setCurrentImage] = useState(0);
   const images = [
     { src: "/images/Svaneti.jpg", alt: "Tours in Georgia" },
@@ -24,7 +27,9 @@ const CoverSection = () => {
   }, [images.length]);
 
   return (
-    <div className="relative w-full min-h-screen md:h-[800px] overflow-hidden bg-white">
+    <div
+      className={`relative w-full min-h-screen md:h-[800px] overflow-hidden bg-white ${isRTL ? "rtl" : "ltr"}`}
+    >
       {images.map((image, index) => (
         <motion.div
           key={index}
@@ -45,12 +50,14 @@ const CoverSection = () => {
             alt={image.alt}
             layout="fill"
             objectFit="cover"
-            className="w-full h-full object-center  brightness-75"
+            className="w-full h-full object-center brightness-75"
           />
         </motion.div>
       ))}
       <div className="absolute inset-0 z-30 flex flex-col items-center justify-center px-4">
-        <div className="text-center space-y-8">
+        <div
+          className={`text-center space-y-8 ${isRTL ? "text-right" : "text-left"}`}
+        >
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -74,7 +81,7 @@ const CoverSection = () => {
             className="flex flex-col md:flex-row items-center justify-center gap-4 max-w-md mx-auto"
           >
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >

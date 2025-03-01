@@ -8,7 +8,6 @@ import {
 } from "@/src/components/ui/dialog";
 import { Tour } from "@/src/types/tours";
 import {
-  ArrowDown,
   CalendarDays,
   GroupIcon,
   MapPin,
@@ -17,11 +16,15 @@ import {
   Timer,
   Wallet,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
+import { cn } from "@/src/utlis/cn";
 
 export default function Description({ data }: { data: Tour }) {
   const t = useTranslations("tours");
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
+
   const [isDestinationsOpen, setIsDestinationsOpen] = useState(false);
   const description =
     data.localizations?.[0]?.description || "No description available";
@@ -40,11 +43,12 @@ export default function Description({ data }: { data: Tour }) {
     const currentMonth = new Date().getMonth();
     return currentMonth >= 5 && currentMonth <= 8;
   };
+
   return (
     <>
-      <Card className="w-full">
+      <Card className="w-full" dir={isRTL ? "rtl" : "ltr"}>
         <CardContent className="p-4 md:p-6 flex flex-col gap-2 md:gap-6 h-full">
-          <div className="flex flex-col gap-2  md:justify-between">
+          <div className="flex flex-col gap-2 md:justify-between">
             <div className="flex-row flex gap-2 items-center">
               <GroupIcon className="text-main w-4 h-4" />
               <span className="text-sm font-semibold">{t("tourType")}:</span>
@@ -67,7 +71,17 @@ export default function Description({ data }: { data: Tour }) {
               <span className="text-sm">
                 {data.type
                   ? t("agreement")
-                  : new Date(data.date).toLocaleDateString("en-CA")}
+                  : new Date(data.date).toLocaleDateString(
+                      currentLocale === "ka"
+                        ? "ka-GE"
+                        : currentLocale === "ar"
+                          ? "ar-SA"
+                          : currentLocale === "ru"
+                            ? "ru-RU"
+                            : currentLocale === "tr"
+                              ? "tr-TR"
+                              : "en-CA"
+                    )}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -151,7 +165,7 @@ export default function Description({ data }: { data: Tour }) {
                     <div className="flex flex-col items-center relative">
                       <MapPin className="w-5 h-5 text-main" />
                       <span className="text-xs font-medium text-center w-20 mt-2">
-                        {startLocation}
+                        {isRTL ? endLocation : startLocation}
                       </span>
                     </div>
                     {nextLocations.length > 1 && (
@@ -161,14 +175,14 @@ export default function Description({ data }: { data: Tour }) {
                       >
                         <MoreHorizontal className="w-5 h-5 text-main z-10" />
                         <span className="text-xs font-medium text-gray-500 text-center mt-2">
-                          +{nextLocations.length - 1} stops
+                          +{nextLocations.length - 1} {t("stops")}
                         </span>
                       </div>
                     )}
                     <div className="flex flex-col items-center relative">
                       <MapPin className="w-5 h-5 text-main" />
                       <span className="text-xs font-medium text-center w-20 mt-2">
-                        {endLocation}
+                        {isRTL ? startLocation : endLocation}
                       </span>
                     </div>
                   </div>
@@ -176,53 +190,76 @@ export default function Description({ data }: { data: Tour }) {
                 <div className="hidden xl:block relative py-4">
                   <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
                   <div className="relative flex justify-between items-center">
-                    {[startLocation, ...nextLocations].map(
-                      (location, index) => (
-                        <div
-                          key={index}
-                          className="flex flex-col items-center relative"
-                        >
-                          <MapPin className="w-5 h-5 text-main" />
-                          <span className="text-xs font-medium text-center w-20 mt-2 line-clamp-2">
-                            {location}
-                          </span>
-                        </div>
-                      )
-                    )}
+                    {/* For RTL languages, we need to reverse the order of locations */}
+                    {(isRTL
+                      ? [...allDestinations].reverse()
+                      : allDestinations
+                    ).map((location, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col items-center relative"
+                      >
+                        <MapPin className="w-5 h-5 text-main" />
+                        <span className="text-xs font-medium text-center w-20 mt-2 line-clamp-2">
+                          {location}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </>
             )}
-            <span className="text-gray-600 mb-6 md:mb-8 text-sm flex-grow">
+            <span
+              className={cn(
+                "text-gray-600 mb-6 md:mb-8 text-sm flex-grow",
+                isRTL && "text-right"
+              )}
+            >
               {renderDescription(description)}
             </span>
           </div>
         </CardContent>
       </Card>
       <Dialog open={isDestinationsOpen} onOpenChange={setIsDestinationsOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" dir={isRTL ? "rtl" : "ltr"}>
           <DialogHeader>
-            <DialogTitle>Tour Destinations</DialogTitle>
+            <DialogTitle>{t("tourDestinations")}</DialogTitle>
           </DialogHeader>
           <div className="relative py-6">
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-blue-200" />
-            {allDestinations.map((location, index) => (
-              <div
-                key={index}
-                className="relative flex items-center mb-6 last:mb-0"
-              >
-                <div className="absolute left-6 -ml-[9px] w-4 h-4 bg-main rounded-full" />
-
-                <div className="ml-12">
-                  <p className="text-sm font-medium">{location}</p>
-                  {index === 0 && (
-                    <span className="text-sm main font-bold">
-                      {t("startLocation")}
-                    </span>
+            <div
+              className={cn(
+                "absolute top-0 bottom-0 w-0.5 bg-blue-200",
+                isRTL ? "right-6" : "left-6"
+              )}
+            />
+            {/* For RTL languages, we might want to keep the chronological order but adjust the layout */}
+            {(isRTL ? [...allDestinations].reverse() : allDestinations).map(
+              (location, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "relative flex items-center mb-6 last:mb-0",
+                    isRTL ? "flex-row-reverse" : ""
                   )}
+                >
+                  <div
+                    className={cn(
+                      "absolute w-4 h-4 bg-main rounded-full",
+                      isRTL ? "right-6 -mr-[9px]" : "left-6 -ml-[9px]"
+                    )}
+                  />
+
+                  <div className={isRTL ? "mr-12" : "ml-12"}>
+                    <p className="text-sm font-medium">{location}</p>
+                    {index === (isRTL ? allDestinations.length - 1 : 0) && (
+                      <span className="text-sm main font-bold">
+                        {t("startLocation")}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         </DialogContent>
       </Dialog>

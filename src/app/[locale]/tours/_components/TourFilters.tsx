@@ -10,7 +10,7 @@ import {
 import { Button } from "@/src/components/ui/button";
 import FilterSectionLoader from "@/src/components/shared/loader/FilterSectionLoader";
 import { FilterValues, TourFiltersProps } from "@/src/types/tourFilter";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function TourFilters({
   urlStartLocation,
@@ -21,6 +21,9 @@ export default function TourFilters({
   onReset,
 }: TourFiltersProps) {
   const t = useTranslations("tours");
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
+
   const [selectedDestination, setSelectedDestination] = useState<
     string | undefined
   >(urlStartLocation || "all");
@@ -81,10 +84,13 @@ export default function TourFilters({
   }
 
   return (
-    <div className="bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-xs p-6">
+    <div
+      className="bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-xs p-6"
+      dir={isRTL ? "rtl" : "ltr"}
+    >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl  flex items-center text-main font-semibold">
-          <Filter className="mr-2 w-5 h-5 text-main" />
+        <h3 className="text-xl flex items-center text-main font-semibold">
+          <Filter className={`${isRTL ? "ml-2" : "mr-2"} w-5 h-5 text-main`} />
           {t("filter")}
         </h3>
       </div>
@@ -140,7 +146,9 @@ export default function TourFilters({
           </div>
         </div>
 
-        <div className="flex space-x-2">
+        <div
+          className={`flex ${isRTL ? "space-x-reverse space-x-2" : "space-x-2"}`}
+        >
           <Button onClick={handleSearch} className="w-full h-8">
             {t("search")}
           </Button>
@@ -148,7 +156,7 @@ export default function TourFilters({
             onClick={handleReset}
             variant="outline"
             size="icon"
-            className="hover:bg-red-50 h-8 "
+            className="hover:bg-red-50 h-8"
           >
             <X className="h-4 w-4 text-red-500" />
           </Button>

@@ -231,7 +231,7 @@ const ContactCard: React.FC = () => {
                 </a>
                 <a
                   target="_blank"
-                  href="https://wa.me/9955574422121"
+                  href="https://wa.me/995557442212"
                   className="hover:fill-main"
                   aria-label="WhatsApp"
                 >

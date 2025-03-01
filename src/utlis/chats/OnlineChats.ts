@@ -62,7 +62,7 @@ export const initTawkWidget = () => {
   
  
   export const CHAT_CONFIG = {
-    WHATSAPP_NUMBER: '1234567890',  
+    WHATSAPP_NUMBER: '+995557442212',  
     TAWK_PROPERTY_ID: '6780f63c49e2fd8dfe058a1a',
     TAWK_WIDGET_ID: '1ih7s3n3p'
   };

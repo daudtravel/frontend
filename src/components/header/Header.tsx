@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 import LocaleSwitcher from "@/src/i18n/LocaleSwitcher";
 import BurgerMenu from "./BurgerMenu";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 
 export default function Header() {
   const t = useTranslations("header");

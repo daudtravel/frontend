@@ -1,12 +1,5 @@
 import { useParams, useRouter } from "next/navigation";
-import {
-  Plus,
-  Loader2,
-  Pencil,
-  Calendar,
-  Trash,
-  ArrowRight,
-} from "lucide-react";
+import { Plus, Loader2, Pencil, Car, Trash, ArrowRight } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
@@ -54,6 +47,38 @@ export function TransfersList() {
     router.push("?transfers=createTransfer");
   };
 
+  // Helper function to get the lowest price for any vehicle type
+  const getLowestPrice = (prices: any) => {
+    if (!prices) return "N/A";
+
+    const allPrices = [];
+    for (const vehicle of ["sedan", "minivan", "vito", "sprinter", "bus"]) {
+      if (prices[vehicle]?.season_price)
+        allPrices.push(prices[vehicle].season_price);
+      if (prices[vehicle]?.off_season_price)
+        allPrices.push(prices[vehicle].off_season_price);
+    }
+
+    if (allPrices.length === 0) return "N/A";
+    return `${Math.min(...allPrices)}₾`;
+  };
+
+  // Helper function to get the highest price for any vehicle type
+  const getHighestPrice = (prices: any) => {
+    if (!prices) return "N/A";
+
+    const allPrices = [];
+    for (const vehicle of ["sedan", "minivan", "vito", "sprinter", "bus"]) {
+      if (prices[vehicle]?.season_price)
+        allPrices.push(prices[vehicle].season_price);
+      if (prices[vehicle]?.off_season_price)
+        allPrices.push(prices[vehicle].off_season_price);
+    }
+
+    if (allPrices.length === 0) return "N/A";
+    return `${Math.max(...allPrices)}₾`;
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -85,11 +110,10 @@ export function TransfersList() {
       ) : (
         <div className="space-y-4">
           <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-gray-100 rounded-lg font-medium text-sm text-gray-600">
-            <div className="col-span-5">მარშრუტი</div>
-            <div className="col-span-2">თარიღი</div>
-            <div className="col-span-2">ჯავშნის საფასური</div>
-            <div className="col-span-2">სრული ღირებულება</div>
-            <div className="col-span-1">მოქმედებები</div>
+            <div className="col-span-6">მარშრუტი</div>
+            <div className="col-span-2">ავტომობილი</div>
+            <div className="col-span-2">ფასების დიაპაზონი</div>
+            <div className="col-span-2">მოქმედებები</div>
           </div>
 
           <div className="space-y-4">
@@ -100,7 +124,7 @@ export function TransfersList() {
               >
                 <CardContent className="p-4">
                   <div className="grid grid-cols-12 gap-4 items-center">
-                    <div className="col-span-5">
+                    <div className="col-span-6">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold">
                           {transfer.localizations[0]?.start_location}
@@ -113,21 +137,18 @@ export function TransfersList() {
                     </div>
 
                     <div className="col-span-2 flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <Car className="h-4 w-4 text-gray-400 flex-shrink-0" />
                       <span className="text-sm">
-                        {new Date(transfer.date).toLocaleDateString("ka-GE")}
+                        {Object.keys(transfer.prices || {}).length} ტიპი
                       </span>
                     </div>
 
                     <div className="col-span-2 font-medium">
-                      {transfer.reservation_price}₾
+                      {getLowestPrice(transfer.prices)} -{" "}
+                      {getHighestPrice(transfer.prices)}
                     </div>
 
-                    <div className="col-span-2 font-medium">
-                      {transfer.total_price}₾
-                    </div>
-
-                    <div className="col-span-1 flex justify-end">
+                    <div className="col-span-2 flex justify-end">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button

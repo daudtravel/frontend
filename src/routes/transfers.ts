@@ -10,8 +10,10 @@ export const transfersAPI = {
     });
     return response.data;
   },
-  getById: async (id: string,) => {
-    const response = await axiosInstance.get(`/transfers/${id}`);
+  getById: async (id: string, locale: string) => {
+    const response = await axiosInstance.get(`/transfers/${id}`,  {
+      params: { locale }
+    });
     return response.data;
   },
   

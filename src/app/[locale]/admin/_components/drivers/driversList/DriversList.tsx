@@ -1,5 +1,5 @@
-import { useParams, useRouter } from "next/navigation";
-import { Plus, Loader2, Pencil, User, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Loader2, User, Trash } from "lucide-react";
 import Image from "next/image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/src/components/ui/card";
@@ -19,25 +19,20 @@ import { driversAPI } from "@/src/routes/drivers";
 
 interface Driver {
   id: string;
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   image?: string;
 }
 
 export function DriversList() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const params = useParams();
-  const locale = params.locale as string;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["drivers", locale],
-    queryFn: () => driversAPI.get(locale),
+    queryKey: ["drivers", "ka"],
+    queryFn: () => driversAPI.get("ka"),
+    staleTime: 1000 * 60 * 5,
   });
-
-  const handleEditDriver = (driverId: string) => {
-    router.push(`?drivers=${driverId}`);
-  };
 
   const handleCreateDriver = () => {
     router.push("?drivers=createDriver");
@@ -45,8 +40,9 @@ export function DriversList() {
 
   const handleDeleteDriver = async (id: string) => {
     try {
+      console.log("Deleting driver with ID:", id);
       await driversAPI.delete(id);
-      queryClient.invalidateQueries({ queryKey: ["drivers"] });
+      queryClient.invalidateQueries({ queryKey: ["drivers", "ka"] });
     } catch (error) {
       console.error("Failed to delete driver:", error);
     }
@@ -60,7 +56,15 @@ export function DriversList() {
     );
   }
 
-  const drivers = data?.data?.drivers || [];
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px] text-red-500">
+        შეცდომა მონაცემების მიღებისას
+      </div>
+    );
+  }
+
+  const drivers: Driver[] = data?.data || [];
 
   return (
     <div className="container mx-auto px-4 space-y-6">
@@ -74,7 +78,8 @@ export function DriversList() {
           <span>მძღოლის დამატება</span>
         </Button>
       </div>
-      {drivers.length === 0 && !error ? (
+
+      {drivers.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 rounded-lg">
           <p className="text-gray-500 text-lg mb-4">მძღოლები არ მოიძებნა</p>
           <Button onClick={handleCreateDriver} variant="outline">
@@ -91,7 +96,7 @@ export function DriversList() {
           </div>
 
           <div className="space-y-4">
-            {drivers.map((driver: Driver) => (
+            {drivers.map((driver) => (
               <Card
                 key={driver.id}
                 className="overflow-hidden hover:shadow-md transition-shadow"
@@ -103,7 +108,7 @@ export function DriversList() {
                         {driver.image ? (
                           <Image
                             src={`https://api.daudtravel.com${driver.image}`}
-                            alt={`${driver.firstName} ${driver.lastName}`}
+                            alt={`${driver.firstname} ${driver.lastname}`}
                             fill
                             className="object-cover rounded-full"
                             priority={false}
@@ -118,17 +123,17 @@ export function DriversList() {
 
                     <div className="col-span-5">
                       <span className="font-semibold">
-                        {driver.firstName || "უცნობი"}
+                        {driver.firstname || "უცნობი"}
                       </span>
                     </div>
 
                     <div className="col-span-4">
                       <span className="font-semibold">
-                        {driver.lastName || "უცნობი"}
+                        {driver.lastname || "უცნობი"}
                       </span>
                     </div>
 
-                    <div className="col-span-2 flex justify-end">
+                    <div className="col-span-2 flex justify-end gap-2">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
@@ -157,15 +162,6 @@ export function DriversList() {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditDriver(driver.id)}
-                        className="text-gray-600 hover:text-black"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 </CardContent>

@@ -24,10 +24,10 @@ import {
   CreateDriverFormData,
   useCreateDriverValidator,
 } from "./CreateDriverValidator";
-
 import { useQueryClient } from "@tanstack/react-query";
 import { driversAPI } from "@/src/routes/drivers";
 import Image from "next/image";
+import { handleFileToBase64 } from "@/src/utlis/base64/mainImageUpload";
 
 const CreateDriver = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,17 +38,13 @@ const CreateDriver = () => {
   const form = useCreateDriverValidator();
   const queryClient = useQueryClient();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setImagePreview(base64String);
-        form.setValue("image", base64String);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleMainImageUpload = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    handleFileToBase64(event, (base64Image) => {
+      form.setValue("image", base64Image);
+      setImagePreview(base64Image);
+    });
   };
 
   const onSubmit = async (data: CreateDriverFormData) => {
@@ -61,7 +57,7 @@ const CreateDriver = () => {
       await queryClient.invalidateQueries({ queryKey: ["drivers"] });
       form.reset();
       setImagePreview(null);
-      router.push(`/drivers`);
+      router.push(`?drivers=all`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data.message || "An error occurred";
@@ -132,8 +128,7 @@ const CreateDriver = () => {
             <FormField
               control={form.control}
               name="image"
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              render={({ field: { onChange, ...field } }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>ფოტო</FormLabel>
                   <FormControl>
@@ -141,17 +136,17 @@ const CreateDriver = () => {
                       <Input
                         type="file"
                         accept="image/*"
-                        onChange={handleImageChange}
+                        onChange={handleMainImageUpload}
                         disabled={isSubmitting}
-                        {...field}
                       />
                       {imagePreview && (
-                        <div className="mt-2">
+                        <div className="mt-2 relative w-32 h-32">
                           <Image
-                            fill
                             src={imagePreview}
                             alt="Preview"
-                            className="w-32 h-32 object-cover rounded"
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded"
                           />
                         </div>
                       )}
@@ -161,7 +156,6 @@ const CreateDriver = () => {
                 </FormItem>
               )}
             />
-
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>

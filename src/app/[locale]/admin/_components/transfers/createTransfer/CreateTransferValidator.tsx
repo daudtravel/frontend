@@ -4,27 +4,28 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const TransfersLocalizationSchema = z.object({
   locale: z.string(),
-  start_location: z.string().min(1, "სახელი სავალდებულოა"),
-  end_location: z.string().min(1, "დანიშნულების ადგილი სავალდებულოა"),
+  start_location: z.string().min(1, "საწყისი ლოკაცია სავალდებულოა"),
+  end_location: z.string().min(1, "საბოლოო ლოკაცია სავალდებულოა"),
+});
+
+const PriceSchema = z.object({
+  season_price: z.number().nullable(),
+  off_season_price: z.number().nullable(),
+});
+
+const VehiclePricesSchema = z.object({
+  sedan: PriceSchema,
+  minivan: PriceSchema,
+  vito: PriceSchema,
+  sprinter: PriceSchema,
+  bus: PriceSchema,
 });
 
 const TransfersSchema = z.object({
   localizations: z
     .array(TransfersLocalizationSchema)
     .length(1, "ლოკალიზაცია სავალდებულოა"),
-  total_price: z
-    .number({
-      required_error: "ფასი სავალდებულოა",
-      invalid_type_error: "გთხოვთ შეიყვანოთ რიცხვი",
-    })
-    .min(0, "ფასი უნდა იყოს დადებითი რიცხვი"),
-  reservation_price: z
-    .number({
-      required_error: "დაჯავშნის ფასი სავალდებულოა",
-      invalid_type_error: "გთხოვთ შეიყვანოთ რიცხვი",
-    })
-    .min(0, "დაჯავშნის ფასი უნდა იყოს დადებითი რიცხვი"),
-  date: z.string(),
+  prices: VehiclePricesSchema,
 });
 
 export type CreateTransferFormData = z.infer<typeof TransfersSchema>;
@@ -40,9 +41,13 @@ export const useCreateTransferValidator = () => {
           end_location: "",
         },
       ],
-      total_price: 0,
-      reservation_price: 0,
-      date: "",
+      prices: {
+        sedan: { season_price: null, off_season_price: null },
+        minivan: { season_price: null, off_season_price: null },
+        vito: { season_price: null, off_season_price: null },
+        sprinter: { season_price: null, off_season_price: null },
+        bus: { season_price: null, off_season_price: null },
+      },
     },
     mode: "onChange",
   });

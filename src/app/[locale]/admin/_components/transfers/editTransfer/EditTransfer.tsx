@@ -42,21 +42,44 @@ export function EditTransfer({ params }: { params: { id: string } }) {
         const response = await transfersAPI.getById(params.id);
 
         const transfer = response.data;
-         
 
         const formData: TransferFormData = {
           localizations: SUPPORTED_LOCALES.map((locale) => ({
             locale,
             start_location:
-              transfer.localizations.find((loc: { locale: string }) => loc.locale === locale)
-                ?.start_location || "",
+              transfer.localizations.find(
+                (loc: { locale: string }) => loc.locale === locale
+              )?.start_location || "",
             end_location:
-              transfer.localizations.find((loc: { locale: string }) => loc.locale === locale)
-                ?.end_location || "",
+              transfer.localizations.find(
+                (loc: { locale: string }) => loc.locale === locale
+              )?.end_location || "",
           })),
-          total_price: transfer.total_price,
-          reservation_price: transfer.reservation_price,
-          date: transfer.date,
+          prices: {
+            sedan: {
+              season_price: transfer.prices?.sedan?.season_price || null,
+              off_season_price:
+                transfer.prices?.sedan?.off_season_price || null,
+            },
+            minivan: {
+              season_price: transfer.prices?.minivan?.season_price || null,
+              off_season_price:
+                transfer.prices?.minivan?.off_season_price || null,
+            },
+            vito: {
+              season_price: transfer.prices?.vito?.season_price || null,
+              off_season_price: transfer.prices?.vito?.off_season_price || null,
+            },
+            sprinter: {
+              season_price: transfer.prices?.sprinter?.season_price || null,
+              off_season_price:
+                transfer.prices?.sprinter?.off_season_price || null,
+            },
+            bus: {
+              season_price: transfer.prices?.bus?.season_price || null,
+              off_season_price: transfer.prices?.bus?.off_season_price || null,
+            },
+          },
         };
 
         form.reset(formData);
@@ -104,6 +127,8 @@ export function EditTransfer({ params }: { params: { id: string } }) {
       </div>
     );
   }
+
+  const vehicleTypes = ["sedan", "minivan", "vito", "sprinter", "bus"] as const;
 
   return (
     <Card className="w-full">
@@ -162,58 +187,72 @@ export function EditTransfer({ params }: { params: { id: string } }) {
               ))}
             </div>
 
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="p-4 border rounded-lg space-y-4">
+              <h3 className="text-lg font-semibold">Prices by Vehicle Type</h3>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="total_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Total Price</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {vehicleTypes.map((vehicleType) => (
+                  <div key={vehicleType} className="p-3 border rounded-md">
+                    <h4 className="font-medium capitalize mb-2">
+                      {vehicleType}
+                    </h4>
 
-              <FormField
-                control={form.control}
-                name="reservation_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reservation Price</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        disabled={isSubmitting}
+                    <div className="space-y-2">
+                      <FormField
+                        control={form.control}
+                        name={`prices.${vehicleType}.season_price`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Season Price</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                value={field.value === null ? "" : field.value}
+                                onChange={(e) => {
+                                  const value =
+                                    e.target.value === ""
+                                      ? null
+                                      : Number(e.target.value);
+                                  field.onChange(value);
+                                }}
+                                disabled={isSubmitting}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
+                      <FormField
+                        control={form.control}
+                        name={`prices.${vehicleType}.off_season_price`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Off-Season Price</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                value={field.value === null ? "" : field.value}
+                                onChange={(e) => {
+                                  const value =
+                                    e.target.value === ""
+                                      ? null
+                                      : Number(e.target.value);
+                                  field.onChange(value);
+                                }}
+                                disabled={isSubmitting}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>

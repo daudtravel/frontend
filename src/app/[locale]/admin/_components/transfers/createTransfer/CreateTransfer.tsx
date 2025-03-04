@@ -26,6 +26,12 @@ import {
 } from "./CreateTransferValidator";
 import { transfersAPI } from "@/src/routes/transfers";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
 
 const CreateTransfer = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -113,59 +119,81 @@ const CreateTransfer = () => {
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>თარიღი</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+
+            <Tabs defaultValue="sedan" className="w-full">
+              <TabsList className="grid grid-cols-5 mb-4">
+                <TabsTrigger value="sedan">Sedan</TabsTrigger>
+                <TabsTrigger value="minivan">Minivan</TabsTrigger>
+                <TabsTrigger value="vito">Vito</TabsTrigger>
+                <TabsTrigger value="sprinter">Sprinter</TabsTrigger>
+                <TabsTrigger value="bus">Bus</TabsTrigger>
+              </TabsList>
+
+              {["sedan", "minivan", "vito", "sprinter", "bus"].map(
+                (vehicleType) => (
+                  <TabsContent
+                    key={vehicleType}
+                    value={vehicleType}
+                    className="mt-0"
+                  >
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`prices.${vehicleType}.season_price` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>სეზონური ფასი</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="სეზონური ფასი"
+                                {...field}
+                                value={field.value === null ? "" : field.value}
+                                onChange={(e) => {
+                                  const value =
+                                    e.target.value === ""
+                                      ? null
+                                      : Number(e.target.value);
+                                  field.onChange(value);
+                                }}
+                                disabled={isSubmitting}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`prices.${vehicleType}.off_season_price` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>არასეზონური ფასი</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="არასეზონური ფასი"
+                                {...field}
+                                value={field.value === null ? "" : field.value}
+                                onChange={(e) => {
+                                  const value =
+                                    e.target.value === ""
+                                      ? null
+                                      : Number(e.target.value);
+                                  field.onChange(value);
+                                }}
+                                disabled={isSubmitting}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
+                )
               )}
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="total_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>საერთო ფასი</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="ტრანსფერის საერთო ფასი"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="reservation_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>დაჯავშნის ფასი</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="დაჯავშნის ფასი"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            </Tabs>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (

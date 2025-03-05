@@ -26,6 +26,7 @@ import {
   useEditTransferValidator,
 } from "./EditTransferValidator";
 import { transfersAPI } from "@/src/routes/transfers";
+import { useLocale } from "next-intl";
 
 export function EditTransfer({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,12 +35,13 @@ export function EditTransfer({ params }: { params: { id: string } }) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
   const form = useEditTransferValidator();
+  const locale = useLocale();
 
   useEffect(() => {
     const fetchTransferDetails = async () => {
       try {
         setIsLoading(true);
-        const response = await transfersAPI.getById(params.id);
+        const response = await transfersAPI.getById(params.id, locale);
 
         const transfer = response.data;
 

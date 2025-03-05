@@ -20,10 +20,6 @@ export default function BurgerMenu() {
   const searchParams = useSearchParams();
   const closeSheet = () => setIsOpen(false);
 
-  console.log("Burger menu pathname:", pathname);
-  console.log("Burger menu locale:", locale);
-  console.log("Search params:", searchParams.toString());
-
   const menuItems = [
     { href: "/", label: t("main") },
     { href: "/tours?isGroup=false", label: t("individualTourType") },

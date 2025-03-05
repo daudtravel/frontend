@@ -40,7 +40,6 @@ export function DriversList() {
 
   const handleDeleteDriver = async (id: string) => {
     try {
-      console.log("Deleting driver with ID:", id);
       await driversAPI.delete(id);
       queryClient.invalidateQueries({ queryKey: ["drivers", "ka"] });
     } catch (error) {

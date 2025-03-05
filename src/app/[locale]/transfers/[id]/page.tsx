@@ -25,7 +25,6 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
 import { ArrowRight, Calendar as CalendarIcon, Car, Clock } from "lucide-react";
-import TourLoader from "@/src/components/shared/loader/TourLoader";
 import { TimePicker } from "@/src/components/shared/CustomTimePicker";
 
 interface Price {
@@ -109,9 +108,11 @@ export default function TransferDetailsPage() {
   const localization =
     transfer?.localizations.find((loc) => loc.locale === locale) ||
     transfer?.localizations[0];
+
   const availableVehicles = Object.entries(transfer?.prices || {})
-    .filter(([_, prices]) => prices.season_price || prices.off_season_price)
-    .map(([vehicleType, _]) => vehicleType);
+
+    .filter(([, prices]) => prices.season_price || prices.off_season_price)
+    .map(([vehicleType]) => vehicleType);
   const currentPrice = getCurrentPrice();
 
   return (
@@ -177,8 +178,8 @@ export default function TransferDetailsPage() {
               <div className="p-3 bg-blue-50 rounded-md border border-blue-100">
                 <p className="text-sm">
                   {t("selectedDate")}:{" "}
-                  <span className="font-medium">y
-                    {selectedDateTime.date?.toLocaleDateString()}{" "}
+                  <span className="font-medium">
+                    y{selectedDateTime.date?.toLocaleDateString()}{" "}
                     {selectedDateTime.time?.toLocaleTimeString()}
                   </span>
                 </p>

@@ -1,6 +1,5 @@
 import { getTranslations } from "next-intl/server";
 import { Locale } from "@/src/i18n/routing";
-
 import { Drivers } from "./_components/Drivers";
 import { TransferBooking } from "./_components/Transfers";
 

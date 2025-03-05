@@ -139,6 +139,7 @@ const CreateTransfer = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         name={`prices.${vehicleType}.season_price` as any}
                         render={({ field }) => (
                           <FormItem>
@@ -165,6 +166,7 @@ const CreateTransfer = () => {
                       />
                       <FormField
                         control={form.control}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         name={`prices.${vehicleType}.off_season_price` as any}
                         render={({ field }) => (
                           <FormItem>

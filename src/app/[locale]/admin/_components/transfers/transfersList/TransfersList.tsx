@@ -47,7 +47,7 @@ export function TransfersList() {
     router.push("?transfers=createTransfer");
   };
 
-  // Helper function to get the lowest price for any vehicle type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getLowestPrice = (prices: any) => {
     if (!prices) return "N/A";
 
@@ -63,7 +63,7 @@ export function TransfersList() {
     return `${Math.min(...allPrices)}₾`;
   };
 
-  // Helper function to get the highest price for any vehicle type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getHighestPrice = (prices: any) => {
     if (!prices) return "N/A";
 

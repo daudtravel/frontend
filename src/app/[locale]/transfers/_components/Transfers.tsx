@@ -45,9 +45,9 @@ export const TransferBooking = () => {
 
           const availableVehicles = Object.entries(transfer.prices)
             .filter(
-              ([_, prices]) => prices.season_price || prices.off_season_price
+              ([, prices]) => prices.season_price || prices.off_season_price
             )
-            .map(([vehicleType, _]) => vehicleType);
+            .map(([vehicleType]) => vehicleType);
 
           return (
             <div

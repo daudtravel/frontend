@@ -12,11 +12,7 @@ export default function Header() {
   const pathname = usePathname();
   const { locale } = useParams();
 
-  console.log("Current pathname:", pathname);
-  console.log("Current locale:", locale);
-
   const isActive = (href: string) => {
-
     if (
       href === "/" &&
       (pathname === `/${locale}` || pathname === `/${locale}/`)

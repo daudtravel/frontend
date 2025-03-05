@@ -15,7 +15,6 @@ import {
   initTawkWidget,
   initWhatsAppWidget,
 } from "@/src/utlis/chats/OnlineChats";
-// Import the widget initializers and config
 
 export async function generateMetadata({
   params,
@@ -37,6 +36,9 @@ export async function generateMetadata({
       locale: locale,
       url: "https://www.daudtravel.com",
       siteName: "Daud Travel",
+    },
+    icons: {
+      icon: "/images/icon.png",
     },
   };
 }

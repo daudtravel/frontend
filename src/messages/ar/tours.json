@@ -38,5 +38,7 @@
     "payReservation": "دفع مبلغ الحجز",
     "numOfPersons": "عدد الأشخاص",
     "noToursFound": "لم يتم العثور على جولات مطابقة لمعاييرك",
-    "resetFilters": "إعادة تعيين المرشحات"
+    "resetFilters": "إعادة تعيين المرشحات",
+    "endLocation": "الموقع النهائي",
+    "tourDestinations": "وجهات الجولة"
 }

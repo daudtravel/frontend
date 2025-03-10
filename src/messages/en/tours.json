@@ -38,5 +38,7 @@
     "payReservation": "Pay reservation amount",
     "numOfPersons": "Number of people",
     "noToursFound": " No tours found matching your criteria",
-    "resetFilters": "Reset filters"
+    "resetFilters": "Reset filters",
+     "endLocation": "End location",
+      "tourDestinations":  "Tour destinations"
 }

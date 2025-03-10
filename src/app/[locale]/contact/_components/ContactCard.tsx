@@ -252,7 +252,7 @@ const ContactCard: React.FC = () => {
                   aria-label="Address"
                   className="hover:fill-main"
                 >
-                  <MapPin className="w-7 h-7" />
+                  <MapPin className="w-7 h-7 hover:text-main" />
                 </a>
               </div>
             </div>

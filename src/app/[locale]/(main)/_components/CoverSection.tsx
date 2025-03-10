@@ -64,16 +64,16 @@ const CoverSection = () => {
             transition={{ duration: 0.6 }}
             className="text-4xl md:text-7xl font-bold h-24 sm:h-16 lg:h-24 mb-4 bg-clip-text text-transparent bg-textGradient"
           >
-            {t("findEmotions")}
+            {t("exploreGeorgia")}
           </motion.h1>
-          <motion.p
+          {/* <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl md:text-2xl text-white font-semibold"
           >
             {t("exploreGeorgia")}
-          </motion.p>
+          </motion.p> */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

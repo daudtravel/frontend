@@ -13,7 +13,7 @@ import { Filter } from "lucide-react";
 import { TourCard } from "./TourCard";
 import { useTranslations } from "next-intl";
 
-export default function ToursSection() {
+export default function IndividualToursSection() {
   const t = useTranslations("tours");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -113,7 +113,7 @@ export default function ToursSection() {
     router.push(`/${locale}/tours`);
     setShowFilters(false);
   };
-
+  console.log(toursData, "here");
   return (
     <main className="w-full min-h-screen md:px-20 xl:pr-36 px-4 pt-6 md:pt-20 pb-20">
       <div className="md:hidden mb-4">

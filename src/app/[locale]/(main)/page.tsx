@@ -3,10 +3,12 @@ import WhyUsSection from "./_components/WhyUsSection";
 import FaqSection from "./_components/FaqSection";
 import Gallery from "./_components/Gallery";
 import ReviewsSection from "./_components/ReviewsSection";
-import ToursSection from "./_components/ToursSection";
 import TransferSection from "./_components/TransferSection";
 import { getTranslations } from "next-intl/server";
 import { Locale } from "@/src/i18n/routing";
+import IndividualToursSection from "./_components/IndividualTours";
+import GroupToursSection from "./_components/GroupToursSection";
+import { SocialSection } from "./_components/SocialSection";
 
 export async function generateMetadata({
   params,
@@ -38,12 +40,14 @@ export default function Page() {
   return (
     <main className="w-full relative ">
       <CoverSection />
-      <ToursSection />
+      <IndividualToursSection />
+      <GroupToursSection />
       <WhyUsSection />
       <TransferSection />
       <Gallery />
       <ReviewsSection />
       <FaqSection />
+      <SocialSection />
     </main>
   );
 }

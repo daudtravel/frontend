@@ -18,27 +18,26 @@ import { CardContent } from "@/src/components/ui/card";
 import Link from "next/link";
 import PoPularToursLoader from "@/src/components/shared/loader/PoPularToursLoader";
 import { useParams } from "next/navigation";
+import { TourCard } from "../../tours/_components/TourCard";
 
-const fetchToursData = async (locale: string) => {
-  try {
-    const response = await axiosInstance.get(`/tours?locale=${locale}`);
-    return response.data;
-  } catch (err) {
-    console.error("Error fetching tours data:", err);
-    throw err;
-  }
-};
-
-export default function ToursSection() {
+export default function GroupToursSection() {
   const t = useTranslations("main");
   const params = useParams();
-  const locale = params.locale;
-
+  const locale = params.locale as string;
   const { data: toursData, isLoading } = useQuery({
-    queryKey: ["tours", "list"],
-    queryFn: async () => fetchToursData(locale as string),
+    queryKey: ["tours", "individualList"],
+    queryFn: async () => {
+      const params = {
+        locale,
+        isGroup: "true",
+      };
+
+      const response = await axiosInstance.get("/tours", { params });
+      return response.data;
+    },
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
+    retry: 2,
   });
 
   const headerVariants = {
@@ -71,20 +70,13 @@ export default function ToursSection() {
             variants={headerVariants}
             className="text-xl md:text-3xl font-semibold text-start"
           >
-            {t("popularDestinations")}
+            {t("groupTours")}
           </motion.h1>
 
           <motion.div
             variants={underlineVariants}
             className="h-[2px] w-80 md:w-[600px] bg-mainGradient"
           />
-          <motion.p
-            className="text-sm"
-            variants={headerVariants}
-            transition={{ delay: 0.2 }}
-          >
-            {t("popularDestinationsDesc")}
-          </motion.p>
         </div>
       </motion.div>
       {isLoading ? (
@@ -98,63 +90,25 @@ export default function ToursSection() {
           viewport={{ once: true }}
         >
           <Carousel opts={{ loop: false }} className="w-full">
-            <CarouselContent className="z-10  md:px-20">
+            <CarouselContent className="z-10 md:px-20">
               {toursData?.data?.tours?.map((tour: Tour, index: number) => (
                 <CarouselItem
                   key={tour.id}
                   className="lg:basis-1/2 md:basis-1/2 xl:basis-1/3 md:pr-7 md:pl-0 px-4 lg:pr-10 lg:pl-0 cursor-pointer hover:z-20"
                 >
                   <motion.div
-                    className="relative group overflow-hidden rounded-xl h-[270px] md:h-[360px]"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * index }}
                     viewport={{ once: true }}
                   >
-                    <CardContent className="p-0 h-full ">
-                      <Link href={`/tours/${tour.id}`}>
-                        <Image
-                          src={`https://api.daudtravel.com${tour.image}`}
-                          alt={tour?.localizations[0].start_location || "alt"}
-                          fill
-                          className="object-cover"
-                        />
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end justify-between"
-                          initial={{ opacity: 0 }}
-                          whileInView={{ opacity: 1 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <div className="p-4">
-                            <motion.div
-                              className="flex flex-row gap-2 items-center"
-                              initial={{ x: -20, opacity: 0 }}
-                              whileInView={{ x: 0, opacity: 1 }}
-                              transition={{ duration: 0.4 }}
-                            >
-                              <Location className="fill-white w-5 h-5" />
-                              <h3 className="text-white text-lg font-semisemibold">
-                                {tour.localizations[0].start_location}
-                              </h3>
-                            </motion.div>
-                          </div>
-                          <motion.div
-                            className="text-white text-sm font-medium p-4 hover:underline transition-all duration-300"
-                            initial={{ x: 20, opacity: 0 }}
-                            whileInView={{ x: 0, opacity: 1 }}
-                            transition={{ duration: 0.4 }}
-                          >
-                            {t("viewMore")}
-                          </motion.div>
-                        </motion.div>
-                      </Link>
-                    </CardContent>
+                    <TourCard tour={tour} />
                   </motion.div>
                 </CarouselItem>
               ))}
             </CarouselContent>
             <motion.div
-              className="hidden md:block md:absolute md:-top-32 lg:-top-28 md:right-36 z-30"
+              className="-top-12 right-16 block  absolute md:-top-32 lg:-top-28 md:right-36 z-30"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}

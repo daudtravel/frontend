@@ -9,6 +9,7 @@ import {
 import { Tour } from "@/src/types/tours";
 import {
   CalendarDays,
+  ChevronRight,
   GroupIcon,
   MapPin,
   MoreHorizontal,
@@ -17,7 +18,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import { useState } from "react";
+import React, { useState } from "react";
 import { cn } from "@/src/utlis/cn";
 
 export default function Description({ data }: { data: Tour }) {
@@ -39,11 +40,98 @@ export default function Description({ data }: { data: Tour }) {
   const night = data.night;
   const numOfPersons = data.amount_persons;
 
+  const MAX_VISIBLE_DESKTOP_LOCATIONS = 5;
+  const showMoreOnDesktop =
+    allDestinations.length > MAX_VISIBLE_DESKTOP_LOCATIONS;
+
+  const getVisibleDesktopLocations = () => {
+    if (!showMoreOnDesktop) {
+      return allDestinations;
+    }
+
+    if (isRTL) {
+      return [
+        allDestinations[allDestinations.length - 1],
+        allDestinations[allDestinations.length - 2],
+        allDestinations[1],
+        allDestinations[0],
+      ];
+    } else {
+      return [
+        allDestinations[0],
+        allDestinations[1],
+        allDestinations[allDestinations.length - 2],
+        allDestinations[allDestinations.length - 1],
+      ];
+    }
+  };
+
+  const visibleDesktopLocations = getVisibleDesktopLocations();
+  const middleIndex = Math.floor(visibleDesktopLocations.length / 2);
+
   const isCurrentSeasonSummer = () => {
     const currentMonth = new Date().getMonth();
     return currentMonth >= 5 && currentMonth <= 8;
   };
 
+  const getDestinationsText = () => {
+    const destinationsToDisplay = isRTL
+      ? [...allDestinations].reverse()
+      : allDestinations;
+
+    const ArrowIcon = isRTL
+      ? ({ className }: { className?: string }) => (
+          <ChevronRight className={cn("rotate-180 text-gray-400", className)} />
+        )
+      : ({ className }: { className?: string }) => (
+          <ChevronRight className={cn("text-gray-400", className)} />
+        );
+
+    return (
+      <div className="mb-6 p-3 bg-gray-50 rounded-md">
+        <h4 className="font-medium mb-2">{t("tourDestinations")}:</h4>
+        <div className="flex flex-wrap items-center">
+          {destinationsToDisplay.map((location, index, array) => (
+            <React.Fragment key={`text-destination-${index}`}>
+              <div className="flex items-center">
+                <span className="text-sm">{location}</span>
+                {isRTL ? (
+                  <>
+                    {index === 0 && array.length > 1 && (
+                      <span className="ml-1 text-xs font-medium text-main">
+                        ({t("endLocation")})
+                      </span>
+                    )}
+                    {index === array.length - 1 && (
+                      <span className="ml-1 text-xs font-medium text-main">
+                        ({t("startLocation")})
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {index === 0 && (
+                      <span className="ml-1 text-xs font-medium text-main">
+                        ({t("startLocation")})
+                      </span>
+                    )}
+                    {index === array.length - 1 && array.length > 1 && (
+                      <span className="ml-1 text-xs font-medium text-main">
+                        ({t("endLocation")})
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
+              {index < array.length - 1 && (
+                <ArrowIcon className="mx-2 w-4 h-4 flex-shrink-0" />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    );
+  };
   return (
     <>
       <Card className="w-full" dir={isRTL ? "rtl" : "ltr"}>
@@ -190,25 +278,50 @@ export default function Description({ data }: { data: Tour }) {
                 <div className="hidden xl:block relative py-4">
                   <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
                   <div className="relative flex justify-between items-center">
-                    {/* For RTL languages, we need to reverse the order of locations */}
-                    {(isRTL
-                      ? [...allDestinations].reverse()
-                      : allDestinations
-                    ).map((location, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col items-center relative"
-                      >
-                        <MapPin className="w-5 h-5 text-main" />
-                        <span className="text-xs font-medium text-center w-20 mt-2 line-clamp-2">
-                          {location}
-                        </span>
-                      </div>
-                    ))}
+                    {visibleDesktopLocations.map((location, index) => {
+                      if (showMoreOnDesktop && index === middleIndex) {
+                        return (
+                          <React.Fragment key={`fragment-${index}`}>
+                            <div
+                              key="more-button"
+                              className="flex flex-col items-center relative px-2 cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={() => setIsDestinationsOpen(true)}
+                            >
+                              <MoreHorizontal className="w-5 h-5 text-main z-10" />
+                              <span className="text-xs font-medium text-gray-500 text-center mt-2">
+                                +{allDestinations.length - 4} {t("stops")}
+                              </span>
+                            </div>
+                            <div
+                              key={`location-${index}`}
+                              className="flex flex-col items-center relative"
+                            >
+                              <MapPin className="w-5 h-5 text-main" />
+                              <span className="text-xs font-medium text-center w-20 mt-2 line-clamp-2">
+                                {location}
+                              </span>
+                            </div>
+                          </React.Fragment>
+                        );
+                      }
+
+                      return (
+                        <div
+                          key={`location-${index}`}
+                          className="flex flex-col items-center relative"
+                        >
+                          <MapPin className="w-5 h-5 text-main" />
+                          <span className="text-xs font-medium text-center w-20 mt-2 line-clamp-2">
+                            {location}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </>
             )}
+            {allDestinations.length > 0 && getDestinationsText()}
             <span
               className={cn(
                 "text-gray-600 mb-6 md:mb-8 text-sm flex-grow",
@@ -232,11 +345,11 @@ export default function Description({ data }: { data: Tour }) {
                 isRTL ? "right-6" : "left-6"
               )}
             />
-            {/* For RTL languages, we might want to keep the chronological order but adjust the layout */}
+
             {(isRTL ? [...allDestinations].reverse() : allDestinations).map(
-              (location, index) => (
+              (location, index, array) => (
                 <div
-                  key={index}
+                  key={`destination-${index}`}
                   className={cn(
                     "relative flex items-center mb-6 last:mb-0",
                     isRTL ? "flex-row-reverse" : ""
@@ -251,11 +364,25 @@ export default function Description({ data }: { data: Tour }) {
 
                   <div className={isRTL ? "mr-12" : "ml-12"}>
                     <p className="text-sm font-medium">{location}</p>
-                    {index === (isRTL ? allDestinations.length - 1 : 0) && (
+                    {isRTL ? (
+                      index === 0 && array.length > 1 ? (
+                        <span className="text-sm main font-bold">
+                          {t("endLocation")}
+                        </span>
+                      ) : index === array.length - 1 ? (
+                        <span className="text-sm main font-bold">
+                          {t("startLocation")}
+                        </span>
+                      ) : null
+                    ) : index === 0 ? (
                       <span className="text-sm main font-bold">
                         {t("startLocation")}
                       </span>
-                    )}
+                    ) : index === array.length - 1 && array.length > 1 ? (
+                      <span className="text-sm main font-bold">
+                        {t("endLocation")}
+                      </span>
+                    ) : null}
                   </div>
                 </div>
               )

@@ -38,5 +38,7 @@
     "payReservation": "Rezervasyon ödemesini yap",
     "numOfPersons": "Kişi sayısı",
     "noToursFound": "Kriterlerinize uygun tur bulunamadı",
-    "resetFilters": "Filtreleri sıfırla"
+    "resetFilters": "Filtreleri sıfırla",
+    "endLocation":  "Bitiş konumu",
+    "tourDestinations": "Tur destinasyonları"
 }

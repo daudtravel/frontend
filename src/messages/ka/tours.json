@@ -38,6 +38,8 @@
     "payReservation": "ჯავშნის თანხის გადახდა",
     "numOfPersons": "ადამიანთა რაოდენობა",
     "noToursFound": "ტურები თქვენი მოთხოვნებით არ მოიძებნა",
-    "resetFilters": "ფილტრის გასუფთავება"
+    "resetFilters": "ფილტრის გასუფთავება",
+    "endLocation": "საბოლოო ლოკაცია",
+    "tourDestinations": "ლოკაციები"
 
 }

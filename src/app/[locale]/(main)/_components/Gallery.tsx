@@ -17,7 +17,6 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 export default function Gallery() {
-
   const t = useTranslations("main");
   const data = [
     { img: Carting, alt: "wineTour" },
@@ -29,7 +28,7 @@ export default function Gallery() {
 
   return (
     <section className="z-10 relative flex h-full w-full flex-col items-center pt-20 py-12 md:mt-12">
-      <h1 className="absolute top-2 text-xl pt-4 text-center md:text-2xl tracking-widest font-semibold">
+      <h1 className="absolute top-2 text-lg pt-4 text-center  md:text-2xl tracking-widest font-semibold">
         {t("imagineYourselfHere")}
       </h1>
       <Carousel opts={{ loop: true }} className="mt-6 w-full">
@@ -49,9 +48,9 @@ export default function Gallery() {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="hidden md:block md:absolute -top-20 md:right-20 lg:right-40">
-          <CarouselPrevious className="bg-mainGradient text-white w-10 h-10 border-white rounded-md border hover:bg-mainGradientHover hover:text-white" />
-          <CarouselNext className="bg-mainGradient text-white w-10 h-10 border-white rounded-md border hover:bg-mainGradientHover hover:text-white" />
+        <div className="hidden md:absolute -top-20 md:right-20 lg:right-40">
+          <CarouselPrevious className="bg-mainGradient text-white w-8 h-8 md:w-10 md:h-10 border-white rounded-md border hover:bg-mainGradientHover hover:text-white" />
+          <CarouselNext className="bg-mainGradient text-white w-8 h-8 md:w-10 md:h-10 border-white rounded-md border hover:bg-mainGradientHover hover:text-white" />
         </div>
       </Carousel>
     </section>

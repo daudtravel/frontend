@@ -141,8 +141,8 @@ export default function IndividualToursSection() {
               <CarouselNext className="bg-mainGradient text-white w-8 h-8 lg:w-10 lg:h-10 border-white border hover:bg-mainGradientHover hover:text-white hover:shadow-lg rounded-md transition-all duration-300" />
             </motion.div>
           </Carousel>
-
           <div className="flex justify-center gap-2 mt-2">
+            {/* eslint-disable @typescript-eslint/no-explicit-any */}
             {toursData?.data?.tours?.map((_: any, index: number) => (
               <button
                 key={index}

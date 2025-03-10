@@ -143,6 +143,7 @@ export default function GroupToursSection() {
           </Carousel>
 
           <div className="flex justify-center gap-2 mt-2">
+            {/* eslint-disable @typescript-eslint/no-explicit-any */}
             {toursData?.data?.tours?.map((_: any, index: number) => (
               <button
                 key={index}

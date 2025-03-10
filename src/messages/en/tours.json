@@ -39,6 +39,7 @@
     "numOfPersons": "Number of people",
     "noToursFound": " No tours found matching your criteria",
     "resetFilters": "Reset filters",
-     "endLocation": "End location",
-      "tourDestinations":  "Tour destinations"
+    "endLocation": "End location",
+    "tourDestinations":  "Tour destinations",
+    "viewAllPhotos": "View all photos"
 }

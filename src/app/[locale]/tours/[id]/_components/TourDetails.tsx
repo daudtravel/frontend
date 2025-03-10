@@ -12,6 +12,7 @@ import { Prices } from "@/src/types/prices";
 import Description from "./description/Description";
 import Gallery from "./gallery/Gallery";
 import Payment from "./payment/Payment";
+import MainImage from "./mainImage/MainImage";
 
 const TourDetails = () => {
   const params = useParams();
@@ -60,6 +61,7 @@ const TourDetails = () => {
       <section className="w-full px-4 md:px-20 py-10  min-h-screen">
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           <div className="w-full md:w-1/2 flex flex-col gap-6">
+            <MainImage data={data} />
             <Description data={data} />
           </div>
           <div className="w-full md:w-1/2 flex flex-col gap-6">

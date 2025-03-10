@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Carousel,
@@ -9,21 +8,22 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/src/components/ui/carousel";
-import { Location } from "@/src/components/svg";
 import { axiosInstance } from "@/src/utlis/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import { Tour } from "@/src/types/tours";
 import { useTranslations } from "next-intl";
-import { CardContent } from "@/src/components/ui/card";
-import Link from "next/link";
 import PoPularToursLoader from "@/src/components/shared/loader/PoPularToursLoader";
 import { useParams } from "next/navigation";
 import { TourCard } from "../../tours/_components/TourCard";
+import { useState, useEffect } from "react";
 
 export default function GroupToursSection() {
   const t = useTranslations("main");
   const params = useParams();
   const locale = params.locale as string;
+  const [api, setApi] = useState<any>(null);
+  const [current, setCurrent] = useState(0);
+
   const { data: toursData, isLoading } = useQuery({
     queryKey: ["tours", "individualList"],
     queryFn: async () => {
@@ -39,6 +39,22 @@ export default function GroupToursSection() {
     gcTime: 30 * 60 * 1000,
     retry: 2,
   });
+
+  useEffect(() => {
+    if (!api) return;
+
+    const handleSelect = () => {
+      setCurrent(api.selectedScrollSnap());
+    };
+
+    api.on("select", handleSelect);
+
+    handleSelect();
+
+    return () => {
+      api.off("select", handleSelect);
+    };
+  }, [api]);
 
   const headerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -83,13 +99,20 @@ export default function GroupToursSection() {
         <PoPularToursLoader />
       ) : (
         <motion.div
-          className="flex justify-center items-center relative md:px-0"
+          className="flex flex-col justify-center items-center relative md:px-0 gap-6"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <Carousel opts={{ loop: false }} className="w-full">
+          <Carousel
+            opts={{
+              loop: true,
+              align: "start",
+            }}
+            className="w-full"
+            setApi={setApi}
+          >
             <CarouselContent className="z-10 md:px-20">
               {toursData?.data?.tours?.map((tour: Tour, index: number) => (
                 <CarouselItem
@@ -108,7 +131,7 @@ export default function GroupToursSection() {
               ))}
             </CarouselContent>
             <motion.div
-              className="-top-12 right-16 block  absolute md:-top-32 lg:-top-28 md:right-36 z-30"
+              className="-top-12 right-16 block absolute md:-top-32 lg:-top-28 md:right-36 z-30"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -118,6 +141,19 @@ export default function GroupToursSection() {
               <CarouselNext className="bg-mainGradient text-white w-8 h-8 lg:w-10 lg:h-10 border-white border hover:bg-mainGradientHover hover:text-white hover:shadow-lg rounded-md transition-all duration-300" />
             </motion.div>
           </Carousel>
+
+          <div className="flex justify-center gap-2 mt-2">
+            {toursData?.data?.tours?.map((_: any, index: number) => (
+              <button
+                key={index}
+                className={`h-2 rounded-full transition-all ${
+                  current === index ? "w-4 bg-mainGradient" : "w-2 bg-gray-300"
+                }`}
+                onClick={() => api?.scrollTo(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </motion.div>
       )}
     </section>

@@ -90,7 +90,9 @@ export default function Description({ data }: { data: Tour }) {
     return (
       <div className="mb-6 p-3 bg-gray-50 rounded-md">
         <h4 className="font-medium mb-2">{t("tourDestinations")}:</h4>
-        <div className="flex flex-wrap items-center">
+        <div
+          className={`flex flex-wrap items-center ${isRTL ? "flex-row-reverse" : "flex-row"}`}
+        >
           {destinationsToDisplay.map((location, index, array) => (
             <React.Fragment key={`text-destination-${index}`}>
               <div className="flex items-center">

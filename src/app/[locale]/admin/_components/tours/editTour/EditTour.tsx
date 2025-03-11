@@ -897,7 +897,14 @@ export function EditTour({ params }: { params: { id: string } }) {
               />
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              ტურის განახლება
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" size={18} />
+                  განახლება...
+                </>
+              ) : (
+                "ტურის განახლება"
+              )}
             </Button>
           </form>
         </Form>

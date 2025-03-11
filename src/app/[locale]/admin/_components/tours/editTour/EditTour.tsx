@@ -81,6 +81,10 @@ export function EditTour({ params }: { params: { id: string } }) {
   });
 
   const onSubmit = async (data: TourFormData) => {
+    if (isSubmitting) {
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       setErrorMessage(null);
@@ -187,10 +191,11 @@ export function EditTour({ params }: { params: { id: string } }) {
       }
 
       updateTourMutation.mutate(formattedData);
+
+      // Note: Don't set isSubmitting false here - it should be done in mutation callbacks
     } catch (error) {
       console.error(error);
       setErrorMessage("Failed to update tour");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -896,14 +901,23 @@ export function EditTour({ params }: { params: { id: string } }) {
                 )}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
+              onClick={(e) => {
+                if (isSubmitting) {
+                  e.preventDefault();
+                }
+              }}
+            >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin mr-2" size={18} />
-                  განახლება...
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  იტვირთება...
                 </>
               ) : (
-                "ტურის განახლება"
+                "განახლება"
               )}
             </Button>
           </form>

@@ -163,7 +163,7 @@ export function EditTransfer({ params }: { params: { id: string } }) {
                     name={`localizations.${index}.start_location`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Start Location</FormLabel>
+                        <FormLabel>საწყისი ლოკაცია</FormLabel>
                         <FormControl>
                           <Input {...field} disabled={isSubmitting} />
                         </FormControl>
@@ -177,7 +177,7 @@ export function EditTransfer({ params }: { params: { id: string } }) {
                     name={`localizations.${index}.end_location`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>End Location</FormLabel>
+                        <FormLabel>საბოლოო ლოკაცია</FormLabel>
                         <FormControl>
                           <Input {...field} disabled={isSubmitting} />
                         </FormControl>
@@ -261,10 +261,10 @@ export function EditTransfer({ params }: { params: { id: string } }) {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Updating...
+                  იტვირთება...
                 </>
               ) : (
-                "Update Transfer"
+                "განახლება"
               )}
             </Button>
           </form>

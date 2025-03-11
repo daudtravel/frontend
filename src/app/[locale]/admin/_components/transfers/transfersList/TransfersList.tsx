@@ -60,7 +60,7 @@ export function TransfersList() {
     }
 
     if (allPrices.length === 0) return "N/A";
-    return `${Math.min(...allPrices)}₾`;
+    return `${Math.min(...allPrices)}$`;
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,7 +76,7 @@ export function TransfersList() {
     }
 
     if (allPrices.length === 0) return "N/A";
-    return `${Math.max(...allPrices)}₾`;
+    return `${Math.max(...allPrices)}$`;
   };
 
   if (isLoading) {

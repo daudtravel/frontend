@@ -41,5 +41,7 @@
     "resetFilters": "إعادة تعيين المرشحات",
     "endLocation": "الموقع النهائي",
     "tourDestinations": "وجهات الجولة",
-    "viewAllPhotos": "عرض جميع الصور"
+    "viewAllPhotos": "عرض جميع الصور",
+    "everyDay": "جولة كل يوم",
+    "name": "اسم الجولة"
 }

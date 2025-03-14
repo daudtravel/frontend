@@ -21,6 +21,7 @@ export interface GetToursResponse {
 
 export interface Localization {
   locale: string;
+  name?: string;
   start_location?: string;
   next_location?: string[];
   description?: string;
@@ -47,6 +48,7 @@ export interface Tour {
   created_at: Date;
   updated_at: Date;
   amount_persons?: number;
+  daily: string;
 }
 
 

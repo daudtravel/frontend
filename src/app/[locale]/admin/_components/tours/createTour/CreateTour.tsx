@@ -69,13 +69,12 @@ const CreateTour = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const formattedData= {
+    const formattedData = {
       ...data,
       type: tourType,
     };
 
     if (!tourType) {
-
       const groupPrices: {
         total_price?: number;
         reservation_price?: number;
@@ -107,16 +106,12 @@ const CreateTour = () => {
         }
       }
 
-
       formattedData.group_prices =
         Object.keys(groupPrices).length > 0 ? groupPrices : {};
 
-   
       formattedData.individual_prices = null;
 
- 
       delete formattedData.amount_persons;
-
 
       if (!formattedData.date) {
         formattedData.date = new Date().toISOString().split("T")[0];
@@ -246,6 +241,23 @@ const CreateTour = () => {
                 )}
               />
               <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="localizations.0.name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ტურის დასახელება</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="შეიყვანეთ ტურის დასახელება"
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="localizations.0.start_location"

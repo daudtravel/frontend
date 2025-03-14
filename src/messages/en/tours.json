@@ -41,5 +41,7 @@
     "resetFilters": "Reset filters",
     "endLocation": "End location",
     "tourDestinations":  "Tour destinations",
-    "viewAllPhotos": "View all photos"
+    "viewAllPhotos": "View all photos",
+    "everyDay": "Every day tour",
+    "name": "Tour name"
 }

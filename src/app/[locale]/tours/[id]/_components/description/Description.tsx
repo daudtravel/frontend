@@ -39,6 +39,7 @@ export default function Description({ data }: { data: Tour }) {
   const day = data.day;
   const night = data.night;
   const numOfPersons = data.amount_persons;
+  const name = data.localizations[0]?.name;
 
   const MAX_VISIBLE_DESKTOP_LOCATIONS = 5;
   const showMoreOnDesktop =
@@ -139,6 +140,11 @@ export default function Description({ data }: { data: Tour }) {
       <Card className="w-full" dir={isRTL ? "rtl" : "ltr"}>
         <CardContent className="p-4 md:p-6 flex flex-col gap-2 md:gap-6 h-full">
           <div className="flex flex-col gap-2 md:justify-between">
+            <div className="flex items-center flex-row gap-2">
+              <MapPin className="w-4 h-4 text-main" />
+              <span className="text-sm font-bold">{t("name")}:</span>
+              <span className="text-sm line-clamp-1">{name}</span>
+            </div>
             <div className="flex-row flex gap-2 items-center">
               <GroupIcon className="text-main w-4 h-4" />
               <span className="text-sm font-semibold">{t("tourType")}:</span>
@@ -161,17 +167,19 @@ export default function Description({ data }: { data: Tour }) {
               <span className="text-sm">
                 {data.type
                   ? t("agreement")
-                  : new Date(data.date).toLocaleDateString(
-                      currentLocale === "ka"
-                        ? "ka-GE"
-                        : currentLocale === "ar"
-                          ? "ar-SA"
-                          : currentLocale === "ru"
-                            ? "ru-RU"
-                            : currentLocale === "tr"
-                              ? "tr-TR"
-                              : "en-CA"
-                    )}
+                  : data.daily
+                    ? t("everyDay")
+                    : new Date(data.date).toLocaleDateString(
+                        currentLocale === "ka"
+                          ? "ka-GE"
+                          : currentLocale === "ar"
+                            ? "ar-SA"
+                            : currentLocale === "ru"
+                              ? "ru-RU"
+                              : currentLocale === "tr"
+                                ? "tr-TR"
+                                : "en-CA"
+                      )}
               </span>
             </div>
             <div className="flex items-center gap-2">

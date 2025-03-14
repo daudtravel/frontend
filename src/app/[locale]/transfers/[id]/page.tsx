@@ -6,7 +6,6 @@ import { transfersAPI } from "@/src/routes/transfers";
 import { useLocale, useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import { Calendar } from "@/src/components/ui/calendar";
-
 import { ka, enUS, ru, tr, ar } from "date-fns/locale";
 import {
   Card,
@@ -179,7 +178,7 @@ export default function TransferDetailsPage() {
                 <p className="text-sm">
                   {t("selectedDate")}:{" "}
                   <span className="font-medium">
-                    y{selectedDateTime.date?.toLocaleDateString()}{" "}
+                    {selectedDateTime.date?.toLocaleDateString()}{" "}
                     {selectedDateTime.time?.toLocaleTimeString()}
                   </span>
                 </p>

@@ -4,6 +4,7 @@ import { z } from "zod";
 
 const TranslationSchema = z.object({
   locale: z.string().min(1, "Locale is required"),
+  name: z.string().min(1, "Start location is required"),
   start_location: z.string().min(1, "Start location is required"),
   next_location: z.array(z.string()).default([]),
   description: z.string().min(1, "Description is required"),
@@ -64,6 +65,7 @@ export const useCreateTourValidator = () => {
       localizations: [
         {
           locale: "ka",
+          name: "",
           start_location: "",
           next_location: [],
           description: "",

@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Calendar1,
   PersonStanding,
+  TextIcon,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -28,6 +29,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
   const [imageError, setImageError] = useState(false);
   const nextLocations = tour.localizations[0]?.next_location || [];
   const startLocation = tour.localizations[0]?.start_location;
+  const name = tour.localizations[0]?.name;
   const endLocation = nextLocations[nextLocations.length - 1];
 
   const isCurrentSeasonSummer = () => {
@@ -36,15 +38,12 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
   };
 
   const processLocations = () => {
-    // Create the base locations array with all locations in the trip order
     let allLocations = [startLocation, ...nextLocations].filter(Boolean);
 
-    // For RTL languages (like Arabic), reverse the entire array to match reading direction
     if (isRTL) {
       allLocations = allLocations.slice().reverse();
     }
 
-    // If there are too many locations, only show first and last
     if (allLocations.length > 4) {
       return {
         displayLocations: [
@@ -103,10 +102,16 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
             </div>
           )}
         </div>
+
         <div
           className="w-full py-4 px-4 flex flex-col gap-4 flex-grow"
           dir={isRTL ? "rtl" : "ltr"}
         >
+          <div className="flex items-center flex-row gap-2">
+            <TextIcon className="w-4 h-4 text-main" />
+
+            <span className="text-sm line-clamp-1">{name}</span>
+          </div>
           <div className="flex md:items-center gap-3 md:gap-0 flex-col md:flex-row md:justify-between">
             <div className="flex items-center flex-row gap-2">
               <MapPin className="w-4 h-4 text-main" />

@@ -6,6 +6,7 @@ export const SUPPORTED_LOCALES = ["en", "ka", "ru", "ar", "tr"] as const;
 
 const LocalizationsSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALES),
+  name: z.string().optional(),
   start_location: z.string().optional(),
   next_location: z.array(z.string()).optional(),
   description: z.string().optional(),
@@ -46,6 +47,7 @@ const TourSchema = z.object({
   deleteImages: z.array(z.string()).optional().nullable(),
   public: z.boolean().default(false),
   type: z.boolean().default(false),
+  daily: z.boolean().default(false),
   date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format")
@@ -60,6 +62,7 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
     defaultValues: {
       localizations: SUPPORTED_LOCALES.map((locale) => ({
         locale,
+        name: "",
         start_location: "",
         next_location: [],
         description: "",
@@ -68,6 +71,7 @@ export const useEditTourValidator = (initialData?: Partial<TourFormData>) => {
       night: "",
       public: false,
       type: false,
+      daily: false,
       group_prices: {
         total_price: null,
         reservation_price: null,

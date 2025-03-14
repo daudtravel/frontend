@@ -41,6 +41,9 @@
     "resetFilters": "ფილტრის გასუფთავება",
     "endLocation": "საბოლოო ლოკაცია",
     "tourDestinations": "ლოკაციები",
-    "viewAllPhotos": "ყველა ფოტოს ნახვა"
+    "viewAllPhotos": "ყველა ფოტოს ნახვა",
+    "everyDay": "ყოველდღიური ტური",
+    "name": "ტურის დასახელება"
+     
 
 }

@@ -126,20 +126,6 @@ const Payment = ({ data }: { data: Tour }) => {
                     onSelect={(newDate) => setDate(newDate || new Date())}
                     initialFocus
                     locale={dateLocale}
-                    classNames={{
-                      day_selected: "bg-orange-500 text-white",
-                      day_today: "bg-gray-100 text-orange-500 font-bold",
-                      caption: "flex justify-center pt-1 relative items-center",
-                      caption_label: "text-sm font-medium",
-                      nav: "space-x-1 flex items-center",
-                      table: "w-full border-collapse space-y-1",
-                      head_row: "flex",
-                      head_cell:
-                        "text-gray-500 rounded-md w-8 font-normal text-[0.8rem]",
-                      row: "flex w-full mt-2",
-                      cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-gray-100",
-                      day: "h-8 w-8 p-0 font-normal aria-selected:opacity-100",
-                    }}
                   />
                 </PopoverContent>
               </Popover>
@@ -271,6 +257,40 @@ const Payment = ({ data }: { data: Tour }) => {
           </div>
         ) : (
           <div className="space-y-4">
+            {data.daily && (
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    {t("selectDate")}
+                  </label>
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal"
+                      )}
+                    >
+                      <CalendarIcon
+                        className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")}
+                      />
+                      {format(date, "d MMMM yyyy", { locale: dateLocale })}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={(newDate) => setDate(newDate || new Date())}
+                      initialFocus
+                      locale={dateLocale}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-4 justify-between">
               <div className="flex-1">
                 <label className="text-sm font-medium text-gray-700">

@@ -35,6 +35,7 @@ import { toursAPI } from "@/src/routes/tours";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function EditTour({ params }: { params: { id: string } }) {
+  const [isDailyTour, setIsDailyTour] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -93,6 +94,7 @@ export function EditTour({ params }: { params: { id: string } }) {
       const formattedData: any = {
         ...data,
         type: tourType,
+        daily: isDailyTour,
       };
       if (deletedImages.length > 0) {
         formattedData.deleteImages = deletedImages;
@@ -249,6 +251,8 @@ export function EditTour({ params }: { params: { id: string } }) {
           : new Date().toISOString().split("T")[0];
         const formData: TourFormData = {
           type: tour.type,
+          daily: tour.daily,
+
           localizations: SUPPORTED_LOCALES.map((locale) => {
             const localization =
               tour.localizations.find(
@@ -256,6 +260,7 @@ export function EditTour({ params }: { params: { id: string } }) {
               ) || {};
             return {
               locale,
+              name: localization.start_location || "",
               start_location: localization.start_location || "",
               next_location: localization.next_location || [],
               description: localization.description || "",
@@ -291,6 +296,7 @@ export function EditTour({ params }: { params: { id: string } }) {
         setTourType(tour.type);
         setMainImagePreview(tour.image);
         setGalleryPreviews(tour.gallery || []);
+        setIsDailyTour(tour.daily || false);
       } catch (error) {
         console.error(error);
         setErrorMessage("Failed to load tour details");
@@ -371,13 +377,44 @@ export function EditTour({ params }: { params: { id: string } }) {
                 </FormItem>
               )}
             />
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">ყოველდღიური ტური</FormLabel>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={isDailyTour}
+                  onCheckedChange={(checked) => {
+                    setIsDailyTour(checked);
+                  }}
+                  aria-label="Toggle daily tour"
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+            </FormItem>
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
               {SUPPORTED_LOCALES.map((locale, index) => (
                 <div key={locale} className="space-y-4 p-4 border rounded-lg">
                   <h3 className="text-lg font-semibold capitalize">
                     {locale} თარგმანი
                   </h3>
-
+                  <FormField
+                    control={form.control}
+                    name={`localizations.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ტურის დასახელება</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="შეიყვანეთ ტურის დასახელება"
+                            disabled={isSubmitting}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name={`localizations.${index}.start_location`}

@@ -41,5 +41,7 @@
     "resetFilters": "Filtreleri sıfırla",
     "endLocation":  "Bitiş konumu",
     "tourDestinations": "Tur destinasyonları",
-    "viewAllPhotos": "Tüm fotoğrafları gör"
+    "viewAllPhotos": "Tüm fotoğrafları gör",
+    "everyDay": "Her gün turu",
+    "name": "Tur adı"
 }

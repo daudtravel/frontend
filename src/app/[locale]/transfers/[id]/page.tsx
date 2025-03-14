@@ -23,7 +23,15 @@ import {
 } from "@/src/components/ui/select";
 import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
-import { ArrowRight, Calendar as CalendarIcon, Car, Clock } from "lucide-react";
+import {
+  ArrowRight,
+  Calendar as CalendarIcon,
+  Car,
+  Clock,
+  User,
+  Truck,
+  Bus as BusIcon,
+} from "lucide-react";
 import { TimePicker } from "@/src/components/shared/CustomTimePicker";
 
 interface Price {
@@ -51,6 +59,22 @@ interface TransferResponse {
   data: Transfer;
   status: string;
 }
+
+const passengerCapacity = {
+  sedan: 3,
+  minivan: 5,
+  vito: 7,
+  sprinter: 12,
+  bus: 20,
+};
+
+const vehicleIcons = {
+  sedan: Car,
+  minivan: Car,
+  vito: Car,
+  sprinter: Truck,
+  bus: BusIcon,
+};
 
 const localeMap = {
   ka,
@@ -109,10 +133,47 @@ export default function TransferDetailsPage() {
     transfer?.localizations[0];
 
   const availableVehicles = Object.entries(transfer?.prices || {})
-
     .filter(([, prices]) => prices.season_price || prices.off_season_price)
-    .map(([vehicleType]) => vehicleType);
+    .map(([vehicleType]) => vehicleType)
+    .sort((a, b) => {
+      const capacityA =
+        passengerCapacity[a as keyof typeof passengerCapacity] || 0;
+      const capacityB =
+        passengerCapacity[b as keyof typeof passengerCapacity] || 0;
+      return capacityA - capacityB;
+    });
+
   const currentPrice = getCurrentPrice();
+
+  const renderPassengerIcons = (vehicleType: string) => {
+    const capacity =
+      passengerCapacity[vehicleType as keyof typeof passengerCapacity] || 0;
+
+    if (capacity <= 3) {
+      // For small capacities, show individual icons
+      return (
+        <div className="flex items-center ml-2">
+          {[...Array(capacity)].map((_, i) => (
+            <User key={i} className="h-4 w-4 text-gray-600" />
+          ))}
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center ml-2">
+          <User className="h-4 w-4 text-gray-600" />
+          <span className="text-xs text-gray-600 ml-1">x{capacity}</span>
+        </div>
+      );
+    }
+  };
+
+  // Function to render vehicle icon based on vehicle type
+  const renderVehicleIcon = (vehicleType: string) => {
+    const IconComponent =
+      vehicleIcons[vehicleType as keyof typeof vehicleIcons] || Car;
+    return <IconComponent className="h-4 w-4 text-gray-700 mr-2" />;
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6 min-h-screen">
@@ -212,20 +273,24 @@ export default function TransferDetailsPage() {
                         value={vehicle}
                         className="capitalize"
                       >
-                        <div className="flex justify-between w-full">
-                          <span>
-                            {vehicle === "sedan"
-                              ? t("sedan")
-                              : vehicle === "minivan"
-                                ? t("minivan")
-                                : vehicle === "vito"
-                                  ? t("vito")
-                                  : vehicle === "sprinter"
-                                    ? t("sprinter")
-                                    : vehicle === "bus"
-                                      ? t("bus")
-                                      : vehicle}
-                          </span>
+                        <div className="flex justify-between w-full items-center">
+                          <div className="flex items-center">
+                            {renderVehicleIcon(vehicle)}
+                            <span>
+                              {vehicle === "sedan"
+                                ? t("sedan")
+                                : vehicle === "minivan"
+                                  ? t("minivan")
+                                  : vehicle === "vito"
+                                    ? t("vito")
+                                    : vehicle === "sprinter"
+                                      ? t("sprinter")
+                                      : vehicle === "bus"
+                                        ? t("bus")
+                                        : vehicle}
+                            </span>
+                            {renderPassengerIcons(vehicle)}
+                          </div>
                           <span className="font-medium ml-2">${price}</span>
                         </div>
                       </SelectItem>
@@ -247,27 +312,40 @@ export default function TransferDetailsPage() {
                           {localization?.end_location}
                         </span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-gray-600">{t("vehicle")}:</span>
-                        <span className="capitalize">
-                          {selectedVehicle === "sedan"
-                            ? t("sedan")
-                            : selectedVehicle === "minivan"
-                              ? t("minivan")
-                              : selectedVehicle === "vito"
-                                ? t("vito")
-                                : selectedVehicle === "sprinter"
-                                  ? t("sprinter")
-                                  : selectedVehicle === "bus"
-                                    ? t("bus")
-                                    : selectedVehicle}
-                        </span>
+                        <div className="flex items-center">
+                          {renderVehicleIcon(selectedVehicle)}
+                          <span className="capitalize">
+                            {selectedVehicle === "sedan"
+                              ? t("sedan")
+                              : selectedVehicle === "minivan"
+                                ? t("minivan")
+                                : selectedVehicle === "vito"
+                                  ? t("vito")
+                                  : selectedVehicle === "sprinter"
+                                    ? t("sprinter")
+                                    : selectedVehicle === "bus"
+                                      ? t("bus")
+                                      : selectedVehicle}
+                          </span>
+                          {renderPassengerIcons(selectedVehicle)}
+                        </div>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">{t("date")}:</span>
                         <span>
                           {selectedDateTime.date?.toLocaleDateString()}{" "}
                           {selectedDateTime.time?.toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">{t("capacity")}:</span>
+                        <span>
+                          {passengerCapacity[
+                            selectedVehicle as keyof typeof passengerCapacity
+                          ] || 0}{" "}
+                          {t("passengers")}
                         </span>
                       </div>
                       <Separator />

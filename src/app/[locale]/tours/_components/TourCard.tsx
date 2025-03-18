@@ -220,7 +220,9 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
           {nextLocations.length > 0 && (
             <div className="relative py-4 min-h-[80px]">
               <div className="absolute left-0 right-0 top-1/3 h-1 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
-              <div className="flex justify-between items-center relative">
+              <div
+                className={`flex justify-between items-center relative ${isRTL ? "flex-row-reverse" : ""}`}
+              >
                 <div className="flex flex-col items-center relative">
                   <MapPin className="w-5 h-5 text-main" />
                   <div className="h-10 text-center mt-2 w-20">

@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, UserCheck, Truck, Users, X, LogOut } from "lucide-react";
+import {
+  Menu,
+  UserCheck,
+  Truck,
+  Users,
+  X,
+  LogOut,
+  ShieldQuestion,
+  Video,
+} from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ToursList } from "./tours/toursList/ToursList";
 import { TransfersList } from "./transfers/transfersList/TransfersList";
@@ -12,6 +21,11 @@ import { DriversList } from "./drivers/driversList/DriversList";
 import EditTransfer from "./transfers/editTransfer/EditTransfer";
 import CreateDriver from "./drivers/createDriver/CreateDriver";
 import { useAuth } from "@/src/auth/authProvider";
+import FaqList from "./faq/faqList/faqList";
+import CreateFaq from "./faq/createFaq/createFaq";
+import EditFaq from "./faq/editFaq/editFaq";
+import VideoList from "./video/videoList/VideoList";
+import CreateVideo from "./video/createVideo/CreateVideo";
 
 export const ClientWrapper = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -22,6 +36,8 @@ export const ClientWrapper = () => {
   const tours = searchParams.get("tours");
   const transfers = searchParams.get("transfers");
   const drivers = searchParams.get("drivers");
+  const faqs = searchParams.get("faqs");
+  const video = searchParams.get("videos");
 
   const { logout } = useAuth();
 
@@ -29,7 +45,9 @@ export const ClientWrapper = () => {
     const hasNoParams =
       !searchParams.has("tours") &&
       !searchParams.has("transfers") &&
-      !searchParams.has("drivers");
+      !searchParams.has("drivers") &&
+      !searchParams.has("faqs") &&
+      !searchParams.has("video");
 
     if (hasNoParams) {
       router.push(`${pathname}?tours=all`);
@@ -71,6 +89,25 @@ export const ClientWrapper = () => {
 
     if (drivers === "createDriver") {
       return <CreateDriver />;
+    }
+
+    if (faqs === "all") {
+      return <FaqList />;
+    }
+
+    if (faqs === "createFaq") {
+      return <CreateFaq />;
+    }
+
+    if (faqs && faqs !== "all" && faqs !== "createFaq") {
+      return <EditFaq params={{ id: faqs }} />;
+    }
+    if (video === "all") {
+      return <VideoList />;
+    }
+
+    if (video === "createVideo") {
+      return <CreateVideo />;
     }
   };
 
@@ -122,6 +159,24 @@ export const ClientWrapper = () => {
           >
             <Users size={20} />
             {isSidebarOpen && <span className="ml-4">მძღოლები</span>}
+          </button>
+          <button
+            onClick={() => navigate("?faqs=all")}
+            className={`flex w-full items-center p-4 hover:bg-gray-100 ${
+              faqs ? "bg-gray-100" : ""
+            }`}
+          >
+            <ShieldQuestion size={20} />
+            {isSidebarOpen && <span className="ml-4">F.A.Q</span>}
+          </button>
+          <button
+            onClick={() => navigate("?videos=all")}
+            className={`flex w-full items-center p-4 hover:bg-gray-100 ${
+              video ? "bg-gray-100" : ""
+            }`}
+          >
+            <Video size={20} />
+            {isSidebarOpen && <span className="ml-4">ვიდეო</span>}
           </button>
 
           <button

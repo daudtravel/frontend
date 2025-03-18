@@ -64,8 +64,8 @@ const passengerCapacity = {
   sedan: 3,
   minivan: 5,
   vito: 7,
-  sprinter: 12,
-  bus: 20,
+  sprinter: 20,
+  bus: 40,
 };
 
 const vehicleIcons = {

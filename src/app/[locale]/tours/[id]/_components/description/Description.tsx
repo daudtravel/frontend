@@ -157,7 +157,7 @@ export default function Description({ data }: { data: Tour }) {
               <MapPin className="w-4 h-4 text-main" />
               <span className="text-sm font-bold">{t("startLocation")}:</span>
               <span className="text-sm line-clamp-1">
-                {startLocation || "Unknown Location"}
+                {isRTL ? endLocation : startLocation || "Unknown Location"}
               </span>
             </div>
 
@@ -259,11 +259,13 @@ export default function Description({ data }: { data: Tour }) {
               <>
                 <div className="xl:hidden relative py-4">
                   <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
-                  <div className="flex justify-between items-center relative">
+                  <div
+                    className={`flex justify-between items-center relative ${isRTL ? "flex-row-reverse" : ""}`}
+                  >
                     <div className="flex flex-col items-center relative">
                       <MapPin className="w-5 h-5 text-main" />
                       <span className="text-xs font-medium text-center w-20 mt-2">
-                        {isRTL ? endLocation : startLocation}
+                        {startLocation}
                       </span>
                     </div>
                     {nextLocations.length > 1 && (
@@ -280,14 +282,16 @@ export default function Description({ data }: { data: Tour }) {
                     <div className="flex flex-col items-center relative">
                       <MapPin className="w-5 h-5 text-main" />
                       <span className="text-xs font-medium text-center w-20 mt-2">
-                        {isRTL ? startLocation : endLocation}
+                        {endLocation}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div className="hidden xl:block relative py-4">
                   <div className="absolute left-0 right-0 top-1/3 h-2 bg-white border-gray-300 border rounded-lg transform -translate-y-1/2" />
-                  <div className="relative flex justify-between items-center">
+                  <div
+                    className={`relative flex justify-between items-center ${isRTL ? "flex-row-reverse" : ""}`}
+                  >
                     {visibleDesktopLocations.map((location, index) => {
                       if (showMoreOnDesktop && index === middleIndex) {
                         return (

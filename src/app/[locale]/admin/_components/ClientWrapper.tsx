@@ -118,7 +118,7 @@ export const ClientWrapper = () => {
           isSidebarOpen ? "w-64" : "w-20"
         } bg-white transition-all duration-300 overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg mt-[2px]`}
       >
-        <div className="flex items-center justify-between p-4 bg-slate-50">
+        <div className="flex items-center justify-between p-2 md:p-4 bg-slate-50">
           <h1 className={`font-bold ${isSidebarOpen ? "block" : "hidden"}`}>
             Admin Panel
           </h1>
@@ -133,7 +133,7 @@ export const ClientWrapper = () => {
         <nav className="mt-4 space-y-1">
           <button
             onClick={() => navigate("?tours=all")}
-            className={`flex w-full items-center p-4 hover:bg-gray-100 ${
+            className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
               tours ? "bg-gray-100" : ""
             }`}
           >
@@ -143,7 +143,7 @@ export const ClientWrapper = () => {
 
           <button
             onClick={() => navigate("?transfers=all")}
-            className={`flex w-full items-center p-4 hover:bg-gray-100 ${
+            className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
               transfers ? "bg-gray-100" : ""
             }`}
           >
@@ -153,7 +153,7 @@ export const ClientWrapper = () => {
 
           <button
             onClick={() => navigate("?drivers=all")}
-            className={`flex w-full items-center p-4 hover:bg-gray-100 ${
+            className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
               drivers ? "bg-gray-100" : ""
             }`}
           >
@@ -162,7 +162,7 @@ export const ClientWrapper = () => {
           </button>
           <button
             onClick={() => navigate("?faqs=all")}
-            className={`flex w-full items-center p-4 hover:bg-gray-100 ${
+            className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
               faqs ? "bg-gray-100" : ""
             }`}
           >
@@ -171,7 +171,7 @@ export const ClientWrapper = () => {
           </button>
           <button
             onClick={() => navigate("?videos=all")}
-            className={`flex w-full items-center p-4 hover:bg-gray-100 ${
+            className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
               video ? "bg-gray-100" : ""
             }`}
           >
@@ -181,14 +181,14 @@ export const ClientWrapper = () => {
 
           <button
             onClick={logout}
-            className={`flex w-full items-center p-4 text-[red] `}
+            className={`flex md:w-full items-center p-4 text-[red] `}
           >
             <LogOut size={20} />
             {isSidebarOpen && <span className="ml-4">გამოსვლა</span>}
           </button>
         </nav>
       </div>
-      <div className="flex-1 overflow-auto p-8 h-full">{renderContent()}</div>
+      <div className="flex-1 overflow-auto  p-1 md:p-8 h-full">{renderContent()}</div>
     </main>
   );
 };

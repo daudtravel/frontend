@@ -404,7 +404,7 @@ const CreateTour = () => {
             </div>
             {tourType && (
               <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
-                <h3 className="text-lg font-medium">
+                <h3 className="text-base md:text-lg font-medium">
                   ინდივიდუალური ტურის დეტალები
                 </h3>
 
@@ -603,7 +603,7 @@ const CreateTour = () => {
             )}
 
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">
+              <h3 className="text-base md:text-lg font-medium">
                 {!tourType ? "ჯგუფური ფასები" : ""}
               </h3>
 

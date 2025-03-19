@@ -113,7 +113,7 @@ export default function IndividualToursSection() {
     router.push(`/${locale}/tours`);
     setShowFilters(false);
   };
-  console.log(toursData, "here");
+ 
   return (
     <main className="w-full min-h-screen md:px-20 xl:pr-36 px-4 pt-6 md:pt-20 pb-20">
       <div className="md:hidden mb-4">

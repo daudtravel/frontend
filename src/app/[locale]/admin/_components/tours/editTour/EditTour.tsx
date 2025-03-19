@@ -341,7 +341,7 @@ export function EditTour({ params }: { params: { id: string } }) {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">ტურის ტიპი</FormLabel>
+                    <FormLabel className="text-sm md:text-base">ტურის ტიპი</FormLabel>
                     <FormDescription>
                       {tourType ? "ინდივიდუალური" : "ჯგუფური"} ტური
                     </FormDescription>
@@ -365,7 +365,7 @@ export function EditTour({ params }: { params: { id: string } }) {
               name="public"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <FormLabel className="text-base">ხილვადობა</FormLabel>
+                  <FormLabel className="text-sm md:text-base">ხილვადობა</FormLabel>
                   <FormControl>
                     <Switch
                       checked={field.value}
@@ -379,7 +379,7 @@ export function EditTour({ params }: { params: { id: string } }) {
             />
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">ყოველდღიური ტური</FormLabel>
+                <FormLabel className="text-sm md:text-base">ყოველდღიური ტური</FormLabel>
               </div>
               <FormControl>
                 <Switch
@@ -395,7 +395,7 @@ export function EditTour({ params }: { params: { id: string } }) {
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
               {SUPPORTED_LOCALES.map((locale, index) => (
                 <div key={locale} className="space-y-4 p-4 border rounded-lg">
-                  <h3 className="text-lg font-semibold capitalize">
+                  <h3 className="text-base md:text-lg font-semibold capitalize">
                     {locale} თარგმანი
                   </h3>
                   <FormField
@@ -578,7 +578,7 @@ export function EditTour({ params }: { params: { id: string } }) {
             </div>
             {tourType ? (
               <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
-                <h3 className="text-lg font-medium">
+                <h3 className="text-base md:text-lg font-medium">
                   ინდივიდუალური ტურის დეტალები
                 </h3>
                 <FormField
@@ -774,7 +774,7 @@ export function EditTour({ params }: { params: { id: string } }) {
             ) : (
               /* Group Prices */
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">ჯგუფური ფასები</h3>
+                <h3 className="text-base md:text-lg font-medium">ჯგუფური ფასები</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}

@@ -30,7 +30,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
   const nextLocations = tour.localizations[0]?.next_location || [];
   const startLocation = tour.localizations[0]?.start_location;
   const name = tour.localizations[0]?.name;
-  const endLocation = nextLocations[nextLocations.length - 1];
+   
 
   const isCurrentSeasonSummer = () => {
     const currentMonth = new Date().getMonth();
@@ -117,9 +117,8 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
               <MapPin className="w-4 h-4 text-main" />
               <span className="text-sm font-bold">{t("startLocation")}:</span>
               <span className="text-sm line-clamp-1">
-                {isRTL
-                  ? endLocation || startLocation
-                  : startLocation || "Unknown Location"}
+                  {startLocation}
+                 
               </span>
             </div>
             <div className="flex items-center gap-[3px]">

@@ -76,7 +76,7 @@ const CreateFaq = () => {
       setErrorMessage(null);
       setSuccessMessage(null);
       await faqApi.post(data);
-      console.log(data);
+     
       setSuccessMessage("კითხვა წარმატებით შეიქმნა");
       await queryClient.invalidateQueries({ queryKey: ["faqs", locale] });
       form.reset();

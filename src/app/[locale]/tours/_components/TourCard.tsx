@@ -128,11 +128,12 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
                   {tour.day} {t("day")}
                 </span>
               </div>
-              <div className="flex items-center">
+             {tour.night !== "0" &&  <div className="flex items-center">
                 <span className="text-sm">
                   / {tour.night} {t("night")}
                 </span>
               </div>
+              }
             </div>
           </div>
           <div className="md:flex-row flex-col flex gap-3 md:gap-0 md:items-center justify-between w-full">

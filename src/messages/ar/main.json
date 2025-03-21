@@ -1,6 +1,6 @@
 {
   "findEmotions": "اكتشف مشاعر جديدة!",
-  "exploreGeorgia":"اكتشف جورجيا",
+  "exploreGeorgia": "اكتشف جورجيا",
   "exploreTours": "جولات في جورجيا",
   "popularDestinations": "الوجهات الشهيرة",
   "popularDestinationsDesc": "الوجهات الشهيرة في جورجيا، الأماكن التاريخية، والمناظر الطبيعية الخلابة.",
@@ -22,5 +22,6 @@
   "viewAllReviews": "عرض جميع التقييمات",
   "faq": "الأسئلة الشائعة",
   "groupTours": "جولات جماعية",
-  "individualTours":  "جولات فردية"
+  "individualTours": "جولات فردية",
+  "videoGallery": "معرض الفيديو"
 }

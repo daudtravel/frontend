@@ -46,7 +46,7 @@ const INITIAL_FORM_STATE: FormData = {
 };
 
 const CONTACT_INFO: ContactInfo = {
-  address: "St.Chavchavadze #34, Batumi",
+  address: "St.Chabua Amirejibi #4, Batumi",
   phone: "+ (995) 557 442 212",
   email: "traveldaud@gmail.com",
 };
@@ -131,7 +131,7 @@ const ContactCard: React.FC = () => {
                   </h3>
                   <p className="text-sm text-gray-600">
                     <a
-                      href="https://www.google.com/maps/place/Daud+Travel/@41.6443898,41.6346718,696m/data=!3m2!1e3!4b1!4m6!3m5!1s0x406787f6f7466e93:0x69bea43bb941487c!8m2!3d41.6443898!4d41.6346718!16s%2Fg%2F11s2jbmn0l?entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw%3D%3D"
+                      href="https://maps.app.goo.gl/RHHMAjJzBT8hhVAp8"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:underline hover:text-main"

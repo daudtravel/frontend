@@ -47,7 +47,7 @@ export const ClientWrapper = () => {
       !searchParams.has("transfers") &&
       !searchParams.has("drivers") &&
       !searchParams.has("faqs") &&
-      !searchParams.has("video");
+      !searchParams.has("videos");
 
     if (hasNoParams) {
       router.push(`${pathname}?tours=all`);
@@ -109,6 +109,8 @@ export const ClientWrapper = () => {
     if (video === "createVideo") {
       return <CreateVideo />;
     }
+    
+    
   };
 
   return (

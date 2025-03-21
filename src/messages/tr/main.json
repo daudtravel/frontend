@@ -1,6 +1,6 @@
 {
   "findEmotions": "Yeni duygular keşfedin!",
-  "exploreGeorgia": "Gürcistan’ı keşfet", 
+  "exploreGeorgia": "Gürcistan’ı keşfet",
   "exploreTours": "Gürcistan Turları",
   "popularDestinations": "Popüler Destinasyonlar",
   "popularDestinationsDesc": "Gürcistan'daki popüler destinasyonlar, tarihi yerler ve muhteşem manzaralar.",
@@ -21,6 +21,7 @@
   "guestReviews": "Müşteri Yorumları",
   "viewAllReviews": "Tüm Yorumları Görüntüle",
   "faq": "Sıkça Sorulan Sorular",
-  "groupTours":  "Grup Turları",
-  "individualTours":  "Bireysel Turlar"
+  "groupTours": "Grup Turları",
+  "individualTours": "Bireysel Turlar",
+  "videoGallery": "Video Galerisi"
 }

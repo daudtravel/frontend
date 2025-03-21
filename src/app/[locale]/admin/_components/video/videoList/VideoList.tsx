@@ -1,5 +1,5 @@
 import { useParams, useRouter } from "next/navigation";
-import { Plus, Loader2, Pencil, Trash, Play } from "lucide-react";
+import { Plus, Loader2,  Trash  } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
@@ -31,25 +31,23 @@ export function VideoList() {
   const videos = data?.data || [];
 
   const handleDeleteVideo = async (id: string) => {
+ 
     try {
-      await videoApi.delete(id);
+       await videoApi.delete(id);
+     
       queryClient.invalidateQueries({ queryKey: ["videos"] });
     } catch (error) {
       console.error("Failed to delete video:", error);
     }
   };
 
-  const handleEditVideo = (videoId: string) => {
-    router.push(`?videos=${videoId}`);
-  };
+ 
 
   const handleCreateVideo = () => {
     router.push("?videos=createVideo");
   };
 
-  const handleViewVideo = (videoId: string) => {
-    router.push(`/videos/${videoId}`);
-  };
+ 
 
   if (isLoading) {
     return (
@@ -119,14 +117,6 @@ export function VideoList() {
                     </div>
 
                     <div className="col-span-2 flex justify-end">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleViewVideo(video.id)}
-                        className="text-gray-600 hover:text-black"
-                      >
-                        <Play className="h-4 w-4 text-blue-700" />
-                      </Button>
 
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -156,15 +146,6 @@ export function VideoList() {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditVideo(video.id)}
-                        className="text-gray-600 hover:text-black"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 </CardContent>

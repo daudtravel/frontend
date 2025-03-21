@@ -94,14 +94,13 @@ export default function CreateVideo() {
             <div className="space-y-2">
               <Label htmlFor="url">URL</Label>
               <Input
-                id="url"
-                name="url"
-                type="url"
-                value={formData.youtube_link}
-                onChange={handleChange}
-                placeholder="შეიყვანეთ ვიდეოს ბმული (URL)"
-                required
-              />
+              id="youtube_link"
+              name="youtube_link" // Fix: Match the state key
+              value={formData.youtube_link}
+              onChange={handleChange}
+              placeholder="შეიყვანეთ ვიდეოს ბმული (URL)"
+              required
+/>
             </div>
 
             <div className="flex justify-end gap-4 pt-4">

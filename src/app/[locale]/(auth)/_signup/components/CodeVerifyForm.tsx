@@ -54,7 +54,7 @@ export default function CodeVerifyForm({
       router.push("/?signin");
       setIsOpen(false);
     } catch (error) {
-      console.log(error);
+ 
       if (error instanceof AxiosError && error.response) {
         if (error.response.data.message === "INVALID_VERIFICATION_CODE") {
           codeForm.setError("code", {

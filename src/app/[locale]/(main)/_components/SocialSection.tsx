@@ -16,7 +16,7 @@ export const SocialSection = () => {
   const t = useTranslations("contact");
 
   return (
-    <div className="border-t flex flex-row justify-center items-center flex-col py-5 md:py-10">
+    <div className="border-t flex flex-row justify-center items-center flex-col py-5 md:py-10 bg-[#f2f5ff]">
       <Button className="text-base h-8 mb-7 text-center ">
         {t("followUs")}
       </Button>

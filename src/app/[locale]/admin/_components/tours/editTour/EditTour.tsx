@@ -50,26 +50,39 @@ export function EditTour({ params }: { params: { id: string } }) {
   const form = useEditTourValidator();
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["tour", params.id],
     queryFn: () => toursAPI.getByIdAllLocales(params.id),
     refetchOnMount: true,
     staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [params.id, refetch]);
 
   const updateTourMutation = useMutation({
     mutationFn: (updatedData: TourFormData) =>
       toursAPI.put(params.id, updatedData),
     onSuccess: (response) => {
+      setIsSubmitting(false);
       if (response.message === "Tour updated successfully") {
         setSuccessMessage("Tour updated successfully");
+
         queryClient.invalidateQueries({ queryKey: ["tours"] });
+        queryClient.invalidateQueries({ queryKey: ["tour", params.id] });
+
+        refetch();
+
         router.push("?tours=all");
       } else {
         setErrorMessage(response.message || "Failed to update tour");
       }
     },
     onError: (error) => {
+      setIsSubmitting(false);
       console.error("Error updating tour:", error);
       if (axios.isAxiosError(error)) {
         setErrorMessage(
@@ -193,14 +206,13 @@ export function EditTour({ params }: { params: { id: string } }) {
       }
 
       updateTourMutation.mutate(formattedData);
-
-      // Note: Don't set isSubmitting false here - it should be done in mutation callbacks
     } catch (error) {
       console.error(error);
       setErrorMessage("Failed to update tour");
       setIsSubmitting(false);
     }
   };
+
   const handleMainImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -260,7 +272,7 @@ export function EditTour({ params }: { params: { id: string } }) {
               ) || {};
             return {
               locale,
-              name: localization.start_location || "",
+              name: localization.name || "",
               start_location: localization.start_location || "",
               next_location: localization.next_location || [],
               description: localization.description || "",
@@ -341,7 +353,9 @@ export function EditTour({ params }: { params: { id: string } }) {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-sm md:text-base">ტურის ტიპი</FormLabel>
+                    <FormLabel className="text-sm md:text-base">
+                      ტურის ტიპი
+                    </FormLabel>
                     <FormDescription>
                       {tourType ? "ინდივიდუალური" : "ჯგუფური"} ტური
                     </FormDescription>
@@ -365,7 +379,9 @@ export function EditTour({ params }: { params: { id: string } }) {
               name="public"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <FormLabel className="text-sm md:text-base">ხილვადობა</FormLabel>
+                  <FormLabel className="text-sm md:text-base">
+                    ხილვადობა
+                  </FormLabel>
                   <FormControl>
                     <Switch
                       checked={field.value}
@@ -379,7 +395,9 @@ export function EditTour({ params }: { params: { id: string } }) {
             />
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-sm md:text-base">ყოველდღიური ტური</FormLabel>
+                <FormLabel className="text-sm md:text-base">
+                  ყოველდღიური ტური
+                </FormLabel>
               </div>
               <FormControl>
                 <Switch
@@ -774,7 +792,9 @@ export function EditTour({ params }: { params: { id: string } }) {
             ) : (
               /* Group Prices */
               <div className="space-y-4">
-                <h3 className="text-base md:text-lg font-medium">ჯგუფური ფასები</h3>
+                <h3 className="text-base md:text-lg font-medium">
+                  ჯგუფური ფასები
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}

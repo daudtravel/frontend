@@ -74,6 +74,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       : EditorState.createEmpty(decorator)
   );
 
+  // Define custom style map for colors
+  const styleMap = {
+    RED_TEXT: { color: "red" },
+    BLUE_TEXT: { color: "blue" },
+    GREEN_TEXT: { color: "green" },
+    PURPLE_TEXT: { color: "purple" },
+    ORANGE_TEXT: { color: "orange" },
+    YELLOW_TEXT: { color: "gold" },
+    TEAL_TEXT: { color: "teal" },
+    BLACK_TEXT: { color: "black" },
+  };
+
   const handleEditorChange = (newEditorState: EditorState) => {
     setEditorState(newEditorState);
     const contentState = newEditorState.getCurrentContent();
@@ -117,48 +129,120 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   return (
     <div className="border rounded p-2">
-      <div className="flex space-x-2 mb-2">
-        <button
-          type="button"
-          onClick={() => toggleInlineStyle("BOLD")}
-          className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
-        >
-          B
-        </button>
-        <button
-          type="button"
-          onClick={() => toggleInlineStyle("ITALIC")}
-          className="bg-green-500 text-white px-2 py-1 rounded text-sm"
-        >
-          I
-        </button>
-        <button
-          type="button"
-          onClick={() => toggleBlockType("ordered-list-item")}
-          className="bg-purple-500 text-white px-2 py-1 rounded text-sm"
-        >
-          OL
-        </button>
-        <button
-          type="button"
-          onClick={() => toggleBlockType("unordered-list-item")}
-          className="bg-red-500 text-white px-2 py-1 rounded text-sm"
-        >
-          UL
-        </button>
-        <button
-          type="button"
-          onClick={addLink}
-          className="bg-indigo-500 text-white px-2 py-1 rounded text-sm"
-        >
-          Link
-        </button>
+      <div className="flex flex-wrap gap-2 mb-2">
+        {/* Formatting options */}
+        <div className="flex space-x-2">
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("BOLD")}
+            className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
+          >
+            B
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("ITALIC")}
+            className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+          >
+            I
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleBlockType("ordered-list-item")}
+            className="bg-purple-500 text-white px-2 py-1 rounded text-sm"
+          >
+            OL
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleBlockType("unordered-list-item")}
+            className="bg-red-500 text-white px-2 py-1 rounded text-sm"
+          >
+            UL
+          </button>
+          <button
+            type="button"
+            onClick={addLink}
+            className="bg-indigo-500 text-white px-2 py-1 rounded text-sm"
+          >
+            Link
+          </button>
+        </div>
+
+        {/* Color buttons */}
+        <div className="flex space-x-2">
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("RED_TEXT")}
+            className="bg-white text-red-500 border border-red-500 px-2 py-1 rounded text-sm"
+            style={{ color: "red" }}
+          >
+            A
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("BLUE_TEXT")}
+            className="bg-white border border-blue-500 px-2 py-1 rounded text-sm"
+            style={{ color: "blue" }}
+          >
+            A
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("GREEN_TEXT")}
+            className="bg-white border border-green-500 px-2 py-1 rounded text-sm"
+            style={{ color: "green" }}
+          >
+            A
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("PURPLE_TEXT")}
+            className="bg-white border border-purple-500 px-2 py-1 rounded text-sm"
+            style={{ color: "purple" }}
+          >
+            A
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("ORANGE_TEXT")}
+            className="bg-white border border-orange-500 px-2 py-1 rounded text-sm"
+            style={{ color: "orange" }}
+          >
+            A
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("YELLOW_TEXT")}
+            className="bg-white border border-yellow-500 px-2 py-1 rounded text-sm"
+            style={{ color: "gold" }}
+          >
+            A
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("TEAL_TEXT")}
+            className="bg-white border border-teal-500 px-2 py-1 rounded text-sm"
+            style={{ color: "teal" }}
+          >
+            A
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleInlineStyle("BLACK_TEXT")}
+            className="bg-white border border-black px-2 py-1 rounded text-sm"
+            style={{ color: "black" }}
+          >
+            A
+          </button>
+        </div>
       </div>
       <Editor
         editorState={editorState}
         onChange={handleEditorChange}
         placeholder={placeholder}
         readOnly={disabled}
+        customStyleMap={styleMap}
       />
     </div>
   );

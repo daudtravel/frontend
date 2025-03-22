@@ -247,11 +247,13 @@ export default function Description({ data }: { data: Tour }) {
                   {day} {t("day")}
                 </span>
               </div>
-              {night !== "0" && <div className="flex items-center">
-                <span className="text-sm">
-                  / {night} {t("night")}
-                </span>
-              </div>}
+              {night !== "0" && (
+                <div className="flex items-center">
+                  <span className="text-sm">
+                    / {night} {t("night")}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex flex-col flex-grow">

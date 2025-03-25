@@ -22,7 +22,7 @@ type Video = {
   title: string;
 };
 
-export default function VideoGallery() {
+export default function VideoGalleryFirst() {
   const t = useTranslations("main");
   const params = useParams();
   const locale = params.locale as string;
@@ -38,12 +38,7 @@ export default function VideoGallery() {
 
   const videos: Video[] = response?.data || [];
 
-  // Return null if there are 10 or fewer videos
-  if (videos.length <= 10) {
-    return null;
-  }
-
-  const displayVideos = videos.slice(10);
+  const displayVideos = videos.slice(0, 10);
 
   if (isLoading) {
     return (
@@ -53,7 +48,7 @@ export default function VideoGallery() {
     );
   }
 
-  if (error) {
+  if (error || videos.length === 0) {
     return (
       <div className="flex justify-center items-center h-64">
         <p className="text-gray-500">

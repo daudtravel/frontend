@@ -19,11 +19,9 @@ export async function generateMetadata({
       locale: locale,
       url: "https://www.daudtravel.com/tours",
       siteName: "Daud Travel",
-      images: [
-        {
-          url: "/images/Svaneti.jpg",
-        },
-      ],
+    },
+    icons: {
+      icon: "/images/MainOG.png",
     },
   };
 }

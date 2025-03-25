@@ -18,7 +18,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import React, { useState } from "react";
+import { useState } from "react";
 import { cn } from "@/src/utlis/cn";
 
 export default function Description({ data }: { data: Tour }) {
@@ -27,8 +27,7 @@ export default function Description({ data }: { data: Tour }) {
   const isRTL = currentLocale === "ar";
 
   const [isDestinationsOpen, setIsDestinationsOpen] = useState(false);
-  const description =
-    data.localizations?.[0]?.description || "No description available";
+  const description = data.localizations?.[0]?.description || null;
   const nextLocations = data.localizations[0]?.next_location || [];
   const startLocation = data.localizations[0]?.start_location;
   const endLocation =
@@ -46,25 +45,31 @@ export default function Description({ data }: { data: Tour }) {
     allDestinations.length > MAX_VISIBLE_DESKTOP_LOCATIONS;
 
   const getVisibleDesktopLocations = () => {
-    if (!showMoreOnDesktop) {
-      return allDestinations;
-    }
+    let allLocations = [startLocation, ...nextLocations];
 
     if (isRTL) {
-      return [
-        allDestinations[allDestinations.length - 1],
-        allDestinations[allDestinations.length - 2],
-        allDestinations[1],
-        allDestinations[0],
-      ];
-    } else {
-      return [
-        allDestinations[0],
-        allDestinations[1],
-        allDestinations[allDestinations.length - 2],
-        allDestinations[allDestinations.length - 1],
-      ];
+      allLocations = allLocations.reverse();
     }
+
+    if (allLocations.length > MAX_VISIBLE_DESKTOP_LOCATIONS) {
+      if (isRTL) {
+        return [
+          allLocations[0],
+          allLocations[1],
+          allLocations[allLocations.length - 2],
+          allLocations[allLocations.length - 1],
+        ];
+      } else {
+        return [
+          allLocations[0],
+          allLocations[1],
+          allLocations[allLocations.length - 2],
+          allLocations[allLocations.length - 1],
+        ];
+      }
+    }
+
+    return allLocations;
   };
 
   const visibleDesktopLocations = getVisibleDesktopLocations();
@@ -95,7 +100,7 @@ export default function Description({ data }: { data: Tour }) {
           className={`flex flex-wrap items-center ${isRTL ? "flex-row-reverse" : "flex-row"}`}
         >
           {destinationsToDisplay.map((location, index, array) => (
-            <React.Fragment key={`text-destination-${index}`}>
+            <div key={`text-destination-${index}`}>
               <div className="flex items-center">
                 <span className="text-sm">{location}</span>
                 {isRTL ? (
@@ -129,7 +134,7 @@ export default function Description({ data }: { data: Tour }) {
               {index < array.length - 1 && (
                 <ArrowIcon className="mx-2 w-4 h-4 flex-shrink-0" />
               )}
-            </React.Fragment>
+            </div>
           ))}
         </div>
       </div>
@@ -297,7 +302,7 @@ export default function Description({ data }: { data: Tour }) {
                     {visibleDesktopLocations.map((location, index) => {
                       if (showMoreOnDesktop && index === middleIndex) {
                         return (
-                          <React.Fragment key={`fragment-${index}`}>
+                          <div key={`fragment-${index}`}>
                             <div
                               key="more-button"
                               className="flex flex-col items-center relative px-2 cursor-pointer hover:opacity-80 transition-opacity"
@@ -317,7 +322,7 @@ export default function Description({ data }: { data: Tour }) {
                                 {location}
                               </span>
                             </div>
-                          </React.Fragment>
+                          </div>
                         );
                       }
 

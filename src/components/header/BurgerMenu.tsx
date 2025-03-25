@@ -29,9 +29,7 @@ export default function BurgerMenu() {
     { href: "/contact", label: t("contact") },
   ];
 
-  // Updated isActive function to handle locale-prefixed routes and query params
   const isActive = (href: string) => {
-    // Special case for home page
     if (
       href === "/" &&
       (pathname === `/${locale}` || pathname === `/${locale}/`)
@@ -39,27 +37,20 @@ export default function BurgerMenu() {
       return true;
     }
 
-    // Extract the base path and query params from href
     const [basePath, queryString] = href.split("?");
 
-    // For tours with query parameters
     if (basePath === "/tours" && queryString) {
-      // Check if we're on the tours page
       if (!pathname.startsWith(`/${locale}/tours`)) {
         return false;
       }
 
-      // Parse the query parameter from the menu item
       const isGroupParam = new URLSearchParams(queryString).get("isGroup");
 
-      // Get the current isGroup param from the URL
       const currentIsGroup = searchParams.get("isGroup");
 
-      // Check if the isGroup parameter matches
       return isGroupParam === currentIsGroup;
     }
 
-    // For regular pages without query params
     return (
       pathname === `/${locale}${basePath}` ||
       pathname === `/${locale}${basePath}/`

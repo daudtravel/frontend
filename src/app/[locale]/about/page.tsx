@@ -23,11 +23,9 @@ export async function generateMetadata({
       locale: locale,
       url: "https://www.daudtravel.com/about",
       siteName: "Daud Travel",
-      images: [
-        {
-          url: "/images/AboutOG.jpg",
-        },
-      ],
+    },
+    icons: {
+      icon: "/images/MainOG.png",
     },
   };
 }

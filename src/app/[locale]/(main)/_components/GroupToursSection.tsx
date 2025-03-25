@@ -21,9 +21,9 @@ export default function GroupToursSection() {
   const t = useTranslations("main");
   const params = useParams();
   const locale = params.locale as string;
-  {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-  }
+
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+
   const [api, setApi] = useState<any>(null);
   const [current, setCurrent] = useState(0);
 

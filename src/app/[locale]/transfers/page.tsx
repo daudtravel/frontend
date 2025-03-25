@@ -20,11 +20,9 @@ export async function generateMetadata({
       locale: locale,
       url: "https://www.daudtravel.com/transfers",
       siteName: "Daud Travel",
-      images: [
-        {
-          url: "/images/Svaneti.jpg",
-        },
-      ],
+    },
+    icons: {
+      icon: "/images/MainOG.png",
     },
   };
 }

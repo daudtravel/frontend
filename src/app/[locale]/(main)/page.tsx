@@ -8,8 +8,9 @@ import { getTranslations } from "next-intl/server";
 import { Locale } from "@/src/i18n/routing";
 import IndividualToursSection from "./_components/IndividualTours";
 import GroupToursSection from "./_components/GroupToursSection";
-import { SocialSection } from "./_components/SocialSection";
+
 import VideoGallery from "./_components/VideoGallerySection";
+import VideoGalleryFirst from "./_components/VideoGalleryFirst";
 
 export async function generateMetadata({
   params,
@@ -40,19 +41,16 @@ export async function generateMetadata({
 export default function Page() {
   return (
     <main className="w-full relative">
-    <CoverSection />
-    <IndividualToursSection />
-    <GroupToursSection />
-    <WhyUsSection />
-    <TransferSection />
-    <Gallery />
-    <ReviewsSection />
-    <FaqSection />
- 
-
-      <VideoGallery/>
-      <SocialSection />
- 
-  </main>
+      <CoverSection />
+      <IndividualToursSection />
+      <GroupToursSection />
+      <WhyUsSection />
+      <VideoGalleryFirst />
+      <TransferSection />
+      <Gallery />
+      <ReviewsSection />
+      <FaqSection />
+      <VideoGallery />
+    </main>
   );
 }

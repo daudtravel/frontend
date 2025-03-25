@@ -30,7 +30,6 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
   const nextLocations = tour.localizations[0]?.next_location || [];
   const startLocation = tour.localizations[0]?.start_location;
   const name = tour.localizations[0]?.name;
-   
 
   const isCurrentSeasonSummer = () => {
     const currentMonth = new Date().getMonth();
@@ -66,12 +65,10 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
     processLocations();
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
+  console.log(startLocation);
   return (
     <div className="flex flex-col md:flex-col w-full bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-xs overflow-hidden transition-all duration-300 hover:shadow-lg h-full">
-      <Link
-        className="block w-full h-full flex flex-col"
-        href={`/tours/${tour.id}`}
-      >
+      <Link className="w-full h-full flex flex-col" href={`/tours/${tour.id}`}>
         <div className="relative w-full h-[200px] md:h-[230px] flex-shrink-0">
           {!imageLoaded && !imageError && (
             <div className="absolute inset-0 bg-gray-200 animate-pulse" />
@@ -116,10 +113,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
             <div className="flex items-center flex-row gap-2">
               <MapPin className="w-4 h-4 text-main" />
               <span className="text-sm font-bold">{t("startLocation")}:</span>
-              <span className="text-sm line-clamp-1">
-                  {startLocation}
-                 
-              </span>
+              <span className="text-sm line-clamp-1">{startLocation}</span>
             </div>
             <div className="flex items-center gap-[3px]">
               <div className="flex items-center gap-2">
@@ -128,12 +122,13 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
                   {tour.day} {t("day")}
                 </span>
               </div>
-             {tour.night !== "0" &&  <div className="flex items-center">
-                <span className="text-sm">
-                  / {tour.night} {t("night")}
-                </span>
-              </div>
-              }
+              {tour.night !== "0" && (
+                <div className="flex items-center">
+                  <span className="text-sm">
+                    / {tour.night} {t("night")}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div className="md:flex-row flex-col flex gap-3 md:gap-0 md:items-center justify-between w-full">

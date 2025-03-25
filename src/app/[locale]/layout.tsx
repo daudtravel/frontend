@@ -10,11 +10,8 @@ import SignInModal from "./(auth)/_signin/SigninModal";
 import QueryProvider from "@/src/reactQuery/queryProvider";
 import { AuthProvider } from "@/src/auth/authProvider";
 import SignupModalWrapper from "./(auth)/_signup/SignupModalWrapper";
-import {
-  CHAT_CONFIG,
-  initTawkWidget,
-  initWhatsAppWidget,
-} from "@/src/utlis/chats/OnlineChats";
+import { CHAT_CONFIG, initWhatsAppWidget } from "@/src/utlis/chats/OnlineChats";
+import { SocialSection } from "./(main)/_components/SocialSection";
 
 export async function generateMetadata({
   params,
@@ -38,7 +35,7 @@ export async function generateMetadata({
       siteName: "Daud Travel",
     },
     icons: {
-      icon: "/images/icon.png",
+      icon: "/images/MainOG.png",
     },
   };
 }
@@ -63,9 +60,9 @@ export default async function LocaleLayout({
         <Script id="whatsapp-widget" strategy="afterInteractive">
           {initWhatsAppWidget(CHAT_CONFIG.WHATSAPP_NUMBER)}
         </Script>
-        <Script id="tawk-widget" strategy="afterInteractive">
+        {/* <Script id="tawk-widget" strategy="afterInteractive">
           {initTawkWidget()}
-        </Script>
+        </Script> */}
 
         <AuthProvider>
           <QueryProvider>
@@ -75,6 +72,7 @@ export default async function LocaleLayout({
               <SignInModal />
               {children}
               <Footer />
+              <SocialSection />
             </NextIntlClientProvider>
           </QueryProvider>
         </AuthProvider>

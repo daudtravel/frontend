@@ -8,18 +8,11 @@ import {
   X,
   Youtube,
 } from "@/src/components/svg";
-import { Button } from "@/src/components/ui/button";
 import { MapPin } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 export const SocialSection = () => {
-  const t = useTranslations("contact");
-
   return (
-    <div className="border-t flex flex-row justify-center items-center flex-col py-5 md:py-10 bg-[#f2f5ff]">
-      <Button className="text-base h-8 mb-7 text-center ">
-        {t("followUs")}
-      </Button>
+    <div className="border-t flex sticky border-t-slate-200 shadow-lg bottom-0 w-full z-50 justify-center items-center flex-col py-2 md:py-5 bg-[#f2f5ff]">
       <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-8">
         <a
           target="_blank"

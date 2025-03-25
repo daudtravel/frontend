@@ -1,13 +1,10 @@
-import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Tour } from "@/src/types/tours";
-import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 
 export default function Gallery({ data }: { data: Tour }) {
-  const t = useTranslations("tours");
   const gallery = data.gallery || [];
   const [loadedGalleryImages, setLoadedGalleryImages] = useState<
     Record<number, boolean>
@@ -87,9 +84,12 @@ export default function Gallery({ data }: { data: Tour }) {
                 )}
               </div>
 
-              <Button className="w-full bg-orange-500 my-5 h-9 hover:bg-orange-600 text-white">
-                {t("viewAllPhotos")}
-              </Button>
+              {filteredGallery.slice(displayLimit - 1).map((item, index) => (
+                <PhotoView
+                  key={`hidden-${index}`}
+                  src={`https://api.daudtravel.com${item}`}
+                />
+              ))}
             </PhotoProvider>
           </CardContent>
         </Card>

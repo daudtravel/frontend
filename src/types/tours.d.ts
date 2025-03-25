@@ -8,6 +8,8 @@ export interface PaginationInfo {
 export interface ToursQueryParams {
   start_location: string | undefined;
   isGroup: boolean | undefined;
+  page: number;
+  limit: number;
 }
 
 export interface GetToursResponse {

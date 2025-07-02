@@ -5,5 +5,5 @@ import axios from "axios";
 // });
 
 export const axiosInstance = axios.create({
-  baseURL: "https://api.daudtravel.com//api",
+  baseURL: "https://api.daudtravel.com/api",
 });

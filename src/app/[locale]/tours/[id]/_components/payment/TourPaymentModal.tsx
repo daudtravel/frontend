@@ -124,7 +124,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     };
 
     const response = await fetch(
-      "http://localhost:3001/api/payments/bog/create",
+      "https://api.daudtravel.com/api/payments/bog/create",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

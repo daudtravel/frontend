@@ -18,7 +18,7 @@ export const usePaymentStatus = (orderId: string | null) => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/payments/bog/status/${orderId}`
+        `https://api.daudtravel.com/api/payments/bog/status/${orderId}`
       );
 
       if (!response.ok) {

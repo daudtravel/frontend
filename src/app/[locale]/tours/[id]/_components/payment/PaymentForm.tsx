@@ -270,21 +270,18 @@ export default function PaymentForm({ bookingData, onBack }: PaymentFormProps) {
         throw new Error(paymentResponse.message || "Failed to create payment");
       }
 
-      console.log("✅ BOG Payment created successfully:", paymentResponse);
       setOrderId(
         paymentResponse.externalOrderId || paymentResponse.orderId || ""
       );
       setMessage("Redirecting to payment...");
 
       if (paymentResponse.paymentUrl) {
-        console.log("🔄 Redirecting to BOG payment page...");
         window.location.href = paymentResponse.paymentUrl;
       } else {
         setPaymentStatus("success");
         setMessage("Payment created successfully!");
       }
     } catch (error) {
-      console.error("❌ Payment creation failed:", error);
       setPaymentStatus("failed");
       setMessage(
         error instanceof Error ? error.message : "Payment creation failed"
@@ -306,7 +303,6 @@ export default function PaymentForm({ bookingData, onBack }: PaymentFormProps) {
     return `₾${amount.toFixed(2)}`;
   };
 
-  // Calculate remaining amount for display (using the same logic as backend)
   const getDisplayRemainingAmount = () => {
     if (bookingData.paymentType === "total") return 0;
     const totalPrice = getTotalTourPrice();
@@ -317,7 +313,6 @@ export default function PaymentForm({ bookingData, onBack }: PaymentFormProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Back Button */}
         <Button variant="ghost" onClick={onBack} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Tour Details
@@ -337,7 +332,6 @@ export default function PaymentForm({ bookingData, onBack }: PaymentFormProps) {
 
           <CardContent>
             <div className="space-y-4">
-              {/* Customer Information */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name *</Label>

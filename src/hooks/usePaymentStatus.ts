@@ -27,12 +27,6 @@ export const usePaymentStatus = (orderId: string | null) => {
 
       const data: PaymentStatusResponse = await response.json();
       setPaymentDetails(data);
-
-      if (data.success && data.status === "completed") {
-        console.log("✅ Payment verified successfully:", data);
-      } else {
-        console.log("❌ Payment verification failed:", data);
-      }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error verifying payment";

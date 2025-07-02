@@ -65,7 +65,6 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
     processLocations();
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
-  console.log(startLocation);
   return (
     <div className="flex flex-col md:flex-col w-full bg-[#f2f5ff] border border-gray-300 rounded-xl shadow-xs overflow-hidden transition-all duration-300 hover:shadow-lg h-full">
       <Link className="w-full h-full flex flex-col" href={`/tours/${tour.id}`}>

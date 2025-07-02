@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
@@ -15,9 +17,11 @@ import { enUS } from "date-fns/locale/en-US";
 import { ar } from "date-fns/locale/ar";
 import { tr } from "date-fns/locale/tr";
 import { ru } from "date-fns/locale/ru";
-import { CalendarIcon, Plus, Minus } from "lucide-react";
-import { Tour } from "@/src/types/tours";
+import { CalendarIcon, Plus, Minus, CreditCard } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+ 
+import PaymentForm from "./PaymentForm";
+import React from "react";
 import { cn } from "@/src/utlis/cn";
 
 const localeMap = {
@@ -28,14 +32,53 @@ const localeMap = {
   ru: ru,
 };
 
-const Payment = ({ data }: { data: Tour }) => {
+interface PaymentProps {
+  data: {
+    type: boolean;
+    individualPrices?: any;
+    groupPrices?: any;
+    name?: string;
+    description?: string;
+    startLocation?: string;
+    endLocation?: string;
+    nextLocations: string[];
+    allDestinations: string[];
+    day: string;
+    night: string;
+    numOfPersons?: number;
+    daily?: boolean;
+    date: string;
+    image?: string;
+    gallery?: string[];
+  };
+}
+
+interface BookingData {
+  tourData: PaymentProps["data"];
+  paymentType: "total" | "reservation";
+  personCount: number;
+  selectedDate: Date;
+  prices: {
+    basePrice: number;
+    discountedPrice: number;
+    reservationPrice: number;
+    remainingPrice: number;
+    savings: number;
+  };
+}
+
+const Payment = React.memo<PaymentProps>(({ data }) => {
   const t = useTranslations("tours");
   const currentLocale = useLocale() as keyof typeof localeMap;
   const dateLocale = localeMap[currentLocale] || enUS;
 
   const [personCount, setPersonCount] = useState(1);
-  const [paymentType, setPaymentType] = useState("total");
+  const [paymentType, setPaymentType] = useState<"total" | "reservation">(
+    "total"
+  );
   const [date, setDate] = useState<Date>(new Date());
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [bookingData, setBookingData] = useState<BookingData | null>(null);
 
   const handleIncrement = () => {
     if (personCount < 8) setPersonCount((prev) => prev + 1);
@@ -48,16 +91,16 @@ const Payment = ({ data }: { data: Tour }) => {
   const isDateInSummerSeason = (selectedDate: Date | undefined) => {
     if (!selectedDate) return false;
     const month = selectedDate.getMonth();
-    return month >= 5 && month <= 8;
+    return month >= 5 && month <= 8; // June to September
   };
 
   const calculateGroupPrices = () => {
     const basePrice =
-      (Number(data.group_prices.total_price) ?? 0) * personCount;
+      (Number(data.groupPrices?.total_price) ?? 0) * personCount;
     const discountedPrice =
-      (Number(data.group_prices.discounted_price) ?? 0) * personCount;
+      (Number(data.groupPrices?.discounted_price) ?? 0) * personCount;
     const reservationPrice =
-      (Number(data.group_prices.reservation_price) ?? 0) * personCount;
+      (Number(data.groupPrices?.reservation_price) ?? 0) * personCount;
     const remainingPrice = basePrice - reservationPrice;
     const savings = basePrice - discountedPrice;
 
@@ -73,11 +116,12 @@ const Payment = ({ data }: { data: Tour }) => {
   const calculateIndividualPrices = () => {
     const isSummerSeason = isDateInSummerSeason(date);
     const priceData = isSummerSeason
-      ? data.individual_prices.season
-      : data.individual_prices.off_season;
-    const basePrice = Number(priceData.total_price) ?? 0;
-    const discountedPrice = Number(priceData.discounted_price) ?? 0;
-    const reservationPrice = Number(priceData.reservation_price) ?? 0;
+      ? data.individualPrices?.season
+      : data.individualPrices?.off_season;
+
+    const basePrice = Number(priceData?.total_price) ?? 0;
+    const discountedPrice = Number(priceData?.discounted_price) ?? 0;
+    const reservationPrice = Number(priceData?.reservation_price) ?? 0;
     const remainingPrice = basePrice - reservationPrice;
     const savings = basePrice - discountedPrice;
 
@@ -90,18 +134,41 @@ const Payment = ({ data }: { data: Tour }) => {
       isSummerSeason,
     };
   };
+
   const prices = data.type
     ? calculateIndividualPrices()
     : calculateGroupPrices();
 
-  const whatsappUrl = `https://wa.me/+995557442212?text=}`;
+  const handlePayment = () => {
+    const booking: BookingData = {
+      tourData: data,
+      paymentType,
+      personCount,
+      selectedDate: date,
+      prices,
+    };
+
+    setBookingData(booking);
+    setShowPaymentForm(true);
+  };
 
   const isRTL = currentLocale === "ar";
+
+  // Show payment form if triggered
+  if (showPaymentForm && bookingData) {
+    return (
+      <PaymentForm
+        bookingData={bookingData}
+        onBack={() => setShowPaymentForm(false)}
+      />
+    );
+  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto" dir={isRTL ? "rtl" : "ltr"}>
       <CardContent className="p-4">
         {data.type ? (
+          // Individual Tour Layout
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-1">
@@ -126,13 +193,13 @@ const Payment = ({ data }: { data: Tour }) => {
                     onSelect={(newDate) => setDate(newDate || new Date())}
                     initialFocus
                     locale={dateLocale}
+                    disabled={(date) => date < new Date()}
                   />
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="bg-gray-50 p-3 rounded-lg space-y-2">
-              <div className="flex justify-between text-sm font-medium"></div>
 
+            <div className="bg-gray-50 p-3 rounded-lg space-y-2">
               {paymentType === "total" ? (
                 <>
                   <div className="flex justify-between text-sm">
@@ -142,20 +209,20 @@ const Payment = ({ data }: { data: Tour }) => {
                         prices.savings > 0 ? "line-through text-gray-500" : ""
                       }
                     >
-                      $ {prices.basePrice.toFixed(2)}
+                      ₾ {prices.basePrice.toFixed(2)}
                     </span>
                   </div>
                   {prices.savings > 0 && (
                     <div className="flex justify-between text-sm text-green-600">
                       <span>{t("savings")}</span>
-                      <span>$ {prices.savings.toFixed(2)}</span>
+                      <span>₾ {prices.savings.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="border-t pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{t("totalPayNow")}</span>
                       <span className="text-lg font-bold text-orange-500">
-                        ${" "}
+                        ₾{" "}
                         {(prices.discountedPrice || prices.basePrice).toFixed(
                           2
                         )}
@@ -167,25 +234,26 @@ const Payment = ({ data }: { data: Tour }) => {
                 <>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">{t("totalAmount")}</span>
-                    <span>$ {prices.basePrice.toFixed(2)}</span>
+                    <span>₾ {prices.basePrice.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm font-medium">
                     <span className="text-gray-600">
                       {t("payNowReservation")}
                     </span>
                     <span className="text-orange-500">
-                      $ {prices.reservationPrice.toFixed(2)}
+                      ₾ {prices.reservationPrice.toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t pt-2 mt-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">{t("payLater")}</span>
-                      <span>$ {prices.remainingPrice.toFixed(2)}</span>
+                      <span>₾ {prices.remainingPrice.toFixed(2)}</span>
                     </div>
                   </div>
                 </>
               )}
             </div>
+
             <RadioGroup
               value={paymentType}
               onValueChange={setPaymentType}
@@ -218,78 +286,50 @@ const Payment = ({ data }: { data: Tour }) => {
                 </Label>
               </div>
             </RadioGroup>
+
             <Button
               className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-              onClick={() => {}}
+              onClick={handlePayment}
             >
+              <CreditCard className="mr-2 h-4 w-4" />
               {paymentType === "reservation"
-                ? `${t("payReservation")} ($${prices.reservationPrice.toFixed(2)})`
-                : `${t("payAll")} ($${prices.discountedPrice.toFixed(2)})`}
+                ? `${t("payReservation")} (₾${prices.reservationPrice.toFixed(2)})`
+                : `${t("payAll")} (₾${(prices.discountedPrice || prices.basePrice).toFixed(2)})`}
             </Button>
-
-            <div className="mt-4 border-t pt-4">
-              <p className="text-center text-gray-600 mb-4">
-                {t("orContactUs")}
-              </p>
-              <div className="flex flex-col gap-2">
-                <Button
-                  asChild
-                  className="w-full bg-green-500 hover:bg-green-600 text-white"
-                >
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t("contactOnWhatsapp")}
-                  </a>
-                </Button>
-                <Button
-                  asChild
-                  className="w-full bg-main hover:bg-mainHover text-white"
-                >
-                  <a href="/contact" target="_blank" rel="noopener noreferrer">
-                    {t("seeAllContactMethods")}
-                  </a>
-                </Button>
-              </div>
-            </div>
           </div>
         ) : (
+          // Group Tour Layout
           <div className="space-y-4">
-            {data.daily && (
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("selectDate")}
-                  </label>
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal"
-                      )}
-                    >
-                      <CalendarIcon
-                        className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")}
-                      />
-                      {format(date, "d MMMM yyyy", { locale: dateLocale })}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(newDate) => setDate(newDate || new Date())}
-                      initialFocus
-                      locale={dateLocale}
-                    />
-                  </PopoverContent>
-                </Popover>
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-sm font-medium text-gray-700">
+                  {t("selectDate")}
+                </label>
               </div>
-            )}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn("w-full justify-start text-left font-normal")}
+                  >
+                    <CalendarIcon
+                      className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")}
+                    />
+                    {format(date, "d MMMM yyyy", { locale: dateLocale })}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(newDate) => setDate(newDate || new Date())}
+                    initialFocus
+                    locale={dateLocale}
+                    disabled={(date) => date < new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-between">
               <div className="flex-1">
@@ -302,7 +342,7 @@ const Payment = ({ data }: { data: Tour }) => {
                     disabled={personCount <= 1}
                     variant="outline"
                     size="sm"
-                    className="h-8 w-8"
+                    className="h-8 w-8 bg-transparent"
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
@@ -359,27 +399,26 @@ const Payment = ({ data }: { data: Tour }) => {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">{t("pricePerPerson")}</span>
                 <span>
-                  $ {(Number(data.group_prices.total_price) ?? 0).toFixed(2)}
+                  ₾ {(Number(data.groupPrices?.total_price) ?? 0).toFixed(2)}
                 </span>
               </div>
-
               {paymentType === "total" ? (
                 <>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">{t("totalAmount")}</span>
                     <span className="line-through text-gray-500">
-                      $ {prices.basePrice.toFixed(2)}
+                      ₾ {prices.basePrice.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm text-green-600">
                     <span>{t("savings")}</span>
-                    <span>$ {prices.savings.toFixed(2)}</span>
+                    <span>₾ {prices.savings.toFixed(2)}</span>
                   </div>
                   <div className="border-t pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{t("totalPayNow")}</span>
                       <span className="text-lg font-bold text-orange-500">
-                        $ {prices.discountedPrice.toFixed(2)}
+                        ₾ {prices.discountedPrice.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -388,20 +427,20 @@ const Payment = ({ data }: { data: Tour }) => {
                 <>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">{t("totalAmount")}</span>
-                    <span>$ {prices.basePrice.toFixed(2)}</span>
+                    <span>₾ {prices.basePrice.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm font-medium">
                     <span className="text-gray-600">
                       {t("payNowReservation")}
                     </span>
                     <span className="text-orange-500">
-                      $ {prices.reservationPrice.toFixed(2)}
+                      ₾ {prices.reservationPrice.toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t pt-2 mt-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">{t("payLater")}</span>
-                      <span>$ {prices.remainingPrice.toFixed(2)}</span>
+                      <span>₾ {prices.remainingPrice.toFixed(2)}</span>
                     </div>
                   </div>
                 </>
@@ -410,17 +449,41 @@ const Payment = ({ data }: { data: Tour }) => {
 
             <Button
               className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-              onClick={() => {}}
+              onClick={handlePayment}
             >
+              <CreditCard className="mr-2 h-4 w-4" />
               {paymentType === "reservation"
-                ? `${t("payReservation")} ($${prices.reservationPrice.toFixed(2)})`
-                : `${t("payAll")} ($${prices.discountedPrice.toFixed(2)})`}
+                ? `${t("payReservation")} (₾${prices.reservationPrice.toFixed(2)})`
+                : `${t("payAll")} (₾${prices.discountedPrice.toFixed(2)})`}
             </Button>
           </div>
         )}
+
+        <div className="mt-4 border-t pt-4">
+          <p className="text-center text-gray-600 mb-4">{t("orContactUs")}</p>
+          <div className="flex flex-col gap-2">
+            <Button
+              asChild
+              className="w-full bg-green-500 hover:bg-green-600 text-white"
+            >
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                {t("contactOnWhatsapp")}
+              </a>
+            </Button>
+            <Button
+              asChild
+              className="w-full bg-main hover:bg-mainHover text-white"
+            >
+              <a href="/contact" target="_blank" rel="noopener noreferrer">
+                {t("seeAllContactMethods")}
+              </a>
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
-};
+});
 
+Payment.displayName = "Payment";
 export default Payment;

@@ -1,31 +1,43 @@
-import { Tour } from "@/src/types/tours";
+import { useImageLoader } from "@/src/hooks/useImageLoader";
 import Image from "next/image";
-import { useState } from "react";
+import React from "react";
 import { PhotoView } from "react-photo-view";
+ 
 
-export default function MainImage({ data }: { data: Tour }) {
-  const [mainImageLoaded, setMainImageLoaded] = useState(false);
-  return (
-    <>
-      <div className="w-full h-[250px] md:h-[400px] rounded-lg overflow-hidden">
-        <PhotoView src={`https://api.daudtravel.com${data.image}`}>
-          <div className="relative w-full h-full">
-            {!mainImageLoaded && (
-              <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />
-            )}
-            <Image
-              src={`https://api.daudtravel.com${data.image}`}
-              alt="Tour main view"
-              fill
-              priority
-              className={`w-full h-full object-cover cursor-pointer transition-opacity duration-300 ${
-                mainImageLoaded ? "opacity-100" : "opacity-0"
-              }`}
-              onLoad={() => setMainImageLoaded(true)}
-            />
-          </div>
-        </PhotoView>
-      </div>
-    </>
-  );
+interface MainImageProps {
+  data: {
+    src: string;
+    alt: string;
+  };
 }
+
+const MainImage = React.memo<MainImageProps>(({ data }) => {
+  const { handleImageLoad, isImageLoaded } = useImageLoader();
+  const imageLoaded = isImageLoaded(data.src);
+
+  return (
+    <div className="w-full h-[250px] md:h-[400px] rounded-lg overflow-hidden">
+      <PhotoView src={data.src}>
+        <div className="relative w-full h-full">
+          {!imageLoaded && (
+            <div className="w-full h-full bg-gray-200 animate-pulse rounded-lg" />
+          )}
+          <Image
+            src={data.src || "/placeholder.svg"}
+            alt={data.alt}
+            fill
+            priority
+            className={`w-full h-full object-cover cursor-pointer transition-opacity duration-300 ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => handleImageLoad(data.src)}
+          />
+        </div>
+      </PhotoView>
+    </div>
+  );
+});
+
+MainImage.displayName = "MainImage";
+
+export default MainImage;

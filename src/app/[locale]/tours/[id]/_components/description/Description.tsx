@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import renderDescription from "@/src/components/textEditor/RenderText";
 import { Card, CardContent } from "@/src/components/ui/card";
 import {
@@ -61,7 +61,6 @@ const Description = React.memo<DescriptionProps>(({ data }) => {
     const showMoreOnDesktop =
       data.allDestinations.length > MAX_VISIBLE_DESKTOP_LOCATIONS;
 
-    // Filter out any undefined values and ensure we have valid locations
     const validLocations = [data.startLocation, ...data.nextLocations].filter(
       (location): location is string => Boolean(location)
     );
@@ -147,18 +146,18 @@ const Description = React.memo<DescriptionProps>(({ data }) => {
     }
   }, [data.type, data.daily, data.date, currentLocale, t]);
 
-  const ArrowIcon = useMemo(
-    () =>
-      ({ className }: { className?: string }) => (
-        <ChevronRight
-          className={cn(
-            isRTL ? "rotate-180 text-gray-400" : "text-gray-400",
-            className
-          )}
-        />
-      ),
-    [isRTL]
-  );
+  const ArrowIcon = useMemo(() => {
+    const Component = ({ className }: { className?: string }) => (
+      <ChevronRight
+        className={cn(
+          isRTL ? "rotate-180 text-gray-400" : "text-gray-400",
+          className
+        )}
+      />
+    );
+    Component.displayName = "ArrowIcon";
+    return Component;
+  }, [isRTL]);
 
   const getDestinationsText = useCallback(() => {
     const destinationsToDisplay = isRTL

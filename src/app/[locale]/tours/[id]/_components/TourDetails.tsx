@@ -1,24 +1,24 @@
 "use client";
 
+import type React from "react";
+import { useMemo } from "react";
 import { Card } from "@/src/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { PhotoProvider } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import type { Tour } from "@/src/types/tours";
+import type { Prices } from "@/src/types/prices";
 import { useParams } from "next/navigation";
 import { toursAPI } from "@/src/routes/tours";
 import ToursSectionLoader from "@/src/components/shared/loader/ToursSectionLoader";
-import type { Prices } from "@/src/types/prices";
 import Description from "./description/Description";
 import Gallery from "./gallery/Gallery";
 import Payment from "./payment/Payment";
 import MainImage from "./mainImage/MainImage";
-import { useMemo } from "react";
 
-// Constants
 const API_BASE_URL = "https://api.daudtravel.com";
 
-const TourDetails = () => {
+const TourDetails: React.FC = () => {
   const params = useParams();
   const id = params.id as string;
   const locale = params.locale as string;
@@ -34,7 +34,6 @@ const TourDetails = () => {
 
   const data = tourData?.data?.tour as (Tour & { prices: Prices }) | undefined;
 
-  // Memoize processed data to avoid recalculations
   const processedData = useMemo(() => {
     if (!data) return null;
 
@@ -46,69 +45,76 @@ const TourDetails = () => {
         ? nextLocations[nextLocations.length - 1]
         : startLocation;
 
+    const allDestinations = [startLocation, ...nextLocations].filter(
+      Boolean
+    ) as string[];
+
+    const baseImageUrl = `${API_BASE_URL}${data.image}`;
+    const galleryImages = (data.gallery || [])
+      .filter((item) => item !== data.image)
+      .map((item) => `${API_BASE_URL}${item}`);
+
+    // Ensure date is always a string
+    const dateString = data.date
+      ? typeof data.date === "string"
+        ? data.date
+        : data.date.toISOString()
+      : new Date().toISOString();
+
+    // Convert daily to boolean
+    const dailyBoolean =
+      typeof data.daily === "string"
+        ? data.daily === "true"
+        : Boolean(data.daily);
+
     return {
-      // Main image data
       mainImage: {
-        src: `${API_BASE_URL}${data.image}`,
+        src: baseImageUrl,
         alt: localization?.name || "Tour main view",
       },
-
-      // Description data
       description: {
         name: localization?.name,
         description: localization?.description,
         startLocation,
         endLocation,
         nextLocations,
-        allDestinations: [startLocation, ...nextLocations].filter(
-          (location): location is string => Boolean(location)
-        ),
+        allDestinations,
         day: data.day || "1",
         night: data.night || "0",
         numOfPersons: data.amount_persons,
         type: data.type || false,
-        daily: data.daily,
-        date: data.date || new Date().toISOString(),
+        daily: dailyBoolean,
+        date: dateString,
         individualPrices: data.individual_prices,
         groupPrices: data.group_prices,
       },
-
-      // Gallery data
       gallery: {
-        images: (data.gallery || [])
-          .filter((item) => item !== data.image)
-          .map((item) => `${API_BASE_URL}${item}`),
+        images: galleryImages,
         mainImageSrc: data.image,
       },
-
-      // Payment data - now includes ALL tour information
       payment: {
         type: data.type || false,
         individualPrices: data.individual_prices,
         groupPrices: data.group_prices,
-        // Include all tour details for payment form
         name: localization?.name,
         description: localization?.description,
         startLocation,
         endLocation,
         nextLocations,
-        allDestinations: [startLocation, ...nextLocations].filter(
-          (location): location is string => Boolean(location)
-        ),
+        allDestinations,
         day: data.day || "1",
         night: data.night || "0",
         numOfPersons: data.amount_persons,
-        daily: data.daily,
-        date: data.date || new Date().toISOString(),
+        daily: dailyBoolean,
+        date: dateString,
         image: data.image,
         gallery: data.gallery || [],
+        tour_name: localization?.name,
       },
     };
   }, [data]);
 
-  if (isLoading) {
-    return <ToursSectionLoader />;
-  }
+  if (isLoading) return <ToursSectionLoader />;
 
   if (error) {
     return (

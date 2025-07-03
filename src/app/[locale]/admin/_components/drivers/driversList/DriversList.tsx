@@ -39,7 +39,6 @@ export function DriversList() {
   };
 
   const handleDeleteDriver = async (id: string) => {
- 
     try {
       await driversAPI.delete(id);
       queryClient.invalidateQueries({ queryKey: ["drivers"] });
@@ -107,7 +106,7 @@ export function DriversList() {
                       <div className="relative h-12 w-12 rounded-lg overflow-hidden">
                         {driver.image ? (
                           <Image
-                            src={`https://api.daudtravel.com${driver.image}`}
+                            src={`${process.env.NEXT_PUBLIC_BASE_URL}${driver.image}`}
                             alt={`${driver.firstname} ${driver.lastname}`}
                             fill
                             className="object-cover rounded-full"

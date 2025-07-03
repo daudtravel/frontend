@@ -892,7 +892,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                           src={
                             mainImagePreview.startsWith("data:")
                               ? mainImagePreview
-                              : `https://api.daudtravel.com${mainImagePreview}`
+                              : `${process.env.NEXT_PUBLIC_BASE_URL}${mainImagePreview}`
                           }
                           alt="მთავარი სურათის გადახედვა"
                           width={400}
@@ -932,7 +932,7 @@ export function EditTour({ params }: { params: { id: string } }) {
                               src={
                                 preview.startsWith("data:")
                                   ? preview
-                                  : `https://api.daudtravel.com${preview}`
+                                  : `${process.env.NEXT_PUBLIC_BASE_URL}${preview}`
                               }
                               alt={`გალერეის სურათი ${index + 1}`}
                               width={200}

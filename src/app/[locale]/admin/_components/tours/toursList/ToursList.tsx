@@ -103,7 +103,7 @@ export function ToursList() {
                         <div className="relative h-14 w-14 rounded-lg overflow-hidden bg-gray-200">
                           {tour.image ? (
                             <Image
-                              src={`https://api.daudtravel.com${tour.image}`}
+                              src={`${process.env.NEXT_PUBLIC_BASE_URL}${tour.image}`}
                               alt={mainLocalization.name || "Tour image"}
                               fill
                               className="object-cover"
@@ -194,7 +194,7 @@ export function ToursList() {
                           <div className="relative h-14 w-14 rounded-lg overflow-hidden bg-gray-200">
                             {tour.image ? (
                               <Image
-                                src={`https://api.daudtravel.com${tour.image}`}
+                                src={`${process.env.NEXT_PUBLIC_BASE_URL}${tour.image}`}
                                 alt={mainLocalization.name || "Tour image"}
                                 fill
                                 className="object-cover"

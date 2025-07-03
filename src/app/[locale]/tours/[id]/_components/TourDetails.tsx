@@ -16,7 +16,7 @@ import Gallery from "./gallery/Gallery";
 import Payment from "./payment/Payment";
 import MainImage from "./mainImage/MainImage";
 
-const API_BASE_URL = "https://api.daudtravel.com";
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}`;
 
 const TourDetails: React.FC = () => {
   const params = useParams();

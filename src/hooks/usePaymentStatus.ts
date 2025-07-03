@@ -17,16 +17,44 @@ export const usePaymentStatus = (orderId: string | null) => {
     }
 
     try {
+      setIsLoading(true);
+      setError("");
+
       const response = await fetch(
-        `https://api.daudtravel.com/api/payments/bog/status/${orderId}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/bog/status/${orderId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data: PaymentStatusResponse = await response.json();
-      setPaymentDetails(data);
+
+      if (!response.ok) {
+        // Handle HTTP errors but still process the response data
+        if (response.status === 404) {
+          setError(data.message || "Payment not found");
+        } else if (response.status === 500) {
+          setError(data.message || "Server error occurred");
+        } else {
+          setError(data.message || `HTTP error! status: ${response.status}`);
+        }
+
+        // Still set payment details if available for failed payments
+        if (data && typeof data === "object") {
+          setPaymentDetails(data);
+        }
+      } else {
+        // Success response
+        setPaymentDetails(data);
+
+        // Additional validation
+        if (!data.success) {
+          setError(data.message || "Payment verification failed");
+        }
+      }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error verifying payment";
@@ -41,5 +69,10 @@ export const usePaymentStatus = (orderId: string | null) => {
     fetchPaymentStatus();
   }, [fetchPaymentStatus]);
 
-  return { isLoading, paymentDetails, error, refetch: fetchPaymentStatus };
+  return {
+    isLoading,
+    paymentDetails,
+    error,
+    refetch: fetchPaymentStatus,
+  };
 };

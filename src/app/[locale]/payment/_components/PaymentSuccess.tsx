@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import PaymentStatusCard from "./PaymentStatusCard";
 import { usePaymentStatus } from "@/src/hooks/usePaymentStatus";
- 
 
 export default function PaymentSuccess() {
   const searchParams = useSearchParams();

@@ -82,7 +82,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
             )}
           </div>
           <Image
-            src={`https://api.daudtravel.com${tour?.image}`}
+            src={`${process.env.NEXT_PUBLIC_BASE_URL}${tour?.image}`}
             fill
             className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
             alt="Tour location"

@@ -51,7 +51,7 @@ export function Drivers() {
           >
             <CardHeader className="text-center pb-4">
               <Image
-                src={`https://api.daudtravel.com${driver.image}`}
+                src={`${process.env.NEXT_PUBLIC_BASE_URL}${driver.image}`}
                 alt={`${driver.firstname} ${driver.lastname}`}
                 className="rounded-full w-56 h-56 mx-auto mb-4 object-cover"
                 width={224}

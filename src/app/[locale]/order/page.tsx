@@ -234,7 +234,7 @@ const OrdersDashboard = () => {
       setError(null);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/orders`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`
       );
 
       if (!response.ok) {

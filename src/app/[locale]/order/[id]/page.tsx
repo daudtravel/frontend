@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 
 import { Card, CardContent } from "@/src/components/ui/card";
 import {
@@ -16,12 +16,16 @@ import {
   Clock,
   RefreshCw,
   AlertCircle,
-  ArrowLeft,
+  CreditCard,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { cn } from "@/src/utlis/cn";
 
 interface OrderData {
-  id: string;
   customerFirstName: string;
   customerLastName: string;
   customerEmail: string;
@@ -50,6 +54,9 @@ interface OrderData {
 
 const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const t = useTranslations("tours");
+  const currentLocale = useLocale();
+  const isRTL = currentLocale === "ar";
 
   const [order, setOrder] = useState<OrderData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,7 +64,7 @@ const OrderDetails: React.FC = () => {
 
   const fetchOrder = async () => {
     if (!id) {
-      setError("Order ID is required");
+      setError(t("orderNotFound"));
       setLoading(false);
       return;
     }
@@ -72,7 +79,7 @@ const OrderDetails: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error("Order not found");
+          throw new Error(t("orderNotFound"));
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -85,7 +92,7 @@ const OrderDetails: React.FC = () => {
         throw new Error("Invalid response format");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch order");
+      setError(err instanceof Error ? err.message : t("errorLoadingOrder"));
     } finally {
       setLoading(false);
     }
@@ -95,44 +102,112 @@ const OrderDetails: React.FC = () => {
     fetchOrder();
   }, [id]);
 
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString("en-CA");
-    } catch {
-      return "Invalid Date";
-    }
-  };
+  const formatDate = useCallback(
+    (dateString: string) => {
+      const localeMap = {
+        ka: "ka-GE",
+        ar: "ar-SA",
+        ru: "ru-RU",
+        tr: "tr-TR",
+      };
 
-  const formatDateTime = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleString("en-CA");
-    } catch {
-      return "Invalid Date";
-    }
-  };
+      try {
+        return new Date(dateString).toLocaleDateString(
+          localeMap[currentLocale as keyof typeof localeMap] || "en-CA"
+        );
+      } catch {
+        return "Invalid Date";
+      }
+    },
+    [currentLocale]
+  );
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  const formatDateTime = useCallback(
+    (dateString: string) => {
+      const localeMap = {
+        ka: "ka-GE",
+        ar: "ar-SA",
+        ru: "ru-RU",
+        tr: "tr-TR",
+      };
+
+      try {
+        return new Date(dateString).toLocaleString(
+          localeMap[currentLocale as keyof typeof localeMap] || "en-CA"
+        );
+      } catch {
+        return "Invalid Date";
+      }
+    },
+    [currentLocale]
+  );
+
+  const statusConfig = useMemo(() => {
+    switch (order?.status) {
       case "pending":
-        return "text-yellow-600 bg-yellow-50";
+        return {
+          color: "text-yellow-700 bg-yellow-50 border-yellow-200",
+          icon: AlertTriangle,
+          text: t("statusPending"),
+        };
       case "confirmed":
-        return "text-green-600 bg-green-50";
+        return {
+          color: "text-green-700 bg-green-50 border-green-200",
+          icon: CheckCircle,
+          text: t("statusConfirmed"),
+        };
       case "cancelled":
-        return "text-red-600 bg-red-50";
+        return {
+          color: "text-red-700 bg-red-50 border-red-200",
+          icon: XCircle,
+          text: t("statusCancelled"),
+        };
       default:
-        return "text-gray-600 bg-gray-50";
+        return {
+          color: "text-gray-700 bg-gray-50 border-gray-200",
+          icon: AlertCircle,
+          text: order?.status?.toUpperCase() || "UNKNOWN",
+        };
     }
-  };
+  }, [order?.status, t]);
 
-  const handleRefresh = () => {
+  const locationConfig = useMemo(() => {
+    if (!order?.locations) return null;
+
+    const MAX_VISIBLE_LOCATIONS = 5;
+    const allLocations = [order.startLocation, ...order.locations];
+    const totalLocations = allLocations.length;
+    const showMore = totalLocations > MAX_VISIBLE_LOCATIONS;
+
+    const visibleLocations = showMore
+      ? [
+          allLocations[0],
+          allLocations[1],
+          allLocations[totalLocations - 2],
+          allLocations[totalLocations - 1],
+        ]
+      : allLocations;
+
+    const hiddenCount = showMore ? totalLocations - 4 : 0;
+
+    return {
+      showMore,
+      visibleLocations,
+      hiddenCount,
+      allLocations,
+      totalLocations,
+    };
+  }, [order?.locations, order?.startLocation]);
+
+  const handleRefresh = useCallback(() => {
     fetchOrder();
-  };
+  }, [fetchOrder]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Loading order details...</span>
+        <RefreshCw className="w-6 h-6 animate-spin text-main" />
+        <span className="ml-2 text-gray-600">{t("loadingOrderDetails")}</span>
       </div>
     );
   }
@@ -142,228 +217,186 @@ const OrderDetails: React.FC = () => {
       <div className="flex flex-col items-center justify-center p-8 text-center">
         <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
         <h2 className="text-lg font-semibold text-gray-800 mb-2">
-          Error Loading Order
+          {t("errorLoadingOrder")}
         </h2>
         <p className="text-gray-600 mb-4">{error}</p>
         <div className="flex gap-2">
-          <button className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </button>
           <button
             onClick={handleRefresh}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-main text-white rounded-md hover:bg-main/90 transition-colors"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Try Again
+            {t("tryAgain")}
           </button>
         </div>
       </div>
     );
   }
 
-  if (!order) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-600">Order not found.</p>
-        <button className="mt-4 inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </button>
-      </div>
-    );
-  }
+  if (!order) return null;
+
+  const StatusIcon = statusConfig.icon;
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <div className="flex justify-between items-center mb-6">
+    <div
+      className="container mx-auto p-4 md:p-6 max-w-4xl"
+      dir={isRTL ? "rtl" : "ltr"}
+    >
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div className="flex items-center gap-4">
-          <button className="inline-flex items-center px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </button>
-          <h1 className="text-2xl font-bold text-gray-800">Order Details</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+            {t("orderDetails")}
+          </h1>
         </div>
         <button
           onClick={handleRefresh}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-main text-white rounded-md hover:bg-main/90 transition-colors"
         >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Refresh
+          <RefreshCw className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+          {t("refresh")}
         </button>
       </div>
 
       <Card className="w-full">
-        <CardContent className="p-6 flex flex-col gap-6">
-          {/* Order Header */}
-          <div className="flex flex-col gap-3 border-b pb-6">
-            <div className="flex justify-between items-start">
-              <h2 className="text-xl font-semibold">{order.tourName}</h2>
-              <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}
-              >
-                {order.status.toUpperCase()}
+        <CardContent className="p-4 md:p-6 flex flex-col gap-4 md:gap-6">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 pb-4 border-b">
+            <div className="flex-1">
+              <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
+                {order.tourName}
+              </h2>
+            </div>
+            <div
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-lg border",
+                statusConfig.color
+              )}
+            >
+              <StatusIcon className="w-4 h-4" />
+              <span className="text-sm font-medium">{statusConfig.text}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <User className="w-5 h-5 text-main" />
+              <span className="text-sm font-bold">
+                {t("customerInformation")}
               </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-              <p>
-                <strong>Order ID:</strong> {order.id}
-              </p>
-              <p>
-                <strong>External ID:</strong> {order.externalOrderId}
-              </p>
-              <p>
-                <strong>BOG Order ID:</strong> {order.bogOrderId}
-              </p>
-              <p>
-                <strong>Created:</strong> {formatDateTime(order.createdAt)}
-              </p>
-            </div>
-          </div>
-
-          {/* Customer Information */}
-          <div className="flex flex-col gap-4">
-            <h3 className="font-semibold text-lg text-gray-700">
-              Customer Information
-            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <User className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Name:
-                  </span>
-                  <p className="text-sm">
-                    {order.customerFirstName} {order.customerLastName}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">{t("name")}:</span>
+                <span className="text-sm">
+                  {order.customerFirstName} {order.customerLastName}
+                </span>
               </div>
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Email:
-                  </span>
-                  <p className="text-sm">{order.customerEmail}</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">{t("email")}:</span>
+                <span className="text-sm">{order.customerEmail}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Phone:
-                  </span>
-                  <p className="text-sm">{order.customerPhone}</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">{t("phone")}:</span>
+                <span className="text-sm">{order.customerPhone}</span>
               </div>
             </div>
           </div>
 
-          {/* Tour Details */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-semibold text-lg text-gray-700">
-              Tour Details
-            </h3>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-main" />
+              <span className="text-sm font-bold">{t("tourDetails")}</span>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <CalendarDays className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Tour Date:
-                  </span>
-                  <p className="text-sm">{formatDate(order.selectedDate)}</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <CalendarDays className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">{t("startDate")}:</span>
+                <span className="text-sm">
+                  {formatDate(order.selectedDate)}
+                </span>
               </div>
-              <div className="flex items-center gap-3">
-                <PersonStanding className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    People:
-                  </span>
-                  <p className="text-sm">{order.peopleAmount}</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <PersonStanding className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">
+                  {t("personCount")}:
+                </span>
+                <span className="text-sm">{order.peopleAmount}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <Timer className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Duration:
-                  </span>
-                  <p className="text-sm">
-                    {order.tourDurationDays} day
-                    {order.tourDurationDays > 1 ? "s" : ""}
-                    {order.tourDurationNights > 0 && (
-                      <span>
-                        {" "}
-                        / {order.tourDurationNights} night
-                        {order.tourDurationNights > 1 ? "s" : ""}
-                      </span>
-                    )}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Timer className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">{t("duration")}:</span>
+                <span className="text-sm">
+                  {order.tourDurationDays} {t("day")}
+                  {order.tourDurationNights > 0 && (
+                    <span>
+                      {" "}
+                      / {order.tourDurationNights} {t("night")}
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">
+                  {t("paymentType")}:
+                </span>
+                <span className="text-sm">
+                  {order.isFullPayment ? t("fullPayment") : t("partialPayment")}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Payment Information */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-semibold text-lg text-gray-700">
-              Payment Information
-            </h3>
+            <div className="flex items-center gap-2">
+              <Wallet className="w-5 h-5 text-main" />
+              <span className="text-sm font-bold">
+                {t("paymentInformation")}
+              </span>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <Wallet className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Total Price:
-                  </span>
-                  <p className="text-sm font-semibold text-green-600">
-                    ${order.totalTourPrice}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Wallet className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">
+                  {t("totalAmount")}:
+                </span>
+                <span className="text-sm font-semibold text-green-600">
+                  ₾{order.totalTourPrice}
+                </span>
               </div>
-              <div className="flex items-center gap-3">
-                <Wallet className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Amount Paid:
-                  </span>
-                  <p className="text-sm font-semibold text-green-600">
-                    ${order.amountPaid}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Wallet className="w-4 h-4 text-main" />
+                <span className="text-sm font-semibold">
+                  {t("amountPaid")}:
+                </span>
+                <span className="text-sm font-semibold text-green-600">
+                  ₾{order.amountPaid}
+                </span>
               </div>
               {order.amountRemaining && order.amountRemaining > 0 && (
-                <div className="flex items-center gap-3">
-                  <Wallet className="w-5 h-5 text-orange-600" />
-                  <div>
-                    <span className="text-sm font-medium text-gray-700">
-                      Amount Remaining:
-                    </span>
-                    <p className="text-sm font-semibold text-orange-600">
-                      ${order.amountRemaining}
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Wallet className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm font-semibold">
+                    {t("amountRemaining")}:
+                  </span>
+                  <span className="text-sm font-semibold text-orange-600">
+                    ${order.amountRemaining}
+                  </span>
                 </div>
               )}
-              <div className="flex items-center gap-3">
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Payment Type:
-                  </span>
-                  <p className="text-sm">
-                    {order.isFullPayment ? "Full Payment" : "Partial Payment"}
-                  </p>
-                </div>
-              </div>
             </div>
 
             {order.status === "pending" && (
-              <div className="mt-4 p-4 bg-yellow-50 rounded-md">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="w-4 h-4 text-red-500" />
-                  <span className="text-sm font-medium">Payment Expires:</span>
-                  <span className="text-sm text-red-600">
+              <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm font-semibold text-orange-700">
+                    {t("paymentExpires")}:
+                  </span>
+                  <span className="text-sm text-orange-600">
                     {formatDateTime(order.expiresAt)}
                   </span>
                 </div>
@@ -372,73 +405,88 @@ const OrderDetails: React.FC = () => {
                     href={order.paymentUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+                    className="inline-flex items-center justify-center px-4 py-2 bg-main text-white rounded-md hover:bg-main/90 transition-colors text-sm font-medium"
                   >
-                    Complete Payment
+                    {t("completePayment")}
                   </a>
                 )}
               </div>
             )}
           </div>
 
-          {/* Route Information */}
-          <div className="flex flex-col gap-4">
-            <h3 className="font-semibold text-lg text-gray-700">
-              Route Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    Start Location:
+          {locationConfig && (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-main" />
+                <span className="text-sm font-bold">
+                  {t("routeInformation")}
+                </span>
+              </div>
+
+              <div className="md:hidden">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin className="w-4 h-4 text-main" />
+                  <span className="text-sm font-semibold">
+                    {t("startLocation")}:
                   </span>
-                  <p className="text-sm">{order.startLocation}</p>
+                  <span className="text-sm">{order.startLocation}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-main" />
+                  <span className="text-sm font-semibold">
+                    {t("endLocation")}:
+                  </span>
+                  <span className="text-sm">{order.endLocation}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-blue-600" />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">
-                    End Location:
-                  </span>
-                  <p className="text-sm">{order.endLocation}</p>
+
+              {order.locations && order.locations.length > 0 && (
+                <div className="p-3 bg-gray-50 rounded-md">
+                  <h4 className="font-medium mb-2 text-sm">
+                    {t("tourDestinations")}:
+                  </h4>
+                  <div
+                    className={cn(
+                      "flex flex-wrap items-center gap-y-2",
+                      isRTL ? "flex-row-reverse" : ""
+                    )}
+                  >
+                    {locationConfig.allLocations.map(
+                      (location, index, array) => (
+                        <div
+                          key={`destination-${index}`}
+                          className="flex items-center"
+                        >
+                          <span className="text-sm bg-white px-2 py-1 rounded border">
+                            {location}
+                          </span>
+                          {index < array.length - 1 && (
+                            <ChevronRight
+                              className={cn(
+                                "mx-2 w-4 h-4 flex-shrink-0 text-gray-400",
+                                isRTL && "rotate-180"
+                              )}
+                            />
+                          )}
+                        </div>
+                      )
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
+          )}
 
-            {/* Locations Path */}
-            {order.locations && order.locations.length > 0 && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                <h4 className="font-medium mb-3 text-sm">Tour Locations:</h4>
-                <div className="flex flex-wrap items-center gap-2">
-                  {order.locations.map((location, index) => (
-                    <div
-                      key={`location-${index}`}
-                      className="flex items-center"
-                    >
-                      <span className="text-sm bg-white px-3 py-1 rounded border">
-                        {location}
-                      </span>
-                      {index < order.locations.length - 1 && (
-                        <ChevronRight className="mx-2 w-4 h-4 flex-shrink-0 text-gray-400" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Description */}
           {order.tourDescription && (
-            <div className="border-t pt-6">
-              <h3 className="font-semibold text-lg text-gray-700 mb-3">
-                Description
-              </h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+            <div className="border-t pt-4">
+              <span
+                className={cn(
+                  "text-gray-600 text-sm leading-relaxed",
+                  isRTL && "text-right"
+                )}
+              >
                 {order.tourDescription}
-              </p>
+              </span>
             </div>
           )}
         </CardContent>

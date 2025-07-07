@@ -3,7 +3,6 @@ import { useImageLoader } from "@/src/hooks/useImageLoader";
 import Image from "next/image";
 import React, { useMemo } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
- 
 
 interface GalleryProps {
   data: {
@@ -85,7 +84,6 @@ const Gallery = React.memo<GalleryProps>(({ data }) => {
             )}
           </div>
 
-          {/* Hidden images for PhotoView */}
           {galleryConfig.hiddenImages.slice(1).map((imageSrc, index) => (
             <PhotoView key={`hidden-${index}`} src={imageSrc} />
           ))}

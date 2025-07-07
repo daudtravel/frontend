@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/src/components/ui/card";
 import {
   CalendarDays,
-  ChevronRight,
   MapPin,
   PersonStanding,
   Timer,
@@ -16,7 +15,9 @@ import {
   RefreshCw,
   AlertCircle,
 } from "lucide-react";
+import { ordersAPI } from "@/src/routes/orders";
 
+// Types
 interface OrderData {
   id: string;
   customerFirstName: string;
@@ -28,15 +29,20 @@ interface OrderData {
   tourDurationDays: number;
   tourDurationNights: number;
   tourName: string;
-  tourDescription: string;
-  startLocation: string;
-  endLocation: string;
-  locations: string[];
+  tourDescription?: string | null;
+  startLocation?: string | null;
+  endLocation?: string | null;
+  locations?: string[];
+  isFullPayment: boolean;
   totalTourPrice: number;
+  amountPaid: number;
+  externalOrderId: string;
+  bogOrderId: string;
   status: string;
   paymentUrl?: string;
   expiresAt: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface OrderDisplayProps {
@@ -54,6 +60,8 @@ const OrderDisplay = React.memo<OrderDisplayProps>(({ data }) => {
       case "confirmed":
         return "text-green-600 bg-green-50";
       case "cancelled":
+        return "text-red-600 bg-red-50";
+      case "failed":
         return "text-red-600 bg-red-50";
       default:
         return "text-gray-600 bg-gray-50";
@@ -83,7 +91,6 @@ const OrderDisplay = React.memo<OrderDisplayProps>(({ data }) => {
           <h4 className="font-semibold text-sm text-gray-700">
             Customer Information
           </h4>
-
           <div className="flex items-center gap-2">
             <User className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">Name:</span>
@@ -91,13 +98,11 @@ const OrderDisplay = React.memo<OrderDisplayProps>(({ data }) => {
               {data.customerFirstName} {data.customerLastName}
             </span>
           </div>
-
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">Email:</span>
             <span className="text-sm">{data.customerEmail}</span>
           </div>
-
           <div className="flex items-center gap-2">
             <Phone className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">Phone:</span>
@@ -108,84 +113,82 @@ const OrderDisplay = React.memo<OrderDisplayProps>(({ data }) => {
         {/* Tour Details */}
         <div className="flex flex-col gap-3">
           <h4 className="font-semibold text-sm text-gray-700">Tour Details</h4>
-
           <div className="flex items-center gap-2">
             <CalendarDays className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">Tour Date:</span>
             <span className="text-sm">{formattedDate}</span>
           </div>
-
           <div className="flex items-center gap-2">
             <PersonStanding className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">People:</span>
             <span className="text-sm">{data.peopleAmount}</span>
           </div>
-
           <div className="flex items-center gap-2">
             <Timer className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">Duration:</span>
             <span className="text-sm">
               {data.tourDurationDays} day{data.tourDurationDays > 1 ? "s" : ""}
               {data.tourDurationNights > 0 && (
-                <span>
-                  {" "}
-                  / {data.tourDurationNights} night
+                <>
+                  {" / "}
+                  {data.tourDurationNights} night
                   {data.tourDurationNights > 1 ? "s" : ""}
-                </span>
+                </>
               )}
             </span>
           </div>
-
           <div className="flex items-center gap-2">
             <Wallet className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">Total Price:</span>
             <span className="text-sm font-semibold text-green-600">
-              ${data.totalTourPrice}
+              ₾{data.totalTourPrice}
             </span>
           </div>
         </div>
 
-        {/* Route Information */}
+        {/* Route */}
         <div className="flex flex-col gap-3">
           <h4 className="font-semibold text-sm text-gray-700">Route</h4>
-
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">Start:</span>
-            <span className="text-sm">{data.startLocation}</span>
+            <span className="text-sm">
+              {data.startLocation || <span className="text-gray-400">N/A</span>}
+            </span>
           </div>
-
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium">End:</span>
-            <span className="text-sm">{data.endLocation}</span>
+            <span className="text-sm">
+              {data.endLocation || <span className="text-gray-400">N/A</span>}
+            </span>
           </div>
-
-          {/* Locations Path */}
-          <div className="mt-2 p-3 bg-gray-50 rounded-md">
-            <h5 className="font-medium mb-2 text-sm">Tour Locations:</h5>
-            <div className="flex flex-wrap items-center gap-2">
-              {data.locations.map((location, index) => (
-                <div key={`location-${index}`} className="flex items-center">
-                  <span className="text-sm bg-white px-2 py-1 rounded border">
-                    {location}
-                  </span>
-                  {index < data.locations.length - 1 && (
-                    <ChevronRight className="mx-2 w-4 h-4 flex-shrink-0 text-gray-400" />
-                  )}
-                </div>
-              ))}
+          {data.locations && data.locations.length > 0 ? (
+            <div className="mt-2 p-3 bg-gray-50 rounded-md">
+              <h5 className="font-medium mb-2 text-sm">Tour Locations:</h5>
+              <div className="flex flex-wrap items-center gap-2">
+                {data.locations.map((location, index) => (
+                  <div key={`location-${index}`} className="flex items-center">
+                    <span className="text-sm bg-white px-2 py-1 rounded border">
+                      {location}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="mt-2 p-3 bg-gray-50 rounded-md text-gray-400 text-sm">
+              No locations provided.
+            </div>
+          )}
         </div>
 
-        {/* Payment Information */}
+        {/* Payment Info */}
         {data.status === "pending" && (
           <div className="flex flex-col gap-3 border-t pt-4">
             <h4 className="font-semibold text-sm text-gray-700">
               Payment Information
             </h4>
-
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-red-500" />
               <span className="text-sm font-medium">Payment Expires:</span>
@@ -193,7 +196,6 @@ const OrderDisplay = React.memo<OrderDisplayProps>(({ data }) => {
                 {formattedExpiryDate}
               </span>
             </div>
-
             {data.paymentUrl && (
               <a
                 href={data.paymentUrl}
@@ -208,12 +210,16 @@ const OrderDisplay = React.memo<OrderDisplayProps>(({ data }) => {
         )}
 
         {/* Description */}
-        {data.tourDescription && (
+        {data.tourDescription ? (
           <div className="border-t pt-4">
             <h4 className="font-semibold text-sm text-gray-700 mb-2">
               Description
             </h4>
             <p className="text-sm text-gray-600">{data.tourDescription}</p>
+          </div>
+        ) : (
+          <div className="border-t pt-4 text-gray-400 text-sm">
+            No description provided.
           </div>
         )}
       </CardContent>
@@ -232,18 +238,7 @@ const OrdersDashboard = () => {
     try {
       setLoading(true);
       setError(null);
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      // Handle the API response structure: { success: true, data: [...] }
+      const result = await ordersAPI.get();
       if (result.success && Array.isArray(result.data)) {
         setOrders(result.data);
       } else {
@@ -260,44 +255,12 @@ const OrdersDashboard = () => {
     fetchOrders();
   }, []);
 
-  const handleRefresh = () => {
-    fetchOrders();
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Loading orders...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 text-center">
-        <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-        <h2 className="text-lg font-semibold text-gray-800 mb-2">
-          Error Loading Orders
-        </h2>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <button
-          onClick={handleRefresh}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Orders Dashboard</h1>
         <button
-          onClick={handleRefresh}
+          onClick={fetchOrders}
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -305,7 +268,27 @@ const OrdersDashboard = () => {
         </button>
       </div>
 
-      {orders.length === 0 ? (
+      {loading ? (
+        <div className="flex items-center justify-center p-8">
+          <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
+          <span className="ml-2 text-gray-600">Loading orders...</span>
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center p-8 text-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+            Error Loading Orders
+          </h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={fetchOrders}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Try Again
+          </button>
+        </div>
+      ) : orders.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-600">No orders found.</p>
         </div>

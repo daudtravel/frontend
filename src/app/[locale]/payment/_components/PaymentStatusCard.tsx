@@ -45,7 +45,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
     );
   }
 
-  // Handle API errors (no payment details)
   if (error && !paymentDetails) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -74,11 +73,9 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
     );
   }
 
-  // Determine payment status
   const isActuallyPaid = paymentDetails?.is_actually_paid === true;
   const isSuccess = type === "success" && isActuallyPaid;
 
-  // Handle case where backend returns success=false but we have payment details
   const backendSuccess = paymentDetails?.success === true;
   const finalSuccess = isSuccess && backendSuccess;
 
@@ -93,7 +90,7 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
 
   let description = "";
   if (finalSuccess) {
-    description = "Your payment has been processed successfully";
+    description = "Congratulations! You have successfully purchased your tour.";
   } else if (type === "success" && !isActuallyPaid) {
     description = "Payment verification failed - no money was charged";
   } else if (paymentDetails?.reject_reason) {
@@ -115,7 +112,26 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {paymentDetails && (
+          {finalSuccess && (
+            <div className="bg-green-50 border border-green-200 rounded-md p-4">
+              <p className="text-green-800 text-sm mb-2">
+                You will receive tour information via email shortly.
+              </p>
+              <p className="text-green-800 text-sm">
+                You can also check your tour details using this link:{" "}
+                <a
+                  href={`https://daudtravel.com/order/${paymentDetails?.external_order_id || orderId}`}
+                  className="underline hover:text-green-900"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Tour Details
+                </a>
+              </p>
+            </div>
+          )}
+
+          {paymentDetails && finalSuccess && (
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-600">Order ID:</span>
@@ -132,7 +148,7 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
                   </span>
                 </div>
               )}
-              {finalSuccess && paymentDetails.transaction_id && (
+              {paymentDetails.transaction_id && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Transaction ID:</span>
                   <span className="font-mono text-sm">
@@ -154,35 +170,22 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
               )}
               <div className="flex justify-between">
                 <span className="text-gray-600">Status:</span>
-                <span
-                  className={`font-semibold ${finalSuccess ? "text-green-600" : "text-red-600"}`}
-                >
-                  {finalSuccess
-                    ? "Completed"
-                    : paymentDetails.status_description || "Failed"}
-                </span>
+                <span className="font-semibold text-green-600">Completed</span>
               </div>
-              {paymentDetails.payment_code && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Payment Code:</span>
-                  <span className="font-mono text-sm">
-                    {paymentDetails.payment_code} -{" "}
-                    {paymentDetails.payment_code_description}
-                  </span>
-                </div>
-              )}
-              {paymentDetails.source && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Source:</span>
-                  <span className="text-sm capitalize">
-                    {paymentDetails.source.replace("_", " ")}
-                  </span>
-                </div>
-              )}
             </div>
           )}
 
-          {/* Show error message if there's an error but we have payment details */}
+          {paymentDetails && !finalSuccess && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <p className="text-red-800 text-sm font-medium">
+                Reason:{" "}
+                {paymentDetails.reject_reason ||
+                  paymentDetails.note ||
+                  "Unknown reason"}
+              </p>
+            </div>
+          )}
+
           {error && paymentDetails && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
               <p className="text-yellow-800 text-sm">{error}</p>

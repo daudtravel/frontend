@@ -157,18 +157,18 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
                     }`}
                   >
                     {isCurrentSeasonSummer()
-                      ? `${tour.individual_prices.season.total_price || 0} $`
-                      : `${tour.individual_prices.off_season.total_price || 0} $`}
+                      ? `${tour.individual_prices.season.total_price || 0} ₾`
+                      : `${tour.individual_prices.off_season.total_price || 0} ₾`}
                   </span>
                   {isCurrentSeasonSummer()
                     ? tour.individual_prices.season.discounted_price && (
                         <span className="text-sm font-medium text-red-600">
-                          {`${tour.individual_prices.season.discounted_price} $`}
+                          {`${tour.individual_prices.season.discounted_price} ₾`}
                         </span>
                       )
                     : tour.individual_prices.off_season.discounted_price && (
                         <span className="text-sm font-medium text-red-600">
-                          {`${tour.individual_prices.off_season.discounted_price} $`}
+                          {`${tour.individual_prices.off_season.discounted_price} ₾`}
                         </span>
                       )}
                 </>
@@ -182,7 +182,7 @@ export const TourCard = ({ tour }: { tour: Tour }) => {
 
                   {tour.group_prices?.discounted_price && (
                     <span className="text-sm font-medium text-red-600">
-                      {`${tour.group_prices?.discounted_price} $`}
+                      {`${tour.group_prices?.discounted_price} ₾`}
                     </span>
                   )}
                 </>

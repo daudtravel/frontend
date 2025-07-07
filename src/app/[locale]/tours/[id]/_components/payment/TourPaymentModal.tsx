@@ -16,24 +16,27 @@ import {
 import { CreditCard, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { ExtractPlainText } from "@/src/helpers/ExtractPlainText";
 import { PaymentModalProps } from "./types";
+import { useTranslations } from "next-intl";
 
 const PaymentModal: React.FC<PaymentModalProps> = ({
   isOpen,
   onClose,
   bookingData,
 }) => {
+  const t = useTranslations("payment");
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
   });
+
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<
     "idle" | "processing" | "success" | "failed"
   >("idle");
   const [message, setMessage] = useState("");
-  const [orderId, setOrderId] = useState("");
 
   const calculations = useMemo(() => {
     if (!bookingData)
@@ -41,6 +44,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
     const personCount =
       bookingData.tourData.numOfPersons || bookingData.personCount || 1;
+
     const paymentAmount =
       bookingData.paymentType === "reservation"
         ? bookingData.prices.reservationPrice
@@ -58,6 +62,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
+      setMessage(""); // Clear previous messages on input change
+      setPaymentStatus("idle");
     },
     []
   );
@@ -66,32 +72,34 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     const { firstName, lastName, email, phone } = formData;
 
     if (!firstName.trim()) {
-      setMessage("First name is required");
+      setMessage(t("firstNameRequired"));
       return false;
     }
     if (!lastName.trim()) {
-      setMessage("Last name is required");
+      setMessage(t("lastNameRequired"));
       return false;
     }
-    if (!email.trim() || !email.includes("@")) {
-      setMessage("Please enter a valid email address");
+    if (!email.trim() || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+      setMessage(t("emailRequired"));
       return false;
     }
     if (!phone.trim()) {
-      setMessage("Phone number is required");
+      setMessage(t("phoneRequired"));
       return false;
     }
+    setMessage(""); // Clear any previous error messages
     return true;
-  }, [formData]);
+  }, [formData, t]);
 
   const createPayment = useCallback(async () => {
-    if (!bookingData) throw new Error("No booking data available");
+    if (!bookingData) throw new Error(t("noBookingData"));
 
     const isFullPayment = bookingData.paymentType === "total";
     const tourName =
       bookingData.tourData?.tour_name ||
       bookingData.tourData?.name ||
-      "Tour Booking";
+      t("defaultTourName");
+
     const remainingAmount = isFullPayment
       ? undefined
       : calculations.totalTourPrice - calculations.paymentAmount;
@@ -135,12 +143,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
+        errorData.message || t("httpError", { status: response.status })
       );
     }
 
     return response.json();
-  }, [bookingData, formData, calculations]);
+  }, [bookingData, formData, calculations, t]);
 
   const handleFormSubmit = useCallback(async () => {
     if (!validateForm()) {
@@ -150,35 +158,31 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
     setIsLoading(true);
     setPaymentStatus("processing");
-    setMessage("Creating payment...");
+    setMessage(t("creatingPayment"));
 
     try {
       const paymentResponse = await createPayment();
 
       if (!paymentResponse.success) {
-        throw new Error(paymentResponse.message || "Failed to create payment");
+        throw new Error(paymentResponse.message || t("paymentCreationFailed"));
       }
 
-      setOrderId(
-        paymentResponse.externalOrderId || paymentResponse.orderId || ""
-      );
-      setMessage("Redirecting to payment...");
-
       if (paymentResponse.paymentUrl) {
+        // No message, just redirect
         window.location.href = paymentResponse.paymentUrl;
       } else {
         setPaymentStatus("success");
-        setMessage("Payment created successfully!");
+        setMessage(t("paymentCreatedSuccessfully"));
       }
     } catch (error) {
       setPaymentStatus("failed");
       setMessage(
-        error instanceof Error ? error.message : "Payment creation failed"
+        error instanceof Error ? error.message : t("paymentCreationFailed")
       );
     } finally {
       setIsLoading(false);
     }
-  }, [validateForm, createPayment]);
+  }, [validateForm, createPayment, t]);
 
   const handleClose = useCallback(() => {
     if (isLoading) return;
@@ -186,7 +190,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     setFormData({ firstName: "", lastName: "", email: "", phone: "" });
     setPaymentStatus("idle");
     setMessage("");
-    setOrderId("");
     onClose();
   }, [isLoading, onClose]);
 
@@ -223,80 +226,73 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Complete Your Booking</DialogTitle>
+          <DialogTitle>{t("modalTitle")}</DialogTitle>
           <DialogDescription>
-            Fill in your details to proceed with payment of{" "}
-            {formatAmount(calculations.paymentAmount)}
+            {t("modalDescription", {
+              amount: formatAmount(calculations.paymentAmount),
+            })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name *</Label>
+              <Label htmlFor="firstName">{t("firstName")}</Label>
               <Input
                 id="firstName"
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                placeholder="John"
                 disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name *</Label>
+              <Label htmlFor="lastName">{t("lastName")}</Label>
               <Input
                 id="lastName"
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                placeholder="Doe"
                 disabled={isLoading}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email Address *</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               name="email"
               type="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="john.doe@example.com"
               disabled={isLoading}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number *</Label>
+            <Label htmlFor="phone">{t("phone")}</Label>
             <Input
               id="phone"
               name="phone"
               type="tel"
               value={formData.phone}
               onChange={handleInputChange}
-              placeholder="+995 555 123 456"
               disabled={isLoading}
             />
           </div>
 
-          {message && statusConfig && (
+          {message && (
             <div
-              className={`p-3 rounded-md border flex items-start gap-2 ${statusConfig.className}`}
+              className={`mt-2 px-3 py-2 rounded border text-sm ${
+                statusConfig?.className ||
+                "border-gray-200 bg-gray-50 text-gray-800"
+              }`}
             >
-              {statusConfig.icon}
-              <div className="text-sm">{message}</div>
-            </div>
-          )}
-
-          {orderId && (
-            <div className="p-3 bg-gray-100 rounded-md">
-              <p className="text-sm text-gray-600">
-                Order ID:{" "}
-                <span className="font-mono font-medium">{orderId}</span>
-              </p>
+              <div className="flex items-center gap-2">
+                {statusConfig?.icon}
+                <span>{message}</span>
+              </div>
             </div>
           )}
         </div>
@@ -308,7 +304,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             disabled={isLoading}
             className="flex-1 bg-transparent"
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             onClick={handleFormSubmit}
@@ -318,12 +314,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
+                {t("processing")}
               </>
             ) : (
               <>
                 <CreditCard className="mr-2 h-4 w-4" />
-                Pay {formatAmount(calculations.paymentAmount)}
+                {t("pay", {
+                  amount: formatAmount(calculations.paymentAmount),
+                })}
               </>
             )}
           </Button>

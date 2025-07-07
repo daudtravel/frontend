@@ -18,6 +18,25 @@ import MainImage from "./mainImage/MainImage";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}`;
 
+function getFirstPriceObject(
+  pricesObj?: Record<
+    string,
+    { total_price?: number; discounted_price?: number }
+  >
+): { total_price: number; discounted_price?: number } | undefined {
+  if (!pricesObj) return undefined;
+  for (const key in pricesObj) {
+    const price = pricesObj[key];
+    if (price && typeof price.total_price === "number") {
+      return {
+        total_price: price.total_price,
+        discounted_price: price.discounted_price,
+      };
+    }
+  }
+  return undefined;
+}
+
 const TourDetails: React.FC = () => {
   const params = useParams();
   const id = params.id as string;
@@ -54,18 +73,18 @@ const TourDetails: React.FC = () => {
       .filter((item) => item !== data.image)
       .map((item) => `${API_BASE_URL}${item}`);
 
-    // Ensure date is always a string
     const dateString = data.date
       ? typeof data.date === "string"
         ? data.date
         : data.date.toISOString()
       : new Date().toISOString();
 
-    // Convert daily to boolean
     const dailyBoolean =
       typeof data.daily === "string"
         ? data.daily === "true"
         : Boolean(data.daily);
+
+    const singleGroupPrice = getFirstPriceObject(data.group_prices);
 
     return {
       mainImage: {
@@ -86,7 +105,7 @@ const TourDetails: React.FC = () => {
         daily: dailyBoolean,
         date: dateString,
         individualPrices: data.individual_prices,
-        groupPrices: data.group_prices,
+        groupPrices: singleGroupPrice,
       },
       gallery: {
         images: galleryImages,

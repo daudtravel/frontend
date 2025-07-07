@@ -5,29 +5,119 @@ import { Locale } from "@/src/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import OwnerSection from "./_components/OwnerSection";
 import { useTranslations, useLocale } from "next-intl";
+import { Metadata } from "next";
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: Locale }>;
-}) {
+}): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations("meta");
-  return {
+
+  // Base URL for your site
+  const baseUrl = "https://www.daudtravel.com";
+  const currentUrl = `${baseUrl}/${locale}/about`;
+
+  const metadata: Metadata = {
     title: t("about"),
     description: t("descriptionAbout"),
+
+    // Additional meta tags
+    keywords:
+      "Daud Travel about, Georgia travel company, tourism company Georgia, travel agency Georgia, Georgian tour operator, experienced guides Georgia, travel services Georgia, tourism expertise Georgia",
+    authors: [{ name: "Daud Travel" }],
+    creator: "Daud Travel",
+    publisher: "Daud Travel",
+    category: "Travel",
+
+    // Canonical URL and language alternatives
+    alternates: {
+      canonical: currentUrl,
+      languages: {
+        en: `${baseUrl}/en`,
+        ka: `${baseUrl}/ka`,
+        ru: `${baseUrl}/ru`,
+        tr: `${baseUrl}/tr`,
+        ar: `${baseUrl}/ar`,
+      },
+    },
+
+    // OpenGraph
     openGraph: {
       title: t("about"),
       description: t("descriptionAbout"),
       type: "website",
       locale: locale,
-      url: "https://www.daudtravel.com/about",
+      url: currentUrl,
       siteName: "Daud Travel",
+      images: [
+        {
+          url: `${baseUrl}/images/About1.jpg`,
+          width: 1200,
+          height: 630,
+          alt: t("about"),
+          type: "image/jpeg",
+        },
+        {
+          url: `${baseUrl}/images/About2.jpg`,
+          width: 1200,
+          height: 630,
+          alt: "Daud Travel Team and Services",
+          type: "image/jpeg",
+        },
+        {
+          url: `${baseUrl}/images/MainOG.png`,
+          width: 1200,
+          height: 630,
+          alt: "Daud Travel - Premium Tours in Georgia",
+          type: "image/png",
+        },
+      ],
     },
+
+    // Robots
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+
+    // Icons
     icons: {
-      icon: "/images/MainOG.png",
+      icon: "/favicon.ico",
+      apple: "/apple-touch-icon.png",
+      other: [
+        {
+          rel: "icon",
+          type: "image/png",
+          sizes: "32x32",
+          url: "/favicon-32x32.png",
+        },
+        {
+          rel: "icon",
+          type: "image/png",
+          sizes: "16x16",
+          url: "/favicon-16x16.png",
+        },
+      ],
+    },
+
+    other: {
+      "article:author": "Daud Travel",
+      "article:publisher": "Daud Travel",
+      "og:image:alt": t("about"),
+      "og:locale:alternate": locale === "en" ? "ka_GE" : "en_US",
     },
   };
+
+  return metadata;
 }
 
 function Page() {
@@ -37,6 +127,44 @@ function Page() {
 
   return (
     <div className="min-h-screen w-full pb-8 md:px-20 lg:py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "TravelAgency",
+            name: "Daud Travel",
+            description: t("about1"),
+            url: "https://www.daudtravel.com",
+            logo: "https://www.daudtravel.com/images/MainOG.png",
+            image: [
+              "https://www.daudtravel.com/images/About1.jpg",
+              "https://www.daudtravel.com/images/About2.jpg",
+            ],
+            address: {
+              "@type": "PostalAddress",
+              addressCountry: "GE",
+              addressLocality: "Tbilisi",
+            },
+            areaServed: {
+              "@type": "Country",
+              name: "Georgia",
+            },
+            serviceType: [
+              "Group Tours",
+              "Individual Tours",
+              "Airport Transfers",
+              "Cultural Tours",
+              "Wine Tours",
+              "Nature Tours",
+            ],
+            priceRange: "$$",
+            telephone: "+995-XXX-XXX-XXX", // Add your actual phone number
+            email: "info@daudtravel.com", // Add your actual email
+          }),
+        }}
+      />
+
       <div
         className={`flex flex-col w-full lg:flex-row gap-4 lg:items-start ${isRTL ? "lg:flex-row-reverse" : ""}`}
       >
@@ -47,10 +175,11 @@ function Page() {
             <div className="relative h-80 sm:h-[400px] w-full border-2 border-[#f2f5ff] lg:rounded-lg overflow-hidden md:shadow-xl">
               <Image
                 src={About1}
-                alt="Our Travel Company"
+                alt="Daud Travel team providing premium tourism services in Georgia"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority
               />
             </div>
             <div
@@ -58,7 +187,7 @@ function Page() {
             >
               <Image
                 src={About2}
-                alt="Our Travel Company"
+                alt="Professional travel services and experienced guides in Georgia"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -18,7 +18,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     tours: (await import(`../messages/${locale}/tours.json`)).default,
     about: (await import(`../messages/${locale}/about.json`)).default,
     transfers: (await import(`../messages/${locale}/transfers.json`)).default,
-
+    payment: (await import(`../messages/${locale}/payment.json`)).default,
   };
 
   return {

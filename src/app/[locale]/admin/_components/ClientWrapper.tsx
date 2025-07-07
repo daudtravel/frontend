@@ -10,6 +10,7 @@ import {
   LogOut,
   ShieldQuestion,
   Video,
+  ShoppingCart,
 } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ToursList } from "./tours/toursList/ToursList";
@@ -26,6 +27,7 @@ import CreateFaq from "./faq/createFaq/createFaq";
 import EditFaq from "./faq/editFaq/editFaq";
 import VideoList from "./video/videoList/VideoList";
 import CreateVideo from "./video/createVideo/CreateVideo";
+import OrdersDashboard from "./orders/ordersList/OrderList";
 
 export const ClientWrapper = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -38,6 +40,7 @@ export const ClientWrapper = () => {
   const drivers = searchParams.get("drivers");
   const faqs = searchParams.get("faqs");
   const video = searchParams.get("videos");
+  const orders = searchParams.get("orders");
 
   const { logout } = useAuth();
 
@@ -47,7 +50,8 @@ export const ClientWrapper = () => {
       !searchParams.has("transfers") &&
       !searchParams.has("drivers") &&
       !searchParams.has("faqs") &&
-      !searchParams.has("videos");
+      !searchParams.has("videos") &&
+      !searchParams.has("orders");
 
     if (hasNoParams) {
       router.push(`${pathname}?tours=all`);
@@ -102,6 +106,7 @@ export const ClientWrapper = () => {
     if (faqs && faqs !== "all" && faqs !== "createFaq") {
       return <EditFaq params={{ id: faqs }} />;
     }
+
     if (video === "all") {
       return <VideoList />;
     }
@@ -109,8 +114,10 @@ export const ClientWrapper = () => {
     if (video === "createVideo") {
       return <CreateVideo />;
     }
-    
-    
+
+    if (orders === "all") {
+      return <OrdersDashboard />;
+    }
   };
 
   return (
@@ -162,6 +169,17 @@ export const ClientWrapper = () => {
             <Users size={20} />
             {isSidebarOpen && <span className="ml-4">მძღოლები</span>}
           </button>
+
+          <button
+            onClick={() => navigate("?orders=all")}
+            className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
+              orders ? "bg-gray-100" : ""
+            }`}
+          >
+            <ShoppingCart size={20} />
+            {isSidebarOpen && <span className="ml-4">შეკვეთები</span>}
+          </button>
+
           <button
             onClick={() => navigate("?faqs=all")}
             className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
@@ -171,6 +189,7 @@ export const ClientWrapper = () => {
             <ShieldQuestion size={20} />
             {isSidebarOpen && <span className="ml-4">F.A.Q</span>}
           </button>
+
           <button
             onClick={() => navigate("?videos=all")}
             className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
@@ -190,7 +209,9 @@ export const ClientWrapper = () => {
           </button>
         </nav>
       </div>
-      <div className="flex-1 overflow-auto  p-1 md:p-8 h-full">{renderContent()}</div>
+      <div className="flex-1 overflow-auto  p-1 md:p-8 h-full">
+        {renderContent()}
+      </div>
     </main>
   );
 };

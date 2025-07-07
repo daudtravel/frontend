@@ -14,6 +14,10 @@ import {
   Clock,
   RefreshCw,
   AlertCircle,
+  CreditCard,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { ordersAPI } from "@/src/routes/orders";
 
@@ -35,6 +39,7 @@ interface OrderData {
   isFullPayment: boolean;
   totalTourPrice: number;
   amountPaid: number;
+  amountRemaining?: number;
   externalOrderId: string;
   bogOrderId: string;
   status: string;
@@ -48,7 +53,6 @@ const OrdersDashboard = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  console.log("123");
 
   const fetchOrders = async () => {
     try {
@@ -71,18 +75,46 @@ const OrdersDashboard = () => {
     fetchOrders();
   }, []);
 
-  const getStatusColor = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
       case "pending":
-        return "text-yellow-600 bg-yellow-50";
+        return {
+          color: "text-yellow-700 bg-yellow-50 border-yellow-200",
+          icon: AlertTriangle,
+          text: "PENDING",
+        };
       case "confirmed":
-        return "text-green-600 bg-green-50";
+        return {
+          color: "text-green-700 bg-green-50 border-green-200",
+          icon: CheckCircle,
+          text: "CONFIRMED",
+        };
       case "cancelled":
+        return {
+          color: "text-red-700 bg-red-50 border-red-200",
+          icon: XCircle,
+          text: "CANCELLED",
+        };
       case "failed":
-        return "text-red-600 bg-red-50";
+        return {
+          color: "text-red-700 bg-red-50 border-red-200",
+          icon: XCircle,
+          text: "FAILED",
+        };
       default:
-        return "text-gray-600 bg-gray-50";
+        return {
+          color: "text-gray-700 bg-gray-50 border-gray-200",
+          icon: AlertCircle,
+          text: status.toUpperCase(),
+        };
     }
+  };
+
+  const calculateAmountRemaining = (order: OrderData) => {
+    if (order.amountRemaining !== undefined) {
+      return order.amountRemaining;
+    }
+    return order.totalTourPrice - order.amountPaid;
   };
 
   const renderOrderCard = (data: OrderData) => {
@@ -92,6 +124,9 @@ const OrdersDashboard = () => {
     const formattedExpiryDate = new Date(data.expiresAt).toLocaleString(
       "en-CA"
     );
+    const statusConfig = getStatusConfig(data.status);
+    const StatusIcon = statusConfig.icon;
+    const amountRemaining = calculateAmountRemaining(data);
 
     return (
       <Card key={data.id} className="w-full">
@@ -100,11 +135,12 @@ const OrdersDashboard = () => {
           <div className="flex flex-col gap-2 border-b pb-4">
             <div className="flex justify-between items-start">
               <h3 className="text-lg font-semibold">{data.tourName}</h3>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(data.status)}`}
+              <div
+                className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-medium ${statusConfig.color}`}
               >
-                {data.status.toUpperCase()}
-              </span>
+                <StatusIcon className="w-3 h-3" />
+                <span>{statusConfig.text}</span>
+              </div>
             </div>
             <p className="text-sm text-gray-600">
               Order ID: {data.id.slice(-8)}
@@ -161,11 +197,51 @@ const OrdersDashboard = () => {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Wallet className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium">Total Price:</span>
-              <span className="text-sm font-semibold text-green-600">
-                ₾{data.totalTourPrice}
+              <CreditCard className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium">Payment Type:</span>
+              <span className="text-sm">
+                {data.isFullPayment ? "Full Payment" : "Partial Payment"}
               </span>
+            </div>
+          </div>
+
+          {/* Payment Information */}
+          <div className="flex flex-col gap-3">
+            <h4 className="font-semibold text-sm text-gray-700">
+              Payment Information
+            </h4>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="flex items-center gap-2">
+                <Wallet className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium">Total Amount:</span>
+                <span className="text-sm font-semibold text-green-600">
+                  ₾{data.totalTourPrice}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Wallet className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-medium">Amount Paid:</span>
+                <span className="text-sm font-semibold text-green-600">
+                  ₾{data.amountPaid}
+                </span>
+              </div>
+              {amountRemaining > 0 && (
+                <div className="flex items-center gap-2">
+                  <Wallet className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm font-medium">Amount Remaining:</span>
+                  <span className="text-sm font-semibold text-orange-600">
+                    ₾{amountRemaining}
+                  </span>
+                </div>
+              )}
+              {amountRemaining === 0 && data.status === "confirmed" && (
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-600">
+                    Payment Complete
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -209,29 +285,30 @@ const OrdersDashboard = () => {
             )}
           </div>
 
-          {/* Payment Info */}
+          {/* Payment Action for Pending Orders */}
           {data.status === "pending" && (
             <div className="flex flex-col gap-3 border-t pt-4">
-              <h4 className="font-semibold text-sm text-gray-700">
-                Payment Information
-              </h4>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-red-500" />
-                <span className="text-sm font-medium">Payment Expires:</span>
-                <span className="text-sm text-red-600">
-                  {formattedExpiryDate}
-                </span>
+              <div className="p-3 bg-yellow-50 rounded-md border border-yellow-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm font-medium text-orange-700">
+                    Payment Expires:
+                  </span>
+                  <span className="text-sm text-orange-600">
+                    {formattedExpiryDate}
+                  </span>
+                </div>
+                {data.paymentUrl && (
+                  <a
+                    href={data.paymentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    Complete Payment
+                  </a>
+                )}
               </div>
-              {data.paymentUrl && (
-                <a
-                  href={data.paymentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  Complete Payment
-                </a>
-              )}
             </div>
           )}
 

@@ -131,50 +131,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
             </div>
           )}
 
-          {paymentDetails && finalSuccess && (
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Order ID:</span>
-                <span className="font-mono text-sm">
-                  {paymentDetails.external_order_id || orderId}
-                </span>
-              </div>
-              {paymentDetails.amount && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount:</span>
-                  <span className="font-semibold">
-                    {paymentDetails.amount.transferred}{" "}
-                    {paymentDetails.amount.currency}
-                  </span>
-                </div>
-              )}
-              {paymentDetails.transaction_id && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Transaction ID:</span>
-                  <span className="font-mono text-sm">
-                    {paymentDetails.transaction_id}
-                  </span>
-                </div>
-              )}
-              {paymentDetails.customer_name && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Customer:</span>
-                  <span>{paymentDetails.customer_name}</span>
-                </div>
-              )}
-              {paymentDetails.tour_name && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tour:</span>
-                  <span>{paymentDetails.tour_name}</span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span className="text-gray-600">Status:</span>
-                <span className="font-semibold text-green-600">Completed</span>
-              </div>
-            </div>
-          )}
-
           {paymentDetails && !finalSuccess && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
               <p className="text-red-800 text-sm font-medium">

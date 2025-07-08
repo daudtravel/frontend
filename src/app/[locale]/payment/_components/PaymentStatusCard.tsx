@@ -26,7 +26,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
   paymentDetails,
   error,
   type,
-  orderId,
 }) => {
   if (isLoading) {
     return (

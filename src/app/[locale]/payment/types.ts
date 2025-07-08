@@ -14,7 +14,7 @@ export interface PaymentDetails {
 }
 
 export interface PaymentStatusResponse {
-  id: any;
+  id: string;
   success: boolean;
   order_id: string;
   external_order_id: string;
@@ -37,6 +37,6 @@ export interface PaymentStatusResponse {
   reject_reason?: string;
   source: "database" | "bog_api";
   note?: string;
-  message?: string; // For error responses
-  error?: string; // For error responses
+  message?: string;
+  error?: string;
 }

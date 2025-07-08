@@ -31,8 +31,11 @@ import {
   User,
   Truck,
   Bus as BusIcon,
+  CreditCard,
 } from "lucide-react";
 import { TimePicker } from "@/src/components/shared/CustomTimePicker";
+import TransferPaymentModal from "./_components/TransferPaymentModal";
+ 
 
 interface Price {
   season_price: number | null;
@@ -58,6 +61,18 @@ interface Transfer {
 interface TransferResponse {
   data: Transfer;
   status: string;
+}
+
+interface TransferBookingData {
+  transferId: string;
+  startLocation: string;
+  endLocation: string;
+  selectedDate: Date;
+  selectedTime: Date;
+  vehicleType: string;
+  vehiclePrice: number;
+  passengerCapacity: number;
+  isSummerSeason: boolean;
 }
 
 const passengerCapacity = {
@@ -101,6 +116,7 @@ export default function TransferDetailsPage() {
   });
 
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const { data: transferDetails } = useQuery<TransferResponse>({
     queryKey: ["transfer", transferId, locale],
@@ -124,7 +140,39 @@ export default function TransferDetailsPage() {
   };
 
   const handlePayment = () => {
-    router.push("/transfers/confirmation");
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentModalClose = () => {
+    setIsPaymentModalOpen(false);
+  };
+
+  const getBookingData = (): TransferBookingData | null => {
+    if (!transferDetails?.data || !selectedVehicle || !selectedDateTime.time) {
+      return null;
+    }
+
+    const transfer = transferDetails.data;
+    const localization =
+      transfer.localizations.find((loc) => loc.locale === locale) ||
+      transfer.localizations[0];
+
+    const currentPrice = getCurrentPrice();
+    if (!currentPrice) return null;
+
+    return {
+      transferId: transfer.id,
+      startLocation: localization?.start_location || "",
+      endLocation: localization?.end_location || "",
+      selectedDate: selectedDateTime.date,
+      selectedTime: selectedDateTime.time,
+      vehicleType: selectedVehicle,
+      vehiclePrice: currentPrice,
+      passengerCapacity:
+        passengerCapacity[selectedVehicle as keyof typeof passengerCapacity] ||
+        0,
+      isSummerSeason: isSummerSeason(selectedDateTime.date),
+    };
   };
 
   const transfer = transferDetails?.data;
@@ -150,7 +198,6 @@ export default function TransferDetailsPage() {
       passengerCapacity[vehicleType as keyof typeof passengerCapacity] || 0;
 
     if (capacity <= 3) {
-      // For small capacities, show individual icons
       return (
         <div className="flex items-center ml-2">
           {[...Array(capacity)].map((_, i) => (
@@ -168,7 +215,6 @@ export default function TransferDetailsPage() {
     }
   };
 
-  // Function to render vehicle icon based on vehicle type
   const renderVehicleIcon = (vehicleType: string) => {
     const IconComponent =
       vehicleIcons[vehicleType as keyof typeof vehicleIcons] || Car;
@@ -298,6 +344,7 @@ export default function TransferDetailsPage() {
                   })}
                 </SelectContent>
               </Select>
+
               {selectedVehicle && selectedDateTime.time && (
                 <div className="mt-6 space-y-4">
                   <div className="rounded-md border overflow-hidden">
@@ -351,16 +398,17 @@ export default function TransferDetailsPage() {
                       <Separator />
                       <div className="flex justify-between font-bold">
                         <span>{t("total")}:</span>
-                        <span> ${currentPrice}</span>
+                        <span>${currentPrice}</span>
                       </div>
                     </div>
                   </div>
 
                   <Button
-                    className="w-full py-2 h-9 text-base transition-all hover:shadow-md"
+                    className="w-full py-3 h-12 text-base font-semibold bg-orange-500 hover:bg-orange-600 transition-all hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
                     onClick={handlePayment}
                     disabled={!currentPrice || !selectedDateTime.time}
                   >
+                    <CreditCard className="mr-2 h-5 w-5" />
                     {t("pay")} ${currentPrice}
                   </Button>
                 </div>
@@ -369,6 +417,13 @@ export default function TransferDetailsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Payment Modal */}
+      <TransferPaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={handlePaymentModalClose}
+        bookingData={getBookingData()}
+      />
     </div>
   );
 }

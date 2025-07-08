@@ -264,6 +264,7 @@ const OrderDetails: React.FC = () => {
       pdf.save(`tour-order-${order.id.slice(-8)}.pdf`);
     } catch (error) {
       alert("Error generating PDF. Please try again.");
+      console.log(error);
     } finally {
       setIsGeneratingPDF(false);
     }

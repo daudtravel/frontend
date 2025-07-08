@@ -28,6 +28,7 @@ import EditFaq from "./faq/editFaq/editFaq";
 import VideoList from "./video/videoList/VideoList";
 import CreateVideo from "./video/createVideo/CreateVideo";
 import OrdersDashboard from "./orders/ordersList/OrderList";
+import TransferOrdersDashboard from "./orders/ordersList/TransfersOrderList";
 
 export const ClientWrapper = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -41,6 +42,7 @@ export const ClientWrapper = () => {
   const faqs = searchParams.get("faqs");
   const video = searchParams.get("videos");
   const orders = searchParams.get("orders");
+  const transferOrders = searchParams.get("transferOrders");
 
   const { logout } = useAuth();
 
@@ -51,7 +53,8 @@ export const ClientWrapper = () => {
       !searchParams.has("drivers") &&
       !searchParams.has("faqs") &&
       !searchParams.has("videos") &&
-      !searchParams.has("orders");
+      !searchParams.has("orders") &&
+      !searchParams.has("transferOrders");
 
     if (hasNoParams) {
       router.push(`${pathname}?tours=all`);
@@ -118,6 +121,9 @@ export const ClientWrapper = () => {
     if (orders === "all") {
       return <OrdersDashboard />;
     }
+    if (transferOrders === "all") {
+      return <TransferOrdersDashboard />;
+    }
   };
 
   return (
@@ -177,7 +183,18 @@ export const ClientWrapper = () => {
             }`}
           >
             <ShoppingCart size={20} />
-            {isSidebarOpen && <span className="ml-4">შეკვეთები</span>}
+            {isSidebarOpen && <span className="ml-4">შეკვეთები/ტურები</span>}
+          </button>
+          <button
+            onClick={() => navigate("?transferOrders=all")}
+            className={`flex md:w-full items-center p-4 hover:bg-gray-100 ${
+              transferOrders ? "bg-gray-100" : ""
+            }`}
+          >
+            <ShoppingCart size={20} />
+            {isSidebarOpen && (
+              <span className="ml-4">შეკვეთები/ტრანსფერები</span>
+            )}
           </button>
 
           <button

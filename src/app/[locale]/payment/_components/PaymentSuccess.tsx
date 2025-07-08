@@ -9,12 +9,15 @@ export default function PaymentSuccess() {
   const orderId = searchParams.get("order_id");
   const { isLoading, paymentDetails, error } = usePaymentStatus(orderId);
 
+  const isCompleted =
+    paymentDetails?.success === true && paymentDetails.status === "completed";
+
   return (
     <PaymentStatusCard
       isLoading={isLoading}
       paymentDetails={paymentDetails}
       error={error}
-      type="success"
+      completed={isCompleted}
       orderId={orderId}
     />
   );

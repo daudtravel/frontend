@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { transfersAPI } from "@/src/routes/transfers";
 import { useLocale, useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Calendar } from "@/src/components/ui/calendar";
 import { ka, enUS, ru, tr, ar } from "date-fns/locale";
 import {
@@ -35,7 +35,6 @@ import {
 } from "lucide-react";
 import { TimePicker } from "@/src/components/shared/CustomTimePicker";
 import TransferPaymentModal from "./_components/TransferPaymentModal";
- 
 
 interface Price {
   season_price: number | null;
@@ -103,7 +102,7 @@ export default function TransferDetailsPage() {
   const t = useTranslations("transfers");
   const locale = useLocale() as keyof typeof localeMap;
   const params = useParams();
-  const router = useRouter();
+
   const transferId = params.id as string;
 
   const currentDateTime = new Date();

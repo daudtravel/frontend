@@ -228,7 +228,6 @@ const OrderDetails: React.FC = () => {
         logging: false,
         imageTimeout: 5000,
         onclone: (clonedDoc) => {
-          // Remove any elements that might cause issues
           const clonedElement = clonedDoc.querySelector('[ref="printRef"]');
           if (clonedElement) {
             const buttons = clonedElement.querySelectorAll("button");
@@ -237,7 +236,6 @@ const OrderDetails: React.FC = () => {
         },
       });
 
-      // Restore tour description visibility
       if (tourDescriptionElement && originalDisplay !== undefined) {
         (tourDescriptionElement as HTMLElement).style.display = originalDisplay;
       }

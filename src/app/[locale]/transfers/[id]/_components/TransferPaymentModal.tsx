@@ -20,7 +20,6 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  User,
   MapPin,
   Calendar,
   Clock,
@@ -30,7 +29,6 @@ import {
   ArrowRight,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 interface TransferBookingData {
   transferId: string;
@@ -71,8 +69,6 @@ const TransferPaymentModal: React.FC<TransferPaymentModalProps> = ({
   onClose,
   bookingData,
 }) => {
-  const t = useTranslations("transfers");
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

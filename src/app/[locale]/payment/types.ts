@@ -14,6 +14,7 @@ export interface PaymentDetails {
 }
 
 export interface PaymentStatusResponse {
+  id: any;
   success: boolean;
   order_id: string;
   external_order_id: string;

@@ -67,5 +67,6 @@
   "fullPayment": "Tam Ödeme",
   "partialPayment": "Kısmi Ödeme",
   "paymentExpires": "Ödeme Süresi Doluyor",
-  "completePayment": "Ödemeyi Tamamla"
+  "completePayment": "Ödemeyi Tamamla",
+  "statusCompleted": "paralı"
 }

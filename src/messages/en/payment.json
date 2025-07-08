@@ -23,5 +23,6 @@
   "httpError": "HTTP error! status: {status}",
   "paymentCreationFailed": "Payment creation failed",
   "defaultTourName": "Tour Booking",
-  "orderId": "Order ID"
+  "orderId": "Order ID",
+  "statusCompleted": "Success"
 }

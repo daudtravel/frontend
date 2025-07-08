@@ -67,5 +67,6 @@
   "fullPayment": "სრული გადახდა",
   "partialPayment": "ნაწილობრივი გადახდა",
   "paymentExpires": "გადახდის ვადა იწურება",
-  "completePayment": "გადახდის დასრულება"
+  "completePayment": "გადახდის დასრულება",
+  "statusCompleted": "გადახდილია"
 }

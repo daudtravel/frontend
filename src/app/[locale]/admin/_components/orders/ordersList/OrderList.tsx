@@ -110,6 +110,21 @@ const OrdersDashboard = () => {
     }
   };
 
+  const handleDeleteFailed = async () => {
+    if (!confirm("Are you sure you want to delete all failed orders?")) return;
+    try {
+      setLoading(true);
+      await ordersAPI.deleteFailedOrders();
+      await fetchOrders();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to delete failed orders"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const calculateAmountRemaining = (order: OrderData) => {
     if (order.amountRemaining !== undefined) {
       return order.amountRemaining;
@@ -338,6 +353,13 @@ const OrdersDashboard = () => {
         >
           <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
+        </button>
+        <button
+          onClick={handleDeleteFailed}
+          className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+        >
+          <XCircle className="w-4 h-4 mr-2" />
+          Delete Failed
         </button>
       </div>
 

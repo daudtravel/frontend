@@ -67,5 +67,6 @@
   "fullPayment": "دفع كامل",
   "partialPayment": "دفع جزئي",
   "paymentExpires": "تاريخ انتهاء الدفع",
-  "completePayment": "إكمال الدفع"
+  "completePayment": "إكمال الدفع",
+  "statusCompleted": "مدفوع"
 }

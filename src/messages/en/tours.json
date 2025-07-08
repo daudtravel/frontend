@@ -67,5 +67,6 @@
   "fullPayment": "Full Payment",
   "partialPayment": "Partial Payment",
   "paymentExpires": "Payment Expires",
-  "completePayment": "Complete Payment"
+  "completePayment": "Complete Payment",
+  "statusCompleted": "Completed"
 }

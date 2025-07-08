@@ -67,5 +67,6 @@
   "fullPayment": "Полная оплата",
   "partialPayment": "Частичная оплата",
   "paymentExpires": "Срок оплаты истекает",
-  "completePayment": "Завершить оплату"
+  "completePayment": "Завершить оплату",
+  "statusCompleted": "оплачен"
 }

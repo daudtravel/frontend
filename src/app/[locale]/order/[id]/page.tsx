@@ -1,6 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 import { Card, CardContent } from "@/src/components/ui/card";
 import {
@@ -20,12 +28,14 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
+  Printer,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { cn } from "@/src/utlis/cn";
 
 interface OrderData {
+  id: string;
   customerFirstName: string;
   customerLastName: string;
   customerEmail: string;
@@ -57,10 +67,12 @@ const OrderDetails: React.FC = () => {
   const t = useTranslations("tours");
   const currentLocale = useLocale();
   const isRTL = currentLocale === "ar";
+  const printRef = useRef<HTMLDivElement>(null);
 
   const [order, setOrder] = useState<OrderData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const fetchOrder = async () => {
     if (!id) {
@@ -156,6 +168,12 @@ const OrderDetails: React.FC = () => {
           icon: CheckCircle,
           text: t("statusConfirmed"),
         };
+      case "completed":
+        return {
+          color: "text-green-700 bg-green-50 border-green-200",
+          icon: CheckCircle,
+          text: t("statusCompleted") || "COMPLETED",
+        };
       case "cancelled":
         return {
           color: "text-red-700 bg-red-50 border-red-200",
@@ -174,34 +192,82 @@ const OrderDetails: React.FC = () => {
   const locationConfig = useMemo(() => {
     if (!order?.locations) return null;
 
-    const MAX_VISIBLE_LOCATIONS = 5;
     const allLocations = [order.startLocation, ...order.locations];
-    const totalLocations = allLocations.length;
-    const showMore = totalLocations > MAX_VISIBLE_LOCATIONS;
-
-    const visibleLocations = showMore
-      ? [
-          allLocations[0],
-          allLocations[1],
-          allLocations[totalLocations - 2],
-          allLocations[totalLocations - 1],
-        ]
-      : allLocations;
-
-    const hiddenCount = showMore ? totalLocations - 4 : 0;
-
     return {
-      showMore,
-      visibleLocations,
-      hiddenCount,
       allLocations,
-      totalLocations,
+      totalLocations: allLocations.length,
     };
   }, [order?.locations, order?.startLocation]);
 
   const handleRefresh = useCallback(() => {
     fetchOrder();
-  }, [fetchOrder]);
+  }, []);
+
+  const handlePrint = useCallback(async () => {
+    if (!order || !printRef.current) return;
+
+    try {
+      setIsGeneratingPDF(true);
+
+      const tourDescriptionElement = printRef.current.querySelector(
+        ".tour-description"
+      ) as HTMLElement;
+      const originalDisplay = tourDescriptionElement?.style?.display;
+      if (tourDescriptionElement) {
+        tourDescriptionElement.style.display = "none";
+      }
+
+      const canvas = await html2canvas(printRef.current, {
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: "#ffffff",
+        width: printRef.current.scrollWidth,
+        height: printRef.current.scrollHeight,
+        removeContainer: true,
+        logging: false,
+        imageTimeout: 5000,
+        onclone: (clonedDoc) => {
+          // Remove any elements that might cause issues
+          const clonedElement = clonedDoc.querySelector('[ref="printRef"]');
+          if (clonedElement) {
+            const buttons = clonedElement.querySelectorAll("button");
+            buttons.forEach((button) => button.remove());
+          }
+        },
+      });
+
+      // Restore tour description visibility
+      if (tourDescriptionElement && originalDisplay !== undefined) {
+        (tourDescriptionElement as HTMLElement).style.display = originalDisplay;
+      }
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.8); // Use JPEG with 80% quality
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`tour-order-${order.id.slice(-8)}.pdf`);
+    } catch (error) {
+      alert("Error generating PDF. Please try again.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  }, [order]);
 
   if (loading) {
     return (
@@ -242,29 +308,39 @@ const OrderDetails: React.FC = () => {
       className="container mx-auto p-4 md:p-6 max-w-4xl"
       dir={isRTL ? "rtl" : "ltr"}
     >
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div className="flex items-center gap-4">
           <h1 className="text-xl md:text-2xl font-bold text-gray-800">
             {t("orderDetails")}
           </h1>
         </div>
-        <button
-          onClick={handleRefresh}
-          className="inline-flex items-center px-4 py-2 bg-main text-white rounded-md hover:bg-main/90 transition-colors"
-        >
-          <RefreshCw className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
-          {t("refresh")}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handlePrint}
+            disabled={isGeneratingPDF}
+            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <Printer className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+            PDF
+          </button>
+          <button
+            onClick={handleRefresh}
+            className="inline-flex items-center px-4 py-2 bg-main text-white rounded-md hover:bg-main/90 transition-colors"
+          >
+            <RefreshCw className={cn("w-4 h-4", isRTL ? "ml-2" : "mr-2")} />
+            {t("refresh")}
+          </button>
+        </div>
       </div>
 
-      <Card className="w-full">
+      <Card className="w-full" ref={printRef}>
         <CardContent className="p-4 md:p-6 flex flex-col gap-4 md:gap-6">
           <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 pb-4 border-b">
             <div className="flex-1">
               <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
                 {order.tourName}
               </h2>
+              <h2> ID: {order.id.slice(-8)}</h2>
             </div>
             <div
               className={cn(
@@ -383,7 +459,7 @@ const OrderDetails: React.FC = () => {
                     {t("amountRemaining")}:
                   </span>
                   <span className="text-sm font-semibold text-orange-600">
-                    ${order.amountRemaining}
+                    ₾{order.amountRemaining}
                   </span>
                 </div>
               )}
@@ -478,7 +554,7 @@ const OrderDetails: React.FC = () => {
           )}
 
           {order.tourDescription && (
-            <div className="border-t pt-4">
+            <div className="border-t pt-4 tour-description">
               <span
                 className={cn(
                   "text-gray-600 text-sm leading-relaxed",

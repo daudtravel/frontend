@@ -45,14 +45,14 @@ export async function generateMetadata({
       siteName: "Daud Travel",
       images: [
         {
-          url: `${baseUrl}/images/MainOG.png`,
+          url: `${baseUrl}/images/MainOG.jpg`,
           width: 1200,
           height: 630,
           alt: t("contact"),
           type: "image/png",
         },
         {
-          url: `${baseUrl}/images/MainOG.png`,
+          url: `${baseUrl}/images/MainOG.jpg`,
           width: 1200,
           height: 630,
           alt: "Contact Daud Travel - Professional Travel Services in Georgia",

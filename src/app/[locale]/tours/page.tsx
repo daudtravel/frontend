@@ -21,7 +21,7 @@ export async function generateMetadata({
       siteName: "Daud Travel",
     },
     icons: {
-      icon: "/images/MainOG.png",
+      icon: "/images/MainOG.jpg",
     },
   };
 }

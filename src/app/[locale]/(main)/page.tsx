@@ -50,7 +50,7 @@ export async function generateMetadata({
       siteName: "Daud Travel",
       images: [
         {
-          url: `${baseUrl}/images/MainOG.png`,
+          url: `${baseUrl}/images/MainOG.jpg`,
           width: 1200,
           height: 630,
           alt: t("main"),

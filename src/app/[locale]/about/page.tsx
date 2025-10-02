@@ -67,7 +67,7 @@ export async function generateMetadata({
           type: "image/jpeg",
         },
         {
-          url: `${baseUrl}/images/MainOG.png`,
+          url: `${baseUrl}/images/MainOG.jpg`,
           width: 1200,
           height: 630,
           alt: "Daud Travel - Premium Tours in Georgia",
@@ -136,7 +136,7 @@ function Page() {
             name: "Daud Travel",
             description: t("about1"),
             url: "https://www.daudtravel.com",
-            logo: "https://www.daudtravel.com/images/MainOG.png",
+            logo: "https://www.daudtravel.com/images/MainOG.jpg",
             image: [
               "https://www.daudtravel.com/images/About1.jpg",
               "https://www.daudtravel.com/images/About2.jpg",

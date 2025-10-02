@@ -336,7 +336,7 @@ export default function TransferDetailsPage() {
                             </span>
                             {renderPassengerIcons(vehicle)}
                           </div>
-                          <span className="font-medium ml-2">${price}</span>
+                          <span className="font-medium ml-2">₾{price}</span>
                         </div>
                       </SelectItem>
                     );
@@ -397,7 +397,7 @@ export default function TransferDetailsPage() {
                       <Separator />
                       <div className="flex justify-between font-bold">
                         <span>{t("total")}:</span>
-                        <span>${currentPrice}</span>
+                        <span>₾{currentPrice}</span>
                       </div>
                     </div>
                   </div>
@@ -408,7 +408,7 @@ export default function TransferDetailsPage() {
                     disabled={!currentPrice || !selectedDateTime.time}
                   >
                     <CreditCard className="mr-2 h-5 w-5" />
-                    {t("pay")} ${currentPrice}
+                    {t("pay")} ₾{currentPrice}
                   </Button>
                 </div>
               )}
@@ -417,7 +417,6 @@ export default function TransferDetailsPage() {
         </CardContent>
       </Card>
 
-      {/* Payment Modal */}
       <TransferPaymentModal
         isOpen={isPaymentModalOpen}
         onClose={handlePaymentModalClose}

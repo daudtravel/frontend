@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import renderDescription from "@/src/components/textEditor/RenderText";
 import { Card, CardContent } from "@/src/components/ui/card";

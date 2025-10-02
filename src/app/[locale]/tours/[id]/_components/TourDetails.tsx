@@ -84,8 +84,6 @@ const TourDetails: React.FC = () => {
         ? data.daily === "true"
         : Boolean(data.daily);
 
-    const singleGroupPrice = getFirstPriceObject(data.group_prices);
-
     return {
       mainImage: {
         src: baseImageUrl,

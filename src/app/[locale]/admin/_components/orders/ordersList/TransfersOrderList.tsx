@@ -329,7 +329,6 @@ const TransferOrdersDashboard = () => {
     return (
       <Card key={data.id} className="w-full">
         <CardContent className="p-4 md:p-6 flex flex-col gap-4 h-full">
-          {/* Order Header */}
           <div className="flex flex-col gap-2 border-b pb-4">
             <div className="flex justify-between items-start">
               <h3 className="text-lg font-semibold">{data.transfer.name}</h3>

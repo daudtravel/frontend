@@ -146,7 +146,6 @@ const OrdersDashboard = () => {
     return (
       <Card key={data.id} className="w-full">
         <CardContent className="p-4 md:p-6 flex flex-col gap-4 h-full">
-          {/* Order Header */}
           <div className="flex flex-col gap-2 border-b pb-4">
             <div className="flex justify-between items-start">
               <h3 className="text-lg font-semibold">{data.tourName}</h3>
@@ -162,7 +161,6 @@ const OrdersDashboard = () => {
             </p>
           </div>
 
-          {/* Customer Info */}
           <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-sm text-gray-700">
               Customer Information
@@ -186,7 +184,6 @@ const OrdersDashboard = () => {
             </div>
           </div>
 
-          {/* Tour Info */}
           <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-sm text-gray-700">
               Tour Details

@@ -33,10 +33,7 @@ interface DescriptionProps {
       season?: { total_price: number; discounted_price?: number };
       off_season?: { total_price: number; discounted_price?: number };
     };
-    groupPrices?: {
-      total_price: number;
-      discounted_price?: number;
-    };
+    groupPrices?: any;
   };
 }
 
@@ -159,7 +156,7 @@ const Description = React.memo<DescriptionProps>(({ data }) => {
                       priceInfo.hasDiscount ? "line-through text-gray-500" : ""
                     }
                   >
-                    {priceInfo.originalPrice} $
+                    {priceInfo.originalPrice} ₾
                   </span>
                   {priceInfo.hasDiscount && (
                     <span className="font-medium text-red-600">

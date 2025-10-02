@@ -105,7 +105,7 @@ const TourDetails: React.FC = () => {
         daily: dailyBoolean,
         date: dateString,
         individualPrices: data.individual_prices,
-        groupPrices: singleGroupPrice,
+        groupPrices: data.group_prices,
       },
       gallery: {
         images: galleryImages,

@@ -18,25 +18,6 @@ import MainImage from "./mainImage/MainImage";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}`;
 
-function getFirstPriceObject(
-  pricesObj?: Record<
-    string,
-    { total_price?: number; discounted_price?: number }
-  >
-): { total_price: number; discounted_price?: number } | undefined {
-  if (!pricesObj) return undefined;
-  for (const key in pricesObj) {
-    const price = pricesObj[key];
-    if (price && typeof price.total_price === "number") {
-      return {
-        total_price: price.total_price,
-        discounted_price: price.discounted_price,
-      };
-    }
-  }
-  return undefined;
-}
-
 const TourDetails: React.FC = () => {
   const params = useParams();
   const id = params.id as string;

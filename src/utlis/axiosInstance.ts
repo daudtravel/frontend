@@ -46,7 +46,7 @@ axiosInstance.interceptors.response.use(
 export const testTokenSetup = async () => {
   try {
     // Check localStorage directly
-    const token = localStorage.getItem("token");
+   
 
     // Test with a protected route
     const response = await axiosInstance.get("/orders");

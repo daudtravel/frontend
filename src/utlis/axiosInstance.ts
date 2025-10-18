@@ -10,19 +10,10 @@ axiosInstance.interceptors.request.use(
   (config) => {
     // Debug: Log the token retrieval
     const token = localStorage.getItem("token");
-    console.log("🔍 Token from localStorage:", token);
-    console.log("🔍 Request URL:", config.url);
-    console.log("🔍 Base URL:", config.baseURL);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log("✅ Token added to headers");
-    } else {
-      console.log("❌ No token found in localStorage");
     }
-
-    // Debug: Log final headers
-    console.log("🔍 Final headers:", config.headers);
 
     return config;
   },
@@ -35,7 +26,6 @@ axiosInstance.interceptors.request.use(
 // Response interceptor to handle responses and errors
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log("✅ Response received:", response.status, response.data);
     return response;
   },
   (error) => {
@@ -46,10 +36,6 @@ axiosInstance.interceptors.response.use(
     );
 
     if (error.response?.status === 401) {
-      console.log("🔒 Unauthorized - token might be expired or invalid");
-      // Optional: Clear token and redirect
-      // localStorage.removeItem('token');
-      // window.location.href = '/login';
     }
 
     return Promise.reject(error);
@@ -59,15 +45,11 @@ axiosInstance.interceptors.response.use(
 // Test function to verify token and setup
 export const testTokenSetup = async () => {
   try {
-    console.log("🧪 Testing token setup...");
-
     // Check localStorage directly
     const token = localStorage.getItem("token");
-    console.log("Token in localStorage:", token);
 
     // Test with a protected route
     const response = await axiosInstance.get("/orders");
-    console.log("✅ Protected route test successful:", response.data);
 
     return response;
   } catch (error) {

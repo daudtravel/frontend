@@ -83,7 +83,7 @@ const TransferDetails: React.FC = () => {
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/transfer/order/${id}`
       );
 
-      console.log(response);
+    
 
       if (!response.ok) {
         if (response.status === 404) {

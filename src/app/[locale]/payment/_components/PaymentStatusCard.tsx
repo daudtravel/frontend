@@ -102,26 +102,21 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
   error,
   completed,
 }) => {
-  // ✅ DETERMINE SUCCESS/FAILURE CORRECTLY
   const isSuccess =
     completed &&
     paymentDetails?.status === "completed" &&
     (paymentDetails?.payment_response?.code === "100" ||
       paymentDetails?.payment_response?.is_successful);
 
-  // ✅ GET THE MOST DETAILED ERROR MESSAGE
   const getErrorMessage = (): string => {
-    // Priority 1: Payment response description (most detailed)
     if (paymentDetails?.payment_response?.description) {
       return paymentDetails.payment_response.description;
     }
 
-    // Priority 2: Status description
     if (paymentDetails?.status_description) {
       return paymentDetails.status_description;
     }
 
-    // Priority 3: Reject reason
     if (paymentDetails?.reject_reason) {
       const reasons: Record<string, string> = {
         expiration: "Payment expired - the order took too long to complete",
@@ -132,7 +127,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
       );
     }
 
-    // Priority 4: Generic error
     if (error) {
       return error;
     }
@@ -152,9 +146,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
     ? "Congratulations! You have successfully purchased your tour."
     : getErrorMessage();
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🔄 LOADING STATE
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -173,9 +164,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
     );
   }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ❌ ERROR STATE (No payment details)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   if (error && !paymentDetails) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -205,9 +193,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
     );
   }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ✅ SUCCESS STATE
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -220,7 +205,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
             <CardDescription>{description}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Success Details */}
             <div className="bg-green-50 border border-green-200 rounded-md p-4">
               <p className="text-green-800 text-sm mb-2">
                 ✅ You will receive tour information via email shortly.
@@ -230,7 +214,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
               </p>
             </div>
 
-            {/* Payment Details */}
             {paymentDetails && (
               <div className="bg-blue-50 border border-blue-200 rounded-md p-4 text-sm">
                 <p className="text-blue-900 font-medium mb-2">
@@ -251,7 +234,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="pt-4 space-y-2">
               <Button onClick={() => (window.location.href = "/")}>
                 Return Home
@@ -269,9 +251,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
     );
   }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ❌ FAILURE STATE
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -283,55 +262,22 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Failure Details */}
           {paymentDetails && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <p className="text-red-800 text-sm font-medium mb-2">
-                Payment Status:{" "}
-                {paymentDetails.status_description || paymentDetails.status}
-              </p>
-
-              {/* Show detailed failure reason */}
-              {paymentDetails.payment_response?.description && (
-                <div className="mt-2 pt-2 border-t border-red-200">
-                  <p className="text-red-900 text-sm font-semibold">Reason:</p>
-                  <p className="text-red-800 text-sm">
-                    {paymentDetails.payment_response.description}
-                  </p>
-                </div>
-              )}
-
-              {/* Show response code for debugging */}
               {paymentDetails.payment_response?.code && (
-                <p className="text-red-700 text-xs mt-2">
+                <p className="text-red-700 text-xs">
                   Error Code: {paymentDetails.payment_response.code}
                 </p>
               )}
             </div>
           )}
 
-          {/* Reassurance Message */}
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
             <p className="text-yellow-800 text-sm">
-              💡 Don t worry! No money has been charged to your account.
+              💡 Don't worry! No money has been charged to your account.
             </p>
           </div>
 
-          {/* Common Failure Reasons Help */}
-          <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
-            <p className="text-gray-700 text-xs font-medium mb-2">
-              Common reasons for payment failure:
-            </p>
-            <ul className="text-gray-600 text-xs space-y-1 list-disc list-inside">
-              <li>Insufficient balance</li>
-              <li>Incorrect card details (CVV, expiry date)</li>
-              <li>Card declined by bank</li>
-              <li>Payment limit exceeded</li>
-              <li>3D Secure verification failed</li>
-            </ul>
-          </div>
-
-          {/* Debug Info (Development Only) */}
           {process.env.NODE_ENV === "development" && paymentDetails && (
             <div className="bg-gray-800 border border-gray-700 rounded-md p-3">
               <p className="text-gray-300 text-xs font-mono mb-1">
@@ -349,7 +295,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
             </div>
           )}
 
-          {/* Action Buttons */}
           <div className="pt-4 space-y-2">
             <Button onClick={() => (window.location.href = "/")}>
               Try Again

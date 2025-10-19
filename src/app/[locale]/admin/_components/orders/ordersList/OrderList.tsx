@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/src/components/ui/card";
+import { Button } from "@/src/components/ui/button";
 import {
   CalendarDays,
   MapPin,
@@ -49,18 +50,38 @@ interface OrderData {
   updatedAt: string;
 }
 
+interface PaginationData {
+  currentPage: number;
+  totalPages: number;
+  totalRecords: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 const OrdersDashboard = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<PaginationData>({
+    currentPage: 1,
+    totalPages: 1,
+    totalRecords: 0,
+    limit: 6,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (page: number = 1) => {
     try {
       setLoading(true);
       setError(null);
-      const result = await ordersAPI.get();
+      const result = await ordersAPI.get(page);
       if (result.success && Array.isArray(result.data)) {
         setOrders(result.data);
+        if (result.pagination) {
+          setPagination(result.pagination);
+        }
       } else {
         setOrders([]);
       }
@@ -72,8 +93,14 @@ const OrdersDashboard = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(pagination.currentPage);
   }, []);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= pagination.totalPages) {
+      fetchOrders(page);
+    }
+  };
 
   const getStatusConfig = (status: string) => {
     switch (status) {
@@ -115,7 +142,7 @@ const OrdersDashboard = () => {
     try {
       setLoading(true);
       await ordersAPI.deleteFailedOrders();
-      await fetchOrders();
+      await fetchOrders(pagination.currentPage);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to delete failed orders"
@@ -130,6 +157,34 @@ const OrdersDashboard = () => {
       return order.amountRemaining;
     }
     return order.totalTourPrice - order.amountPaid;
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const { totalPages, currentPage } = pagination;
+
+    if (totalPages > 0) pageNumbers.push(1);
+
+    if (totalPages > 5) {
+      if (currentPage > 3) pageNumbers.push(-1);
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        if (!pageNumbers.includes(i)) pageNumbers.push(i);
+      }
+
+      if (currentPage < totalPages - 2) pageNumbers.push(-2);
+
+      if (!pageNumbers.includes(totalPages)) pageNumbers.push(totalPages);
+    } else {
+      for (let i = 2; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    }
+
+    return pageNumbers;
   };
 
   const renderOrderCard = (data: OrderData) => {
@@ -217,7 +272,6 @@ const OrdersDashboard = () => {
             </div>
           </div>
 
-          {/* Payment Information */}
           <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-sm text-gray-700">
               Payment Information
@@ -257,25 +311,9 @@ const OrdersDashboard = () => {
             </div>
           </div>
 
-          {/* Route */}
           <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-sm text-gray-700">Route</h4>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium">Start:</span>
-              <span className="text-sm">
-                {data.startLocation || (
-                  <span className="text-gray-400">N/A</span>
-                )}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium">End:</span>
-              <span className="text-sm">
-                {data.endLocation || <span className="text-gray-400">N/A</span>}
-              </span>
-            </div>
+
             {data.locations?.length ? (
               <div className="mt-2 p-3 bg-gray-50 rounded-md">
                 <h5 className="font-medium mb-2 text-sm">Tour Locations:</h5>
@@ -297,7 +335,6 @@ const OrdersDashboard = () => {
             )}
           </div>
 
-          {/* Payment Action for Pending Orders */}
           {data.status === "pending" && (
             <div className="flex flex-col gap-3 border-t pt-4">
               <div className="p-3 bg-yellow-50 rounded-md border border-yellow-200">
@@ -323,41 +360,33 @@ const OrdersDashboard = () => {
               </div>
             </div>
           )}
-
-          {/* Description */}
-          <div className="border-t pt-4">
-            <h4 className="font-semibold text-sm text-gray-700 mb-2">
-              Description
-            </h4>
-            {data.tourDescription ? (
-              <p className="text-sm text-gray-600">{data.tourDescription}</p>
-            ) : (
-              <p className="text-sm text-gray-400">No description provided.</p>
-            )}
-          </div>
         </CardContent>
       </Card>
     );
   };
 
+  const pageNumbers = getPageNumbers();
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Orders Dashboard</h1>
-        <button
-          onClick={fetchOrders}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Refresh
-        </button>
-        <button
-          onClick={handleDeleteFailed}
-          className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-        >
-          <XCircle className="w-4 h-4 mr-2" />
-          Delete Failed
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => fetchOrders(pagination.currentPage)}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </button>
+          <button
+            onClick={handleDeleteFailed}
+            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            <XCircle className="w-4 h-4 mr-2" />
+            Delete Failed
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -373,7 +402,7 @@ const OrdersDashboard = () => {
           </h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
-            onClick={fetchOrders}
+            onClick={() => fetchOrders(pagination.currentPage)}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -385,9 +414,55 @@ const OrdersDashboard = () => {
           <p className="text-gray-600">No orders found.</p>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {orders.map(renderOrderCard)}
-        </div>
+        <>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {orders.map(renderOrderCard)}
+          </div>
+
+          {pagination.totalPages > 1 && (
+            <div className="flex justify-center items-center space-x-2 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                disabled={!pagination.hasPreviousPage}
+                className="px-3 py-1"
+              >
+                Prev
+              </Button>
+
+              {pageNumbers.map((page, index) => {
+                if (page === -1 || page === -2) {
+                  return (
+                    <span key={`ellipsis-${index}`} className="px-3 py-1">
+                      ...
+                    </span>
+                  );
+                }
+                return (
+                  <Button
+                    key={page}
+                    variant={
+                      pagination.currentPage === page ? "default" : "outline"
+                    }
+                    onClick={() => handlePageChange(page)}
+                    className="px-3 py-1"
+                  >
+                    {page}
+                  </Button>
+                );
+              })}
+
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                disabled={!pagination.hasNextPage}
+                className="px-3 py-1"
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -79,3 +79,8 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+.PhoneInputInput:focus {
+  outline: none;
+  border: none; /* or customize as needed, e.g. border: 1px solid #ccc; */
+}

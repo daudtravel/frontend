@@ -17,6 +17,8 @@ import { CreditCard, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { ExtractPlainText } from "@/src/helpers/ExtractPlainText";
 import { PaymentModalProps } from "./types";
 import { useTranslations } from "next-intl";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 const PaymentModal: React.FC<PaymentModalProps> = ({
   isOpen,
@@ -67,6 +69,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     },
     []
   );
+
+  const handlePhoneChange = useCallback((value: string | undefined) => {
+    setFormData((prev) => ({ ...prev, phone: value || "" }));
+    setMessage("");
+    setPaymentStatus("idle");
+  }, []);
 
   const validateForm = useCallback((): boolean => {
     const { firstName, lastName, email, phone } = formData;
@@ -272,13 +280,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
           <div className="space-y-2">
             <Label htmlFor="phone">{t("phone")}</Label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
+            <PhoneInput
+              international
+              defaultCountry="GE"
               value={formData.phone}
-              onChange={handleInputChange}
+              onChange={handlePhoneChange}
               disabled={isLoading}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
 

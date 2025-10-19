@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import {
   CalendarDays,
-  MapPin,
   PersonStanding,
   Timer,
   Wallet,

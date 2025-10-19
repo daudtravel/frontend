@@ -22,34 +22,37 @@ export const usePaymentStatus = (orderId: string | null) => {
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/bog/status/${orderId}`,
-        { method: "GET", headers: { "Content-Type": "application/json" } }
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       const data: PaymentStatusResponse = await response.json();
 
-      console.group("💳 Payment Status Debug");
-      console.log("Full Response:", data);
-      console.log("Status:", data?.status);
-      console.log("Reject Reason:", data?.reject_reason);
-      console.log("Payment Code:", data?.payment_code);
-      console.log("Description:", data?.payment_code_description);
-      console.groupEnd();
-
       if (!response.ok) {
-        setError(data.message || `HTTP error: ${response.status}`);
-        setPaymentDetails(data);
+        // Handle HTTP errors but still process the response data
+        if (response.status === 404) {
+          setError(data.message || "Payment not found");
+        } else if (response.status === 500) {
+          setError(data.message || "Server error occurred");
+        } else {
+          setError(data.message || `HTTP error! status: ${response.status}`);
+        }
+
+        // Still set payment details if available for failed payments
+        if (data && typeof data === "object") {
+          setPaymentDetails(data);
+        }
       } else {
+        // Success response
         setPaymentDetails(data);
 
-        // Explicitly check payment success/failure
+        // Additional validation
         if (!data.success) {
-          setError(
-            data.reject_reason ||
-              data.payment_code_description ||
-              "Payment failed"
-          );
-        } else {
-          console.log("✅ Payment succeeded:", data.payment_code_description);
+          setError(data.message || "Payment verification failed");
         }
       }
     } catch (err) {
@@ -66,5 +69,10 @@ export const usePaymentStatus = (orderId: string | null) => {
     fetchPaymentStatus();
   }, [fetchPaymentStatus]);
 
-  return { isLoading, paymentDetails, error, refetch: fetchPaymentStatus };
+  return {
+    isLoading,
+    paymentDetails,
+    error,
+    refetch: fetchPaymentStatus,
+  };
 };

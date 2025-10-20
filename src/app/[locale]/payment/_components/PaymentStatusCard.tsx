@@ -31,7 +31,6 @@ interface PaymentStatusCardProps {
   paymentDetails: PaymentStatusResponse | null;
   error: string;
   completed: boolean;
-  orderId: string | null;
 }
 
 const Card = ({
@@ -214,35 +213,9 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
               </p>
             </div>
 
-            {paymentDetails && (
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4 text-sm">
-                <p className="text-blue-900 font-medium mb-2">
-                  Payment Details:
-                </p>
-                <div className="space-y-1 text-blue-800">
-                  <p>💳 Method: {paymentDetails.payment_method || "Card"}</p>
-                  <p>
-                    💰 Amount: {paymentDetails.amount?.requested}{" "}
-                    {paymentDetails.amount?.currency}
-                  </p>
-                  {paymentDetails.transaction_id && (
-                    <p className="text-xs">
-                      🔑 Transaction: {paymentDetails.transaction_id}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
             <div className="pt-4 space-y-2">
               <Button onClick={() => (window.location.href = "/")}>
                 Return Home
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => (window.location.href = "/bookings")}
-              >
-                View My Bookings
               </Button>
             </div>
           </CardContent>
@@ -262,38 +235,11 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {paymentDetails && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              {paymentDetails.payment_response?.code && (
-                <p className="text-red-700 text-xs">
-                  Error Code: {paymentDetails.payment_response.code}
-                </p>
-              )}
-            </div>
-          )}
-
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
             <p className="text-yellow-800 text-sm">
-              💡 Don t worry, No money has been charged to your account.
+              💡 Don t worry, no money has been charged to your account.
             </p>
           </div>
-
-          {process.env.NODE_ENV === "development" && paymentDetails && (
-            <div className="bg-gray-800 border border-gray-700 rounded-md p-3">
-              <p className="text-gray-300 text-xs font-mono mb-1">
-                🔍 Debug Info:
-              </p>
-              <p className="text-gray-400 text-xs font-mono">
-                Status: {paymentDetails.status}
-              </p>
-              <p className="text-gray-400 text-xs font-mono">
-                Code: {paymentDetails.payment_response?.code || "N/A"}
-              </p>
-              <p className="text-gray-400 text-xs font-mono">
-                Success: {String(paymentDetails.success)}
-              </p>
-            </div>
-          )}
 
           <div className="pt-4 space-y-2">
             <Button onClick={() => (window.location.href = "/")}>

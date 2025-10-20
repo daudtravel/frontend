@@ -9,8 +9,6 @@ export default function PaymentSuccess() {
   const orderId = searchParams.get("order_id");
   const { isLoading, paymentDetails, error } = usePaymentStatus(orderId);
 
- 
-
   const isCompleted =
     paymentDetails?.success === true && paymentDetails.status === "completed";
 
@@ -20,7 +18,6 @@ export default function PaymentSuccess() {
       paymentDetails={paymentDetails}
       error={error}
       completed={isCompleted}
-      orderId={orderId}
     />
   );
 }

@@ -18,7 +18,6 @@ export default function PaymentFailure() {
       paymentDetails={paymentDetails}
       error={error}
       completed={isCompleted}
-      orderId={orderId}
     />
   );
 }

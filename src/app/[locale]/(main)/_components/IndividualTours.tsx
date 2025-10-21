@@ -113,10 +113,11 @@ export default function IndividualToursSection() {
               loop: true,
               align: "start",
             }}
-            className="w-full"
+            className="w-full md:px-20"
             setApi={setApi}
           >
-            <CarouselContent className="z-10 md:px-20">
+            <CarouselContent className="z-10">
+              {" "}
               {toursData?.data?.tours?.map((tour: Tour, index: number) => (
                 <CarouselItem
                   key={tour.id}
@@ -127,6 +128,7 @@ export default function IndividualToursSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * index }}
                     viewport={{ once: true }}
+                    className="h-full"
                   >
                     <TourCard tour={tour} />
                   </motion.div>

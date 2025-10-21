@@ -12,6 +12,7 @@ import { AuthProvider } from "@/src/auth/authProvider";
 import SignupModalWrapper from "./(auth)/_signup/SignupModalWrapper";
 import { CHAT_CONFIG, initWhatsAppWidget } from "@/src/utlis/chats/OnlineChats";
 import { SocialSection } from "./(main)/_components/SocialSection";
+import ConsentBanner from "@/src/components/shared/ConsentBanner";
 
 export async function generateMetadata({
   params,
@@ -60,9 +61,6 @@ export default async function LocaleLayout({
         <Script id="whatsapp-widget" strategy="afterInteractive">
           {initWhatsAppWidget(CHAT_CONFIG.WHATSAPP_NUMBER)}
         </Script>
-        {/* <Script id="tawk-widget" strategy="afterInteractive">
-          {initTawkWidget()}
-        </Script> */}
 
         <AuthProvider>
           <QueryProvider>
@@ -73,6 +71,7 @@ export default async function LocaleLayout({
               {children}
               <Footer />
               <SocialSection />
+              <ConsentBanner />
             </NextIntlClientProvider>
           </QueryProvider>
         </AuthProvider>

@@ -12,7 +12,7 @@ import { MapPin } from "lucide-react";
 
 export const SocialSection = () => {
   return (
-    <div className="border-t flex sticky border-t-slate-200 shadow-lg bottom-0 w-full z-50 justify-center items-center flex-col py-2 md:py-5 bg-[#f2f5ff]">
+    <div className="border-t flex sticky border-t-slate-200 shadow-lg bottom-0 w-full z-50 justify-center items-center flex-col py-4 md:py-5 bg-[#f2f5ff]">
       <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-8">
         <a
           target="_blank"

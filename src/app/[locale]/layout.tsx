@@ -27,6 +27,8 @@ export async function generateMetadata({
       template: `%s | ${t("daudTravel")}`,
     },
     description: t("descriptionMain"),
+    // ADDED: Explicit charset
+    charset: "UTF-8",
     openGraph: {
       title: t("default"),
       description: t("descriptionMain"),
@@ -57,6 +59,12 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        {/* CRITICAL: UTF-8 encoding meta tags for Georgian text */}
+        <meta charSet="UTF-8" />
+        <meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+      </head>
       <body>
         <Script id="whatsapp-widget" strategy="afterInteractive">
           {initWhatsAppWidget(CHAT_CONFIG.WHATSAPP_NUMBER)}
